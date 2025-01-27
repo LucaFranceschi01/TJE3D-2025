@@ -9,6 +9,8 @@
 #include "framework/input.h"
 #include "framework/entities/entityMesh.h"
 
+#include "game/scene_parser.h"
+
 #include <cmath>
 
 //some globals
@@ -20,7 +22,8 @@ float mouse_speed = 100.0f;
 
 Game* Game::instance = NULL;
 
-EntityMesh* entity_mesh = nullptr;
+Entity* root = nullptr;
+//EntityMesh* entity_mesh = nullptr;
 
 Game::Game(int window_width, int window_height, SDL_Window* window)
 {
@@ -56,7 +59,10 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 
 	Material material = { shader, {}, texture };
 
-	entity_mesh = new EntityMesh(mesh, material);
+	root = new Entity();
+	//entity_mesh = new EntityMesh(mesh, material);
+	SceneParser parser;
+	parser.parse("data/myscene...", root); // TODO: in blender do @player tag parser thing
 
 	// Hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
@@ -73,6 +79,9 @@ void Game::render(void)
 
 	// Set the camera as default
 	camera->enable();
+
+
+	root->render(camera);
 
 	// Set flags
 	glDisable(GL_BLEND);

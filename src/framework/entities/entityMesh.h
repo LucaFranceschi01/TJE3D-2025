@@ -4,8 +4,6 @@
 #include "graphics/material.h"
 
 class Mesh;
-class Texture;
-class Shader;
 
 class EntityMesh : public Entity {
 
@@ -18,6 +16,9 @@ public:
 	// Attributes of the derived class  
 	Mesh* mesh = nullptr;
 	Material material; // TODO: implement this material
+
+	bool isInstanced = false;
+	std::vector<Matrix44> models;
 
 	// Methods overwritten from base class
 	void render();

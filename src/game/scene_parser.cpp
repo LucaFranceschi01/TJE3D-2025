@@ -4,7 +4,6 @@
 #include "graphics/mesh.h"
 
 #include "framework/utils.h"
-
 #include "framework/entities/entityMesh.h"
 
 #include <fstream>
@@ -58,7 +57,7 @@ bool SceneParser::parse(const char* filename, Entity* root)
 		Material mat = render_data.material;
 		EntityMesh* new_entity = nullptr;
 
-		size_t tag = data.first.find("@tag");
+		size_t tag = data.first.find("@tag"); // TODO: use parser tags
 
 		if (tag != std::string::npos) {
 			Mesh* mesh = Mesh::Get("...");

@@ -24,6 +24,7 @@ void EntityMesh::render() {
 	}
 
 	if ( !material.shader ) {
+		//material.shader = Shader::Get("", "");
 		material.shader = Shader::Get("", "");
 	}
 	
@@ -32,11 +33,26 @@ void EntityMesh::render() {
 
 	// Enable shader and pass uniforms 
 	material.shader->enable();
-	material.shader->setUniform("u_model", model);
+	
+	if (!isInstanced) {
+		material.shader->setUniform("u_model", model);
+	}
+	
 	material.shader->setUniform("u_viewproj", camera->viewprojection_matrix);
-	material.shader->setTexture("u_texture", material.diffuse, 0);
+	material.shader->setTexture("u_texture", material.diffuse, 0); // the slot is hardcoded
 	
 	// material.shader->setTexture("u_texture", material.normals, 1);
+
+	if (material.diffuse) {
+		// TODO: set texture
+	}
+
+	if (isInstanced) {
+		mesh->renderInstanced(GL_TRIANGLES, models.data(), models.size());
+	}
+	else {
+		mesh->render(GL_TRIANGLES);
+	}
 
 	// Render the mesh using the shader
 	mesh->render(GL_TRIANGLES);
