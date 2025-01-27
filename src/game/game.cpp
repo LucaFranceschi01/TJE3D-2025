@@ -1,10 +1,13 @@
 #include "game.h"
-#include "framework/utils.h"
+
 #include "graphics/mesh.h"
 #include "graphics/texture.h"
 #include "graphics/fbo.h"
 #include "graphics/shader.h"
+
+#include "framework/utils.h"
 #include "framework/input.h"
+#include "framework/entities/entityMesh.h"
 
 #include <cmath>
 
@@ -16,6 +19,8 @@ float angle = 0;
 float mouse_speed = 100.0f;
 
 Game* Game::instance = NULL;
+
+EntityMesh* entity_mesh = nullptr;
 
 Game::Game(int window_width, int window_height, SDL_Window* window)
 {
@@ -48,6 +53,10 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 
 	// Example of shader loading using the shaders manager
 	shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+
+	Material material = { shader, {}, texture };
+
+	entity_mesh = new EntityMesh(mesh, material);
 
 	// Hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
