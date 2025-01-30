@@ -14,10 +14,10 @@ public:
 	virtual ~EntityMesh() {};
 
 	// Attributes of the derived class  
-	Mesh* mesh = nullptr;
-	Material material; // TODO: implement this material
+	Mesh* mesh;
+	Material material;
 
-	bool isInstanced = false;
+	bool isInstanced;
 	std::vector<Matrix44> models;
 
 	// Methods overwritten from base class

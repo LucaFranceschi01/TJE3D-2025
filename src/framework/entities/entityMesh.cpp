@@ -6,11 +6,11 @@
 
 EntityMesh::EntityMesh() : Entity()
 {
-	//material = ...
-	//shader = material.shader;
+	mesh = nullptr;
+	isInstanced = false;
 }
 
-EntityMesh::EntityMesh(Mesh* mesh, const Material& material)
+EntityMesh::EntityMesh(Mesh* mesh, const Material& material) : EntityMesh()
 {
 	this->mesh = mesh;
 	this->material = material;
@@ -24,8 +24,7 @@ void EntityMesh::render() {
 	}
 
 	if ( !material.shader ) {
-		//material.shader = Shader::Get("", "");
-		material.shader = Shader::Get("", "");
+		material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
 	}
 	
 	// Get the last camera that was activated 
@@ -38,14 +37,13 @@ void EntityMesh::render() {
 		material.shader->setUniform("u_model", model);
 	}
 	
-	material.shader->setUniform("u_viewproj", camera->viewprojection_matrix);
-	material.shader->setTexture("u_texture", material.diffuse, 0); // the slot is hardcoded
-	
-	// material.shader->setTexture("u_texture", material.normals, 1);
-
 	if (material.diffuse) {
 		// TODO: set texture
-	}
+		material.shader->setTexture("u_texture", material.diffuse, 0); // the slot is hardcoded
+	} // TODO: ELSE poner con missing ???
+
+	material.shader->setUniform("u_viewproj", camera->viewprojection_matrix);
+	// material.shader->setTexture("u_texture", material.normals, 1);
 
 	if (isInstanced) {
 		mesh->renderInstanced(GL_TRIANGLES, models.data(), models.size());
@@ -53,9 +51,6 @@ void EntityMesh::render() {
 	else {
 		mesh->render(GL_TRIANGLES);
 	}
-
-	// Render the mesh using the shader
-	mesh->render(GL_TRIANGLES);
 
 	// Disable shader after finishing rendering
 	material.shader->disable();
