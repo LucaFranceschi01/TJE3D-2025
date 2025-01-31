@@ -25,7 +25,7 @@ void EntityMesh::render(Camera* camera) {
 	}
 
 	if ( !material.shader ) {
-		material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+		material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 	}
 	
 	// Get the last camera that was activated 
@@ -34,12 +34,12 @@ void EntityMesh::render(Camera* camera) {
 	// Enable shader and pass uniforms 
 	material.shader->enable();
 	
-	material.shader->setUniform("u_color", material.color);
+	material.shader->setUniform("u_color", material.color); // TODO: CHECK IF THIS U_COLOR IS BEING USED
 
-	material.shader->setUniform("u_viewproj", camera->viewprojection_matrix);
+	material.shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
 
 	if (!material.diffuse) {
-		material.diffuse = Texture::Get("data/textures/missing.tga");
+		material.diffuse = Texture::Get("data/textures/texture.tga");
 	}
 
 	material.shader->setTexture("u_texture", material.diffuse, 0); // the slot is hardcoded
