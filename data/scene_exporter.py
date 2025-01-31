@@ -4,8 +4,8 @@ from bpy_extras.io_utils import axis_conversion
 import os
 import shutil
 
-filepath = bpy.path.abspath("//") + "myscene.scene"
-abs_folderpath = bpy.path.abspath("//")
+filepath = bpy.path.abspath("//..//") + "myscene.scene"
+abs_folderpath = bpy.path.abspath("//..//")
 
 # Deselect all objects
 bpy.ops.object.select_all(action='DESELECT')
@@ -25,7 +25,7 @@ with open(filepath, 'w') as f:
         if object.type == 'MESH':
                         
             folderpath = "scene/" + object.data.name + "/"
-            abs_folderpath = bpy.path.abspath("//") + folderpath
+            abs_folderpath = bpy.path.abspath("//..//") + folderpath
             
             name = object.data.name + ".obj"
             
