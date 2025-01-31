@@ -47,17 +47,18 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	camera = new Camera();
 	camera->lookAt(Vector3(0.f,100.f, 100.f),Vector3(0.f,0.f,0.f), Vector3(0.f,1.f,0.f)); //position the camera and point to 0,0,0
 	camera->setPerspective(70.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
-
+	/*
 	// Load one texture using the Texture Manager
-	//texture = Texture::Get("data/textures/texture.tga");
+	texture = Texture::Get("data/textures/texture.tga");
 
 	// Example of loading Mesh from Mesh Manager
-	//mesh = Mesh::Get("data/meshes/box.ASE");
+	mesh = Mesh::Get("data/meshes/box.ASE");
 
 	// Example of shader loading using the shaders manager
-	//shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+	shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
 	Material material = { shader, {}, texture };
+	*/
 
 	root = new Entity();
 	//entity_mesh = new EntityMesh(mesh, material);
@@ -80,19 +81,18 @@ void Game::render(void)
 	// Set the camera as default
 	camera->enable();
 
-
-	root->render(camera);
-
 	// Set flags
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
    
+	root->render(camera);
 	// Create model matrix for cube
-	//Matrix44 m;
-	//m.rotate(angle*DEG2RAD, Vector3(0.0f, 1.0f, 0.0f));
+	/*
+	Matrix44 m;
+	m.rotate(angle*DEG2RAD, Vector3(0.0f, 1.0f, 0.0f));
 
-	/*if (shader)
+	if (shader)
 	{
 		// Enable shader
 		shader->enable();
@@ -109,7 +109,8 @@ void Game::render(void)
 
 		// Disable shader
 		shader->disable();
-	}*/
+	}
+	*/
 
 	// Draw the floor grid
 	drawGrid();

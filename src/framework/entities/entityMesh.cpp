@@ -20,7 +20,7 @@ EntityMesh::EntityMesh(Mesh* mesh, const Material& material) : EntityMesh()
 void EntityMesh::render(Camera* camera) {
 
 	if ( !mesh ) {
-		assert(0);
+		assert(0, "No mesh was loaded");
 		return;
 	}
 
@@ -52,7 +52,7 @@ void EntityMesh::render(Camera* camera) {
 	else {
 		mesh->renderInstanced(GL_TRIANGLES, models.data(), models.size());
 	}
-
+	
 	//long now = SDL_GetTicks();
 	//float time = float(now * 0.001);
 	//material.shader->setUniform("u_time", time);
