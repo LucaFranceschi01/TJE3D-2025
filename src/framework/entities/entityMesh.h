@@ -21,6 +21,6 @@ public:
 	std::vector<Matrix44> models;
 
 	// Methods overwritten from base class
-	void render();
-	void update(float elapsed_time);
+	void render(Camera* camera) override;
+	void update(float elapsed_time) override;
 };

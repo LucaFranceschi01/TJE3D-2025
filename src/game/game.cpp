@@ -49,20 +49,20 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	camera->setPerspective(70.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
 
 	// Load one texture using the Texture Manager
-	texture = Texture::Get("data/textures/texture.tga");
+	//texture = Texture::Get("data/textures/texture.tga");
 
 	// Example of loading Mesh from Mesh Manager
-	mesh = Mesh::Get("data/meshes/box.ASE");
+	//mesh = Mesh::Get("data/meshes/box.ASE");
 
 	// Example of shader loading using the shaders manager
-	shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+	//shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
 	Material material = { shader, {}, texture };
 
 	root = new Entity();
 	//entity_mesh = new EntityMesh(mesh, material);
 	SceneParser parser;
-	parser.parse("data/myscene...", root); // TODO: in blender do @player tag parser thing
+	parser.parse("data/myscene.scene", root); // TODO: in blender do @player tag parser thing
 
 	// Hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
@@ -89,10 +89,10 @@ void Game::render(void)
 	glDisable(GL_CULL_FACE);
    
 	// Create model matrix for cube
-	Matrix44 m;
-	m.rotate(angle*DEG2RAD, Vector3(0.0f, 1.0f, 0.0f));
+	//Matrix44 m;
+	//m.rotate(angle*DEG2RAD, Vector3(0.0f, 1.0f, 0.0f));
 
-	if(shader)
+	/*if (shader)
 	{
 		// Enable shader
 		shader->enable();
@@ -109,7 +109,7 @@ void Game::render(void)
 
 		// Disable shader
 		shader->disable();
-	}
+	}*/
 
 	// Draw the floor grid
 	drawGrid();
@@ -123,7 +123,7 @@ void Game::render(void)
 
 void Game::update(double seconds_elapsed)
 {
-	float speed = seconds_elapsed * mouse_speed; //the speed is defined by the seconds_elapsed so it goes constant
+	float speed = seconds_elapsed * mouse_speed * 10.0; //the speed is defined by the seconds_elapsed so it goes constant
 
 	// Example
 	angle += (float)seconds_elapsed * 10.0f;
