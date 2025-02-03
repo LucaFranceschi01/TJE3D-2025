@@ -124,7 +124,7 @@ void Game::render(void)
 
 void Game::update(double seconds_elapsed)
 {
-	float speed = seconds_elapsed * mouse_speed * 10.0; //the speed is defined by the seconds_elapsed so it goes constant
+	float speed = seconds_elapsed * mouse_speed * 1.0; //the speed is defined by the seconds_elapsed so it goes constant
 
 	// Example
 	angle += (float)seconds_elapsed * 10.0f;
