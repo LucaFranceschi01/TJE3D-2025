@@ -3,6 +3,8 @@
 #include "entity.h"
 #include "graphics/material.h"
 
+using namespace std; // te parece bien usar esto para evitar escribir std siempre?
+
 class Mesh;
 
 struct s_MeshLOD {
@@ -24,7 +26,7 @@ public:
 
 	bool isInstanced;
 	std::vector<Matrix44> models;
-	std::vector<s_MeshLOD> lods;
+	std::vector<s_MeshLOD> meshLods;
 
 	// Methods overwritten from base class
 	void render(Camera* camera) override;
@@ -36,4 +38,5 @@ public:
 	also uses
 	std::sort(mesh_lods.begin(), mesh_lods.end(), [](const meshLOD&)...
 	*/
+	void addMeshLOD(Mesh* mesh, float distance);
 };
