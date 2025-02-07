@@ -8,19 +8,24 @@
 
 #include "stage.h"
 
+#include "world.h"
 
 
-PlayStage::PlayStage(Camera* camera) {
-    this->camera = camera;
-    // init root
-    root = new Entity();
+PlayStage::PlayStage() {
+
     //entity_mesh = new EntityMesh(mesh, material);
-    SceneParser parser;
-    parser.parse("data/myscene.scene", root); // TODO: in blender do @player tag parser thing
+    //SceneParser parser;
+   // parser.parse("data/myscene.scene", root); // TODO: in blender do @player tag parser thing
 }
 
+void PlayStage::init() {
+
+}
+
+
+
 void PlayStage::render() {
-    root->render(camera);
+    //root->render(camera);
     // Create model matrix for cube
     /*
     Matrix44 m;
@@ -46,28 +51,53 @@ void PlayStage::render() {
     }
     */
 
+    World::getInstance()->render();
+
     // Draw the floor grid
     drawGrid();
 }
 
 void PlayStage::update(double dt) {
-    float speed = dt * Game::instance->mouse_speed * 0.25; //the speed is defined by the seconds_elapsed so it goes constant
-
-    // Example
-    Game::instance->angle += static_cast<float>(dt) * 10.0f;
-
-    // Mouse input to rotate the cam
-    if (Input::isMousePressed(SDL_BUTTON_LEFT) || Game::instance->mouse_locked) //is left button pressed?
-    {
-        camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
-        camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
-    }
-
-    // Async input to move the camera around
-    if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT) ) speed *= 10; //move faster with left shift
-    if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
-    if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f) * speed);
-    if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
-    if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f) * speed);
+    World::getInstance()->update(dt);
 }
 
+void PlayStage::onEnter(Stage *prev_stage) {
+
+}
+
+void PlayStage::onKeyDown(SDL_KeyboardEvent event) {
+    //World::getInstance()->player->onKeyDown(event);
+}
+
+void PlayStage::onResize(int width, int height) {
+    World* world = World::getInstance();
+    world->camera->aspect = static_cast<float>(width) / static_cast<float>(height);
+}
+
+// está default ahora
+MenuStage::MenuStage() {
+}
+
+void MenuStage::init() {
+    Stage::init();
+}
+
+void MenuStage::render() {
+    Stage::render();
+}
+
+void MenuStage::update(double dt) {
+    Stage::update(dt);
+}
+
+void MenuStage::onEnter(Stage *prev_stage) {
+    Stage::onEnter(prev_stage);
+}
+
+void MenuStage::onKeyDown(SDL_KeyboardEvent event) {
+    Stage::onKeyDown(event);
+}
+
+void MenuStage::onResize(int width, int height) {
+    Stage::onResize(width, height);
+}

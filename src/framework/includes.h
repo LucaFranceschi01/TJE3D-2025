@@ -37,6 +37,7 @@
 #endif
 
 #include <iostream>
+#include <map>
 
 //remove warnings
 
