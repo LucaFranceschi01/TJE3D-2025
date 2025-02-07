@@ -31,9 +31,6 @@ World::World() {
 
     root = new Entity();
 
-    SceneParser parser;
-    parser.parse("data/myscene.scene", root); // TODO: in blender do @player tag parser thing
-
     // create height map
     // esto lo pongo pq lo ha puesto en clase, ns si lo usaremos
     /*
@@ -65,8 +62,25 @@ World::World() {
         //Texture::Get("landscape"); una vez que se carga la texture, se puede acceder por todo el código con esto.
 
         // continuació
+
+        Material cubemap_material;
+        cubemap_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs");
+        cubemap_material.diffuse = cube_texture;
+
+        skybox = new EntityMesh(Mesh::Get("data/meshes/cubemap.ASE"), cubemap_material);
     }
     */
+
+    // render player
+    Material player_material;
+    player_material.diffuse = Texture::Get("data/meshes/colormap.png");
+    player_material.shader = Shader::Get("data/shaders/basic.vs");
+
+
+    SceneParser parser;
+    bool completed = parser.parse("data/myscene.scene", root); // TODO: in blender do @player tag parser thing
+    assert(completed);
+
 }
 
 
@@ -92,28 +106,62 @@ void World::render() {
 }
 
 
-void World::update(double dt) {
+void World::update(float dt) {
+
+    // update all elements
+    root->update(dt);
+
+    // update the player
+    //player->update(dt);
 
     float speed = dt * Game::instance->mouse_speed * 0.25; //the speed is defined by the seconds_elapsed so it goes constant
 
-    // Este bloque de código es temporal, estaba en game update()
-    // Example
-    Game::instance->angle += static_cast<float>(dt) * 10.0f;
+    if (free_camera) {
+        // camara libre
+        // Example
+        Game::instance->angle += static_cast<float>(dt) * 10.0f;
 
-    // Mouse input to rotate the cam
-    if (Input::isMousePressed(SDL_BUTTON_LEFT) || Game::instance->mouse_locked) { //is left button pressed?
-        camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
-        camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
+        // Mouse input to rotate the cam
+        if (Input::isMousePressed(SDL_BUTTON_LEFT) || Game::instance->mouse_locked) { //is left button pressed?
+            camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
+            camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
+        }
+
+        // Async input to move the camera around
+        if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT) ) speed *= 10; //move faster with left shift
+        if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
+        if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f) * speed);
+        if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
+        if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f) * speed);
+    } else {
+        // camara en 3a persona
+        // get camera delta
+        camera_yaw -= Input::mouse_delta.x * dt * mouse_speed;
+        camera_pitch -= Input::mouse_delta.y * dt * mouse_speed;
+
+        // restrict pitch angle
+        camera_pitch = clamp(camera_pitch, -M_PI * 0.4f, M_PI * 0.4f);
+
+        Matrix44 mYaw;
+        mYaw.setRotation(camera_yaw, Vector3(0, 1, 0));
+
+        Matrix44 mPitch;
+        mPitch.setRotation(camera_pitch, Vector3(-1, 0, 0));
+
+        Vector3 front = (mPitch * mYaw).frontVector().normalize();
+        Vector3 eye;
+        Vector3 center;
+
+        // camera 3rd person
+        float orbit_distance = 1.5f;
+        eye = player->model.getTranslation() - front * orbit_distance;
+        center = player->model.getTranslation() + Vector3(0.f, 0.5f, 0.0f);
+
+        camera->lookAt(eye, center, Vector3::UP);
     }
 
-    // Async input to move the camera around
-    if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT) ) speed *= 10; //move faster with left shift
-    if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
-    if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f) * speed);
-    if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
-    if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f) * speed);
-
     // hay cosas ...
+    //skybox->model.setTranslation(camera->eye);
 
     // delete pending entities
     for (auto entity : entities_to_destroy) {

@@ -15,7 +15,7 @@ using namespace std;
 class Player : public EntityMesh {
 private:
     float walk_speed = 0.0f;
-    Vector3 speed = Vector3(0.0f);
+    Vector3 velocity = Vector3(0.0f);
 
 public:
     Player() = default;

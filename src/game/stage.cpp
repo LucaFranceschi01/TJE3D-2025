@@ -67,6 +67,14 @@ void PlayStage::onEnter(Stage *prev_stage) {
 
 void PlayStage::onKeyDown(SDL_KeyboardEvent event) {
     //World::getInstance()->player->onKeyDown(event);
+
+    switch (event.keysym.sym) {
+        case SDLK_TAB:
+            bool& free_camera = World::getInstance()->free_camera;
+            free_camera = !free_camera;
+            Game::instance->mouse_locked = !free_camera; // ns si está bien
+            break;
+    }
 }
 
 void PlayStage::onResize(int width, int height) {

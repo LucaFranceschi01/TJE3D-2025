@@ -41,7 +41,9 @@ public:
 
     void update(double dt);
 
-    //events
+    // events
+    void setMouseLocked(bool mouse_lock);
+
     void goToStage(TypeStages type_stage);
 
     void onKeyDown(SDL_KeyboardEvent event);

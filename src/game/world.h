@@ -43,7 +43,7 @@ public:
 
     // methods
     void render();
-    void update(double dt);
+    void update(float dt);
 
     // scene
     vector<Entity*> entities_to_destroy;
