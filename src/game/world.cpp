@@ -5,7 +5,14 @@
 #include "world.h"
 #include "game.h"
 #include "scene_parser.h"
+#include "player.h"
+
 #include "framework/input.h"
+#include "framework/includes.h"
+#include "framework/camera.h"
+#include "framework/utils.h"
+#include "framework/entities/entity.h"
+#include "framework/entities/entityMesh.h"
 
 #include "graphics/mesh.h"
 #include "graphics/shader.h"
@@ -80,7 +87,6 @@ World::World() {
     SceneParser parser;
     bool completed = parser.parse("data/myscene.scene", root); // TODO: in blender do @player tag parser thing
     assert(completed);
-
 }
 
 

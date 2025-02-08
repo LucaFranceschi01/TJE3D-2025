@@ -2,15 +2,9 @@
 // Created by Xavi Cañadas on 6/2/25.
 //
 
-#ifndef PLAYER_H
-#define PLAYER_H
+#pragma once
 
-#include "stage.h"
-
-#include "framework/includes.h"
 #include "framework/entities/entityMesh.h"
-
-using namespace std;
 
 class Player : public EntityMesh {
 private:
@@ -19,12 +13,7 @@ private:
 
 public:
     Player() = default;
-    Player(Mesh* mesh, const Material& material, const string& name = "");
+    Player(Mesh* mesh, const Material& material, const std::string& name = "");
 
     void update(float dt) override;
-
 };
-
-
-
-#endif //PLAYER_H

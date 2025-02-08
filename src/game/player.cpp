@@ -7,7 +7,7 @@
 
 #include "framework/input.h"
 
-Player::Player(Mesh *mesh, const Material &material, const string &name) {
+Player::Player(Mesh *mesh, const Material &material, const std::string &name) {
 }
 
 void Player::update(float dt) {

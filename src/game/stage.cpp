@@ -1,21 +1,18 @@
 //
 // Created by Xavi Cañadas on 3/2/25.
 //
-#include "framework/input.h"
+#include "stage.h"
 
 #include "game/game.h"
 #include "game/scene_parser.h"
 
-#include "stage.h"
-
 #include "world.h"
-
 
 PlayStage::PlayStage() {
 
     //entity_mesh = new EntityMesh(mesh, material);
     //SceneParser parser;
-   // parser.parse("data/myscene.scene", root); // TODO: in blender do @player tag parser thing
+    // parser.parse("data/myscene.scene", root); // TODO: in blender do @player tag parser thing
 }
 
 void PlayStage::init() {
@@ -65,6 +62,10 @@ void PlayStage::onEnter(Stage *prev_stage) {
 
 }
 
+void PlayStage::onLeave(Stage* prev_stage)
+{
+}
+
 void PlayStage::onKeyDown(SDL_KeyboardEvent event) {
     //World::getInstance()->player->onKeyDown(event);
 
@@ -100,6 +101,10 @@ void MenuStage::update(double dt) {
 
 void MenuStage::onEnter(Stage *prev_stage) {
     Stage::onEnter(prev_stage);
+}
+
+void MenuStage::onLeave(Stage* prev_stage)
+{
 }
 
 void MenuStage::onKeyDown(SDL_KeyboardEvent event) {

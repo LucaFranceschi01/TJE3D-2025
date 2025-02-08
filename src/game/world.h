@@ -2,25 +2,20 @@
 // Created by Xavi Cañadas on 6/2/25.
 //
 
-#ifndef WORLD_H
-#define WORLD_H
+#pragma once
 
-#include "framework/includes.h"
-#include "framework/camera.h"
-#include "framework/utils.h"
-#include "framework/entities/entity.h"
-#include "framework/entities/entityMesh.h"
+#include <vector>
 
-#include "player.h"
-
-using namespace std;
+class Entity;
+class EntityMesh;
+class Player;
+class Camera;
 
 class World {
 private:
     static World* instance;
 public:
     static World* getInstance();
-    
 
     // attributes
     Entity* root = nullptr;
@@ -46,12 +41,8 @@ public:
     void update(float dt);
 
     // scene
-    vector<Entity*> entities_to_destroy;
+    std::vector<Entity*> entities_to_destroy;
 
     void addEntity(Entity* entity);
     void destroyEntity(Entity* entity);
 };
-
-
-
-#endif //WORLD_H
