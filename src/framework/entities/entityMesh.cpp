@@ -1,5 +1,7 @@
 #include "entityMesh.h"
 
+#include <algorithm>
+
 #include "graphics/shader.h"
 #include "graphics/mesh.h"
 #include "framework/camera.h"
@@ -127,7 +129,7 @@ void EntityMesh::addMeshLOD(Mesh *mesh, float distance) {
 
     meshLods.push_back({mesh, distance});
 
-    sort(meshLods.begin(), meshLods.end(), [](const s_MeshLOD a, const s_MeshLOD b) {
+    std::sort(meshLods.begin(), meshLods.end(), [](const s_MeshLOD& a, const s_MeshLOD& b) {
         return a.distance > b.distance;
     });
 }
