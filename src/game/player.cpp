@@ -10,7 +10,8 @@
 Player::Player(Mesh *mesh, const Material &material, const std::string &name) {
 }
 
-void Player::update(float dt) {
+void Player::update(float dt)
+{
     float camera_yaw = World::getInstance()->camera_yaw;
 
     Matrix44 mYaw;
@@ -23,10 +24,10 @@ void Player::update(float dt) {
 
     Vector3 move_dir;
 
-    if (Input:: isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP))
+    if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP))
         move_dir += front;
 
-    if (Input:: isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN))
+    if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN))
         move_dir -= front;
 
     float speed_mult = walk_speed;

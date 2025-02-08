@@ -10,7 +10,8 @@ typedef enum {
     MENU_STAGE, PLAY_STAGE
 } TypeStages;
 
-class Stage {
+class Stage
+{
 public:
     virtual ~Stage() = default; // TODO: does this really matter since virtual ???
 
@@ -32,7 +33,8 @@ public:
     virtual void onLeave(Stage* new_stage) {};
 };
 
-class PlayStage : public Stage {
+class PlayStage : public Stage
+{
 public:
     // constructor
     PlayStage();
@@ -48,7 +50,8 @@ public:
     void onResize(int width, int height) override;
 };
 
-class MenuStage : public Stage {
+class MenuStage : public Stage
+{
 public:
     // constructor
     MenuStage();

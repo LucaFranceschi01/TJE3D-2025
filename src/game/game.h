@@ -9,12 +9,13 @@
 #include "framework/utils.h"
 #include "game/stage.h"
 
-class Game {
+class Game
+{
 public:
-    static Game *instance;
+    static Game* instance;
 
     //window
-    SDL_Window *window;
+    SDL_Window* window;
     int window_width;
     int window_height;
 
@@ -27,14 +28,14 @@ public:
 
     //some vars
     bool mouse_locked; //tells if the mouse is locked (not seen)
-    Stage *currentStage;
+    Stage* currentStage;
     std::map<TypeStages, Stage*> stages;
 
     float angle = 0;
     float mouse_speed = 100.0f;
 
 
-    Game(int window_width, int window_height, SDL_Window *window);
+    Game(int window_width, int window_height, SDL_Window* window);
 
     //main functions
     void render(void);

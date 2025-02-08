@@ -14,17 +14,18 @@
 #include <cmath>
 
 //some globals
-Mesh *mesh = NULL;
-Texture *texture = NULL;
-Shader *shader = NULL;
+Mesh* mesh = NULL;
+Texture* texture = NULL;
+Shader* shader = NULL;
 
 
-Game *Game::instance = NULL;
+Game* Game::instance = NULL;
 
-Entity *root = nullptr;
+Entity* root = nullptr;
 //EntityMesh* entity_mesh = nullptr;
 
-Game::Game(int window_width, int window_height, SDL_Window *window) {
+Game::Game(int window_width, int window_height, SDL_Window* window)
+{
     this->window_width = window_width;
     this->window_height = window_height;
     this->window = window;
@@ -59,7 +60,8 @@ Game::Game(int window_width, int window_height, SDL_Window *window) {
 }
 
 //what to do when the image has to be draw
-void Game::render(void) {
+void Game::render(void)
+{
     // Set the clear color (the background color)
     glClearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -84,13 +86,15 @@ void Game::render(void) {
     SDL_GL_SwapWindow(this->window);
 }
 
-void Game::update(double seconds_elapsed) {
+void Game::update(double seconds_elapsed)
+{
     if (currentStage != nullptr)
         currentStage->update(seconds_elapsed);
 }
 
-void Game::goToStage(TypeStages type_stage) {
-    Stage *new_stage = stages[type_stage];
+void Game::goToStage(TypeStages type_stage)
+{
+    Stage* new_stage = stages[type_stage];
     assert(new_stage);
 
     if (currentStage != nullptr)
@@ -103,7 +107,8 @@ void Game::goToStage(TypeStages type_stage) {
 
 
 //Keyboard event handler (sync input)
-void Game::onKeyDown(SDL_KeyboardEvent event) {
+void Game::onKeyDown(SDL_KeyboardEvent event)
+{
     switch (event.keysym.sym) {
         case SDLK_ESCAPE: must_exit = true;
             break; //ESC key, kill the app
@@ -115,46 +120,53 @@ void Game::onKeyDown(SDL_KeyboardEvent event) {
         currentStage->onKeyDown(event);
 }
 
-void Game::onKeyUp(SDL_KeyboardEvent event) {
+void Game::onKeyUp(SDL_KeyboardEvent event)
+{
     if (currentStage != nullptr)
         currentStage->onKeyUp(event);
 }
 
-void Game::onMouseButtonDown(SDL_MouseButtonEvent event) {
+void Game::onMouseButtonDown(SDL_MouseButtonEvent event)
+{
     // middle mouse
     if (event.button == SDL_BUTTON_MIDDLE) {
         mouse_locked = !mouse_locked;
         SDL_ShowCursor(!mouse_locked);
-        SDL_SetRelativeMouseMode((SDL_bool) (mouse_locked));
+        SDL_SetRelativeMouseMode((SDL_bool)(mouse_locked));
     }
 
     if (currentStage != nullptr)
         currentStage->onMouseButtonDown(event);
 }
 
-void Game::onMouseButtonUp(SDL_MouseButtonEvent event) {
+void Game::onMouseButtonUp(SDL_MouseButtonEvent event)
+{
     if (currentStage != nullptr)
         currentStage->onMouseButtonUp(event);
 }
 
-void Game::onMouseWheel(SDL_MouseWheelEvent event) {
+void Game::onMouseWheel(SDL_MouseWheelEvent event)
+{
     mouse_speed *= event.y > 0 ? 1.1f : 0.9f;
 
     if (currentStage != nullptr)
         currentStage->onMouseWheel(event);
 }
 
-void Game::onGamepadButtonDown(SDL_JoyButtonEvent event) {
+void Game::onGamepadButtonDown(SDL_JoyButtonEvent event)
+{
     if (currentStage != nullptr)
         currentStage->onGamepadButtonDown(event);
 }
 
-void Game::onGamepadButtonUp(SDL_JoyButtonEvent event) {
+void Game::onGamepadButtonUp(SDL_JoyButtonEvent event)
+{
     if (currentStage != nullptr)
         currentStage->onGamepadButtonUp(event);
 }
 
-void Game::onResize(int width, int height) {
+void Game::onResize(int width, int height)
+{
     std::cout << "window resized: " << width << "," << height << std::endl;
     glViewport(0, 0, width, height);
     window_width = width;

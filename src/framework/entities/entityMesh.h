@@ -3,15 +3,17 @@
 #include "entity.h"
 #include "graphics/material.h"
 
+
 class Mesh;
 
-struct s_MeshLOD {
-	Mesh* mesh;
-	float distance;
+struct s_MeshLOD
+{
+    Mesh* mesh;
+    float distance;
 };
 
-class EntityMesh : public Entity {
-
+class EntityMesh : public Entity
+{
 public:
 
 	EntityMesh();

@@ -20,14 +20,16 @@
 
 World* World::instance = nullptr;
 
-World* World::getInstance() {
+World* World::getInstance()
+{
     if (instance == nullptr) {
         instance = new World();
     }
     return instance;
 }
 
-World::World() {
+World::World()
+{
     window_height = static_cast<float>(Game::instance->window_height);
     window_width = static_cast<float>(Game::instance->window_width);
 
@@ -90,7 +92,8 @@ World::World() {
 }
 
 
-void World::render() {
+void World::render()
+{
     // set camera as default
     camera->enable();
 
@@ -112,8 +115,8 @@ void World::render() {
 }
 
 
-void World::update(float dt) {
-
+void World::update(float dt)
+{
     // update all elements
     root->update(dt);
 
@@ -128,9 +131,10 @@ void World::update(float dt) {
         Game::instance->angle += static_cast<float>(dt) * 10.0f;
 
         // Mouse input to rotate the cam
-        if (Input::isMousePressed(SDL_BUTTON_LEFT) || Game::instance->mouse_locked) { //is left button pressed?
-            camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
-            camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
+        if (Input::isMousePressed(SDL_BUTTON_LEFT) || Game::instance->mouse_locked) {
+            //is left button pressed?
+            camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f, -1.0f, 0.0f));
+            camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector(Vector3(-1.0f, 0.0f, 0.0f)));
         }
 
         // Async input to move the camera around
@@ -178,13 +182,14 @@ void World::update(float dt) {
 }
 
 
-
-void World::addEntity(Entity *entity) {
+void World::addEntity(Entity* entity)
+{
     root->addChild(entity);
 }
 
 
-void World::destroyEntity(Entity *entity) {
+void World::destroyEntity(Entity* entity)
+{
     entities_to_destroy.push_back(entity);
 }
 

@@ -5,29 +5,28 @@
 
 class Camera;
 
-class Entity {
-
+class Entity
+{
 public:
+    Entity() {}; // Constructor
+    virtual ~Entity() {}; // Destructor
 
-	Entity() {}; 			// Constructor
-	virtual ~Entity() {}; 	// Destructor
+    std::string name;
 
-	std::string name;
+    Matrix44 model;
 
-	Matrix44 model;
+    Entity* parent = nullptr;
+    std::vector<Entity*> children;
 
-	Entity* parent = nullptr;
-	std::vector<Entity*> children;
+    void addChild(Entity* child);
+    void removeChild(Entity* child);
 
-	void addChild(Entity* child);
-	void removeChild(Entity* child);
+    // Methods that should be overwritten
+    // by derived classes
+    virtual void render(Camera* camera);
+    virtual void update(float delta_time);
 
-	// Methods that should be overwritten
-	// by derived classes 
-	virtual void render(Camera* camera);
-	virtual void update(float delta_time);
-
-	// Some useful methods
-	Matrix44 getGlobalMatrix();
-	float distance(Entity* e);
+    // Some useful methods
+    Matrix44 getGlobalMatrix();
+    float distance(Entity* e);
 };

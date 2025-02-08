@@ -7,19 +7,22 @@
 #include "framework/camera.h"
 #include "graphics/texture.h"
 
-EntityMesh::EntityMesh() : Entity() {
+EntityMesh::EntityMesh() : Entity()
+{
     mesh = nullptr;
     isInstanced = false;
 }
 
-EntityMesh::EntityMesh(Mesh *mesh, const Material &material) : EntityMesh() {
+EntityMesh::EntityMesh(Mesh* mesh, const Material& material) : EntityMesh()
+{
     this->mesh = mesh;
     this->material = material;
     //auto mat = mesh->materials.find("diffuse");
     //this->material.diffuse = mesh->materials.find("diffuse");
 }
 
-void EntityMesh::render(Camera *camera) {
+void EntityMesh::render(Camera* camera)
+{
     if (!mesh) {
         assert(0);
         return;
@@ -39,11 +42,12 @@ void EntityMesh::render(Camera *camera) {
         Vector3 bb_center = global_matrix * mesh->box.center;
         Vector3 bb_halfsize = mesh->box.halfsize;
         must_render &= (camera->testBoxInFrustum(bb_center, bb_halfsize) != CLIP_OUTSIDE);
-    } else {
+    }
+    else {
         float distance = 0.0f;
         Matrix44 global_matrix;
         Vector3 bb_center, bb_halfsize;
-        for (const Matrix44 &model: models) {
+        for (const Matrix44& model : models) {
             global_matrix = model * parent->getGlobalMatrix();
             // same as getGlobalMatrix() but now "model" is not valid, we have to make this operation ourselves
             distance = camera->eye.distance(global_matrix.getTranslation());
@@ -87,9 +91,9 @@ void EntityMesh::render(Camera *camera) {
     if (!isInstanced) {
         float distance = camera->eye.distance(getGlobalMatrix().getTranslation());
 
-        Mesh *current_lod = mesh;
+        Mesh* current_lod = mesh;
 
-        for (auto &lod: meshLods) {
+        for (auto& lod : meshLods) {
             if (distance > lod.distance) {
                 current_lod = lod.mesh;
                 break;
@@ -100,7 +104,8 @@ void EntityMesh::render(Camera *camera) {
         //material.shader->setUniform("u_model", model);
         material.shader->setUniform("u_model", getGlobalMatrix());
         current_lod->render(GL_TRIANGLES);
-    } else {
+    }
+    else {
         // TODO: NOW THE MODEL IS NOT UNIFORM, IS ATTRIBUTE
         // ATTRIBUTES ARE PER INSTANCE, UNIFORMS ARE PER
         mesh->renderInstanced(GL_TRIANGLES, must_render_models.data(), static_cast<int>(must_render_models.size()));
@@ -117,19 +122,21 @@ void EntityMesh::render(Camera *camera) {
     //Entity::render(camera);
 }
 
-void EntityMesh::update(float elapsed_time) {
+void EntityMesh::update(float elapsed_time)
+{
     Entity::update(elapsed_time);
 }
 
-void EntityMesh::addInstance(const Matrix44 &model) {
+void EntityMesh::addInstance(const Matrix44& model)
+{
     models.push_back(model);
 }
 
-void EntityMesh::addMeshLOD(Mesh *mesh, float distance) {
-
+void EntityMesh::addMeshLOD(Mesh* mesh, float distance)
+{
     meshLods.push_back({mesh, distance});
 
-    std::sort(meshLods.begin(), meshLods.end(), [](const s_MeshLOD& a, const s_MeshLOD& b) {
+    std::sort(meshLods.begin(), meshLods.end(), [](const s_MeshLOD a, const s_MeshLOD& b) {
         return a.distance > b.distance;
     });
 }

@@ -11,7 +11,8 @@ class EntityMesh;
 class Player;
 class Camera;
 
-class World {
+class World
+{
 private:
     static World* instance;
 public:
