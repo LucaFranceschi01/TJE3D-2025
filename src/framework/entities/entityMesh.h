@@ -3,8 +3,6 @@
 #include "entity.h"
 #include "graphics/material.h"
 
-using namespace std; // te parece bien usar esto para evitar escribir std siempre?
-
 class Mesh;
 
 struct s_MeshLOD {
@@ -32,11 +30,7 @@ public:
 	void render(Camera* camera) override;
 	void update(float elapsed_time) override;
 
+	// More methods
 	void addInstance(const Matrix44& model);
-	/*
-	TODO: EntityMesh::addMeshLOD(Mesh* mesh, float distance); // just pushes back lods with info
-	also uses
-	std::sort(mesh_lods.begin(), mesh_lods.end(), [](const meshLOD&)...
-	*/
 	void addMeshLOD(Mesh* mesh, float distance);
 };
