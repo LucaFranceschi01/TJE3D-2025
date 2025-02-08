@@ -28,7 +28,7 @@ public:
 
     //some vars
     bool mouse_locked; //tells if the mouse is locked (not seen)
-    Stage* currentStage;
+    Stage* currentStage = nullptr;
     std::map<TypeStages, Stage*> stages;
 
     float angle = 0;
