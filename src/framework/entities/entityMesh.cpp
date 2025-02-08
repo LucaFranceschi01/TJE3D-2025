@@ -17,6 +17,7 @@ EntityMesh::EntityMesh(Mesh* mesh, const Material& material) : EntityMesh()
 {
     this->mesh = mesh;
     this->material = material;
+    //this->materials = mesh->materials;
     //auto mat = mesh->materials.find("diffuse");
     //this->material.diffuse = mesh->materials.find("diffuse");
 }
@@ -29,7 +30,6 @@ void EntityMesh::render(Camera* camera)
     }
 
     // cullings
-
     bool must_render = true;
     std::vector<Matrix44> must_render_models;
 
@@ -37,11 +37,14 @@ void EntityMesh::render(Camera* camera)
         Matrix44 global_matrix = getGlobalMatrix(); // a nivel de mundo
         float distance = camera->eye.distance(global_matrix.getTranslation());
 
-        must_render &= (distance < 100.0f);
+        must_render &= (distance < 200.0f);
 
+        /*
+        // TODO: FIX PROBLEMATIC box testing
         Vector3 bb_center = global_matrix * mesh->box.center;
         Vector3 bb_halfsize = mesh->box.halfsize;
         must_render &= (camera->testBoxInFrustum(bb_center, bb_halfsize) != CLIP_OUTSIDE);
+        */
     }
     else {
         float distance = 0.0f;
@@ -55,7 +58,7 @@ void EntityMesh::render(Camera* camera)
             bb_center = global_matrix * mesh->box.center;
             bb_halfsize = mesh->box.halfsize;
 
-            if (distance < 100.0f && (camera->testBoxInFrustum(bb_center, bb_halfsize) != CLIP_OUTSIDE)) {
+            if (distance < 200.0f && (camera->testBoxInFrustum(bb_center, bb_halfsize) != CLIP_OUTSIDE)) {
                 must_render_models.push_back(model); // TODO: when is this used ???
             }
         }
@@ -68,9 +71,7 @@ void EntityMesh::render(Camera* camera)
     // end cullings
 
     if (!material.shader) {
-        material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
-        // TODO: INSTANCED SHADER IF INSTANCED
-        //isInstanced ? "instanced.vs" : "basic.vs", "texture.fs"
+        material.shader = Shader::Get(isInstanced ? "data/shaders/instanced.vs" : "data/shaders/basic.vs", "data/shaders/texture.fs");
     }
 
     // Get the last camera that was activated

@@ -123,7 +123,7 @@ void World::update(float dt)
     // update the player
     //player->update(dt);
 
-    float speed = dt * Game::instance->mouse_speed * 0.25; //the speed is defined by the seconds_elapsed so it goes constant
+    float speed = dt * Game::instance->mouse_speed * 1; //the speed is defined by the seconds_elapsed so it goes constant
 
     if (free_camera) {
         // camara libre

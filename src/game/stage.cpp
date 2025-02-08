@@ -11,9 +11,11 @@
 
 PlayStage::PlayStage()
 {
-    //entity_mesh = new EntityMesh(mesh, material);
-    //SceneParser parser;
-    // parser.parse("data/myscene.scene", root); // TODO: in blender do @player tag parser thing
+   /*
+    entity_mesh = new EntityMesh(mesh, material);
+    SceneParser parser;
+    parser.parse("data/myscene.scene", root); // TODO: in blender do @player tag parser thing
+    */
 }
 
 void PlayStage::init()

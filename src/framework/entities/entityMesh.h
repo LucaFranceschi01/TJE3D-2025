@@ -3,8 +3,8 @@
 #include "entity.h"
 #include "graphics/material.h"
 
-
 class Mesh;
+//class Shader;
 
 struct s_MeshLOD
 {
@@ -23,6 +23,8 @@ public:
 	// Attributes of the derived class  
 	Mesh* mesh;
 	Material material;
+	//Shader* shader = nullptr;
+	//std::map<std::string, sMaterialInfo> materials;
 
 	bool isInstanced;
 	std::vector<Matrix44> models;
