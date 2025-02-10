@@ -82,9 +82,10 @@ World::World()
 
     // render player
     Material player_material;
-    player_material.diffuse = Texture::Get("data/meshes/colormap.png");
-    player_material.shader = Shader::Get("data/shaders/basic.vs");
+    player_material.diffuse = Texture::Get("data/meshes/faces.png");
+    player_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
+    player = new Player(Mesh::Get("data/player/ElDon.obj"), player_material, "player");
 
     SceneParser parser;
     bool completed = parser.parse("data/myscene.scene", root); // TODO: in blender do @player tag parser thing
@@ -108,7 +109,7 @@ void World::render()
     drawGrid();
 
     // render entity player
-    //player->render();
+    player->render(camera);
 
     // render all scene tree
     root->render(camera);
