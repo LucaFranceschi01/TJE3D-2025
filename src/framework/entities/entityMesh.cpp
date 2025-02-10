@@ -7,6 +7,8 @@
 #include "framework/camera.h"
 #include "graphics/texture.h"
 
+#define RENDER_DEBUG
+
 EntityMesh::EntityMesh() : Entity()
 {
     mesh = nullptr;
@@ -115,6 +117,14 @@ void EntityMesh::render(Camera* camera)
 
     // Disable shader after finishing rendering
     material.shader->disable();
+
+#ifdef RENDER_DEBUG
+    float sphere_radius = 0.15f;
+    float sphere_ground_radius = 0.05f;
+    float player_height = 0.2f;
+
+    // TODO: render collisions to debug (no sale nada en las fotos creo)
+#endif
 
     // TODO: also do Entity::render()
     //Entity::render(camera);
