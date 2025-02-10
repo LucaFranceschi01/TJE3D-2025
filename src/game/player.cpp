@@ -8,6 +8,9 @@
 #include "framework/input.h"
 
 Player::Player(Mesh *mesh, const Material &material, const std::string &name) {
+    this->mesh = mesh;
+    this->material = material;
+    this->name = name;
 }
 
 void Player::update(float dt)
