@@ -85,7 +85,7 @@ World::World()
     player_material.diffuse = Texture::Get("data/meshes/faces.png");
     player_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
-    player = new Player(Mesh::Get("data/player/ElDon.obj"), player_material, "player");
+    player = new Player(Mesh::Get("data/player/Don_Bolon.obj"), player_material, "player");
 
     SceneParser parser;
     bool completed = parser.parse("data/myscene.scene", root); // TODO: in blender do @player tag parser thing
