@@ -38,13 +38,11 @@ void EntityMesh::render(Camera* camera)
         float distance = camera->eye.distance(global_matrix.getTranslation());
 
         must_render &= (distance < 200.0f);
-
-        /*
+        
         // TODO: FIX PROBLEMATIC box testing
         Vector3 bb_center = global_matrix * mesh->box.center;
         Vector3 bb_halfsize = mesh->box.halfsize;
         must_render &= (camera->testBoxInFrustum(bb_center, bb_halfsize) != CLIP_OUTSIDE);
-        */
     }
     else {
         float distance = 0.0f;
@@ -59,7 +57,7 @@ void EntityMesh::render(Camera* camera)
             bb_halfsize = mesh->box.halfsize;
 
             if (distance < 200.0f && (camera->testBoxInFrustum(bb_center, bb_halfsize) != CLIP_OUTSIDE)) {
-                must_render_models.push_back(model); // TODO: when is this used ???
+                must_render_models.push_back(model);
             }
         }
     }
@@ -80,14 +78,13 @@ void EntityMesh::render(Camera* camera)
     // Enable shader and pass uniforms
     material.shader->enable();
 
-    material.shader->setUniform("u_color", material.color); // TODO: CHECK IF THIS U_COLOR IS BEING USED
+    material.shader->setUniform("u_color", material.color);
 
     material.shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
 
     if (material.diffuse) {
         material.shader->setTexture("u_texture", material.diffuse, 0); // the slot is hardcoded
     }
-    // material.shader->setTexture("u_texture", material.normals, 1);
 
     if (!isInstanced) {
         float distance = camera->eye.distance(getGlobalMatrix().getTranslation());
