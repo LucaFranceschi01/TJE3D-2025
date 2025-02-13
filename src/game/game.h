@@ -33,7 +33,7 @@ public:
 
     float angle = 0;
     float mouse_speed = 100.0f;
-
+    bool debug_view = false;
 
     Game(int window_width, int window_height, SDL_Window* window);
 

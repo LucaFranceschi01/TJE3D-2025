@@ -76,10 +76,17 @@ void PlayStage::onKeyDown(SDL_KeyboardEvent event)
 
     switch (event.keysym.sym) {
         case SDLK_TAB:
+        {
             bool& free_camera = World::getInstance()->free_camera;
             free_camera = !free_camera;
             Game::instance->mouse_locked = !free_camera; // ns si está bien
             break;
+        }
+        case SDLK_RSHIFT:
+        {
+            Game::instance->debug_view = !Game::instance->debug_view;
+            break;
+        }
     }
 }
 
