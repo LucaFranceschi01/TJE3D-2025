@@ -41,37 +41,8 @@ void EntityMesh::render(Camera* camera)
 
         must_render &= (distance < 200.0f);
         
-        // TODO: FIX PROBLEMATIC box testing
-        Vector3 bb_center = global_matrix * mesh->box.center;
-        Vector3 bb_halfsize = mesh->box.halfsize;
-        must_render &= (camera->testBoxInFrustum(bb_center, bb_halfsize) != CLIP_OUTSIDE);
-
-        if (Game::instance->debug_view) {
-            Shader* debug_shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
-            Mesh debug_bb;
-
-            debug_bb.createCube();
-            debug_bb.colors.push_back(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-        
-            /*debug_bb.box.center = mesh->box.center;
-            debug_bb.box.halfsize = mesh->box.halfsize;*/
-
-            /*debug_bb.box.center.set(mesh->box.center.x, mesh->box.center.y, mesh->box.center.z);
-            debug_bb.box.halfsize.set(mesh->box.halfsize.x, mesh->box.halfsize.y, mesh->box.halfsize.z);*/
-
-            debug_shader->enable();
-            debug_shader->setUniform("u_color", debug_bb.colors.front());
-            debug_shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
-            Matrix44 tmp = getGlobalMatrix();
-        
-            tmp.setScale(bb_halfsize.x, bb_halfsize.y, bb_halfsize.z);
-            tmp.translateGlobal(bb_center);
-        
-            debug_shader->setUniform("u_model", tmp);
-
-            debug_bb.render(GL_TRIANGLES);
-            debug_shader->disable();
-        }
+        BoundingBox global_bb = transformBoundingBox(global_matrix, mesh->box);
+        must_render &= (camera->testBoxInFrustum(global_bb.center, global_bb.halfsize) != CLIP_OUTSIDE);
     }
     else {
         float distance = 0.0f;
@@ -101,9 +72,6 @@ void EntityMesh::render(Camera* camera)
         material.shader = Shader::Get(isInstanced ? "data/shaders/instanced.vs" : "data/shaders/basic.vs", "data/shaders/texture.fs");
     }
 
-    // Get the last camera that was activated
-    //Camera* camera = Camera::current; // TODO: IS IT BETTER TO PASS AS ARGUMENT OR GET CURRENT ???
-
     // Enable shader and pass uniforms
     material.shader->enable();
 
@@ -132,8 +100,7 @@ void EntityMesh::render(Camera* camera)
         current_lod->render(GL_TRIANGLES);
     }
     else {
-        // TODO: NOW THE MODEL IS NOT UNIFORM, IS ATTRIBUTE
-        // ATTRIBUTES ARE PER INSTANCE, UNIFORMS ARE PER
+        // ATTRIBUTES ARE PER INSTANCE, UNIFORMS ARE PER mesh ¿
         mesh->renderInstanced(GL_TRIANGLES, must_render_models.data(), static_cast<int>(must_render_models.size()));
     }
 
@@ -144,12 +111,6 @@ void EntityMesh::render(Camera* camera)
     // Disable shader after finishing rendering
 
     if (Game::instance->debug_view) {
-        /*
-        float sphere_radius = 0.15f;
-        float sphere_ground_radius = 0.05f;
-        float player_height = 0.2f;
-        */
-
         mesh->renderBounding(model);
     }
 

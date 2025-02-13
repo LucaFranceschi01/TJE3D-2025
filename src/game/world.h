@@ -36,11 +36,12 @@ public:
     enum e_camera_mode {
         FREE,
         FIXED,
-        FOLLOWING,
+        FIRST_PERSON,
+        THIRD_PERSON,
         NR_CAMERA_MODES
     };
 
-    e_camera_mode camera_mode = FOLLOWING;
+    e_camera_mode camera_mode = THIRD_PERSON;
 
     // constructor
     World();

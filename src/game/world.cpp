@@ -155,7 +155,7 @@ void Camera::update(float dt)
     Camera * camera = Camera::current;
     World* world = World::getInstance();
     
-    float speed = dt * Game::instance->mouse_speed * 1.0f; //the speed is defined by the seconds_elapsed so it goes constant
+    float speed = dt * Game::instance->mouse_speed; //the speed is defined by the seconds_elapsed so it goes constant
 
     switch (world->camera_mode)
     {
@@ -185,9 +185,8 @@ void Camera::update(float dt)
         // TODO
         break;
     }
-    case World::FOLLOWING:
+    case World::FIRST_PERSON:
     {
-        // camara en 3a persona
         // get camera delta
         world->camera_yaw -= Input::mouse_delta.x * dt * world->mouse_speed;
         world->camera_pitch -= Input::mouse_delta.y * dt * world->mouse_speed;
@@ -196,20 +195,35 @@ void Camera::update(float dt)
         world->camera_pitch = clamp(world->camera_pitch, static_cast<float>(- M_PI * 0.4), static_cast<float>(M_PI * 0.4));
 
         Matrix44 mYaw;
-        mYaw.setRotation(world->camera_yaw, Vector3(0, 1, 0));
+        mYaw.setRotation(world->camera_yaw, Vector3(0.f, 1.f, 0.f));
 
         Matrix44 mPitch;
-        mPitch.setRotation(world->camera_pitch, Vector3(-1, 0, 0));
+        mPitch.setRotation(world->camera_pitch, Vector3(-1.f, 0.f, 0.f));
 
         Vector3 front = (mPitch * mYaw).frontVector().normalize();
-        Vector3 eye;
-        Vector3 center;
+        Vector3 eye, center;
 
-        float orbit_distance = 5.0f;
-        eye = world->player->model.getTranslation() - front * orbit_distance;
-        center = world->player->model.getTranslation() + Vector3(0.f, 0.5f, 0.0f);
+        Vector3 player_tr = world->player->model.getTranslation();
+
+        float orbit_distance = 5.f;
+        eye = player_tr - front * orbit_distance;
+        center = player_tr + Vector3(0.f, 0.5f, 0.f);
 
         camera->lookAt(eye, center, Vector3::UP);
+        break;
+    }
+    case World::THIRD_PERSON:
+    {
+        Vector3 player_tr = world->player->model.getTranslation();
+        Vector3 front = world->player->model.frontVector().normalize();
+        Vector3 eye, center;
+
+        float orbit_distance = 5.0f;
+        eye = player_tr - front * orbit_distance;
+        center = player_tr + Vector3(0.f, 0.5f, 0.0f);
+
+        camera->lookAt(eye, center, Vector3::UP);
+
         break;
     }
     default:

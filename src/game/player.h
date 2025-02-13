@@ -10,7 +10,8 @@
 class Player : public EntityMesh
 {
 private:
-    float walk_speed = 0.0f;
+    float yaw = 0.0f;
+    float walk_speed = 1.0f;
     Vector3 velocity = Vector3(0.0f);
 
 public:
