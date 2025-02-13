@@ -32,7 +32,15 @@ public:
     float window_height = 0.f;
     float window_width = 0.f;
 
-    bool free_camera = true; // esto es para mover la cámara por el mapa (god mode)
+    //bool free_camera = true; // esto es para mover la cámara por el mapa (god mode)
+    enum e_camera_mode {
+        FREE,
+        FIXED,
+        FOLLOWING,
+        NR_CAMERA_MODES
+    };
+
+    e_camera_mode camera_mode = FOLLOWING;
 
     // constructor
     World();

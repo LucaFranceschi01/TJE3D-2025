@@ -10,6 +10,7 @@
 #include "framework/entities/entityMesh.h"
 
 #include "game/scene_parser.h"
+#include "game/world.h"
 
 #include <cmath>
 
@@ -54,7 +55,6 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     glEnable(GL_CULL_FACE); //render both sides of every triangle
     glEnable(GL_DEPTH_TEST); //check the occlusions using the Z buffer
 
-
     // Hide the cursor
     SDL_ShowCursor(!mouse_locked); //hide or show the mouse
 }
@@ -68,7 +68,6 @@ void Game::render(void)
     // Clear the window and the depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
     // Set flags
     /*
     glDisable(GL_BLEND);
@@ -76,8 +75,9 @@ void Game::render(void)
     glDisable(GL_CULL_FACE);
     */
 
-    if (currentStage != nullptr)
+    if (currentStage != nullptr) {
         currentStage->render();
+    }
 
     // Render the FPS, Draw Calls, etc
     drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
@@ -86,10 +86,22 @@ void Game::render(void)
     SDL_GL_SwapWindow(this->window);
 }
 
-void Game::update(double seconds_elapsed)
+void Game::update(double dt)
 {
     if (currentStage != nullptr)
-        currentStage->update(seconds_elapsed);
+        currentStage->update(static_cast<float>(dt));
+}
+
+void Game::setMouseLocked()
+{
+    World::e_camera_mode* camera_mode = &World::getInstance()->camera_mode;
+    *camera_mode = World::e_camera_mode((*camera_mode + 1) % World::NR_CAMERA_MODES);
+    if (*camera_mode == World::FIXED) {
+        Game::instance->mouse_locked = true;
+    }
+    else {
+        Game::instance->mouse_locked = false;
+    }
 }
 
 void Game::goToStage(TypeStages type_stage)

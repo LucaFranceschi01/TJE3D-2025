@@ -159,9 +159,9 @@ void EntityMesh::render(Camera* camera)
     //Entity::render(camera);
 }
 
-void EntityMesh::update(float elapsed_time)
+void EntityMesh::update(float dt)
 {
-    Entity::update(elapsed_time);
+    Entity::update(dt);
 }
 
 void EntityMesh::addInstance(const Matrix44& model)

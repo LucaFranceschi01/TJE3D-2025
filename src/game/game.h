@@ -43,7 +43,7 @@ public:
     void update(double dt);
 
     // events
-    void setMouseLocked(bool mouse_lock);
+    static void setMouseLocked();
 
     void goToStage(TypeStages type_stage);
 

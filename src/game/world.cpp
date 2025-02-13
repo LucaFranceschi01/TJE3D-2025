@@ -118,58 +118,14 @@ void World::render()
 
 void World::update(float dt)
 {
-    // update all elements
+    // update all elements in the scene
     root->update(dt);
 
     // update the player
-    //player->update(dt);
+    player->update(dt);
 
-    float speed = dt * Game::instance->mouse_speed * 1; //the speed is defined by the seconds_elapsed so it goes constant
-
-    if (free_camera) {
-        // camara libre
-        // Example
-        Game::instance->angle += static_cast<float>(dt) * 10.0f;
-
-        // Mouse input to rotate the cam
-        if (Input::isMousePressed(SDL_BUTTON_LEFT) || Game::instance->mouse_locked) {
-            //is left button pressed?
-            camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f, -1.0f, 0.0f));
-            camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector(Vector3(-1.0f, 0.0f, 0.0f)));
-        }
-
-        // Async input to move the camera around
-        if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT) ) speed *= 10; //move faster with left shift
-        if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
-        if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f) * speed);
-        if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
-        if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f) * speed);
-    } else {
-        // camara en 3a persona
-        // get camera delta
-        camera_yaw -= Input::mouse_delta.x * dt * mouse_speed;
-        camera_pitch -= Input::mouse_delta.y * dt * mouse_speed;
-
-        // restrict pitch angle
-        camera_pitch = clamp(camera_pitch, -M_PI * 0.4f, M_PI * 0.4f);
-
-        Matrix44 mYaw;
-        mYaw.setRotation(camera_yaw, Vector3(0, 1, 0));
-
-        Matrix44 mPitch;
-        mPitch.setRotation(camera_pitch, Vector3(-1, 0, 0));
-
-        Vector3 front = (mPitch * mYaw).frontVector().normalize();
-        Vector3 eye;
-        Vector3 center;
-
-        // camera 3rd person
-        float orbit_distance = 1.5f;
-        eye = player->model.getTranslation() - front * orbit_distance;
-        center = player->model.getTranslation() + Vector3(0.f, 0.5f, 0.0f);
-
-        camera->lookAt(eye, center, Vector3::UP);
-    }
+    // update camera
+    camera->update(dt);
 
     // hay cosas ...
     //skybox->model.setTranslation(camera->eye);
@@ -194,3 +150,71 @@ void World::destroyEntity(Entity* entity)
     entities_to_destroy.push_back(entity);
 }
 
+void Camera::update(float dt)
+{
+    Camera * camera = Camera::current;
+    World* world = World::getInstance();
+    
+    float speed = dt * Game::instance->mouse_speed * 1.0f; //the speed is defined by the seconds_elapsed so it goes constant
+
+    switch (world->camera_mode)
+    {
+    case World::FREE:
+    {
+        // camara libre
+        // Example
+        Game::instance->angle += dt * 10.0f;
+
+        // Mouse input to rotate the cam
+        if (Input::isMousePressed(SDL_BUTTON_LEFT) || Game::instance->mouse_locked) {
+            //is left button pressed?
+            camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f, -1.0f, 0.0f));
+            camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector(Vector3(-1.0f, 0.0f, 0.0f)));
+        }
+
+        // Async input to move the camera around
+        if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) speed *= 10; //move faster with left shift
+        if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
+        if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f, -1.0f) * speed);
+        if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
+        if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f, 0.0f, 0.0f) * speed);
+        break;
+    }
+    case World::FIXED:
+    {
+        // TODO
+        break;
+    }
+    case World::FOLLOWING:
+    {
+        // camara en 3a persona
+        // get camera delta
+        world->camera_yaw -= Input::mouse_delta.x * dt * world->mouse_speed;
+        world->camera_pitch -= Input::mouse_delta.y * dt * world->mouse_speed;
+
+        // restrict pitch angle
+        world->camera_pitch = clamp(world->camera_pitch, static_cast<float>(- M_PI * 0.4), static_cast<float>(M_PI * 0.4));
+
+        Matrix44 mYaw;
+        mYaw.setRotation(world->camera_yaw, Vector3(0, 1, 0));
+
+        Matrix44 mPitch;
+        mPitch.setRotation(world->camera_pitch, Vector3(-1, 0, 0));
+
+        Vector3 front = (mPitch * mYaw).frontVector().normalize();
+        Vector3 eye;
+        Vector3 center;
+
+        float orbit_distance = 5.0f;
+        eye = world->player->model.getTranslation() - front * orbit_distance;
+        center = world->player->model.getTranslation() + Vector3(0.f, 0.5f, 0.0f);
+
+        camera->lookAt(eye, center, Vector3::UP);
+        break;
+    }
+    default:
+    {
+        break;
+    }
+    }
+}
