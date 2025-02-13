@@ -78,7 +78,7 @@ World::World()
         // continuació
 
         Material cubemap_material;
-        cubemap_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs"); // falla la textura. Se tiene que pedir el cubemap.fs por si es diferente
+        cubemap_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs");
         cubemap_material.diffuse = cube_texture;
 
         skybox = new EntityMesh(Mesh::Get("data/meshes/cubemap.ASE"), cubemap_material);
@@ -135,7 +135,7 @@ void World::update(float dt)
     // update camera
     camera->update(dt);
 
-    // hay cosas ...
+
     skybox->model.setTranslation(camera->eye);
 
     // delete pending entities

@@ -79,6 +79,8 @@ void EntityMesh::render(Camera* camera)
 
     material.shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
 
+    material.shader->setUniform("u_camera_position", camera->eye);
+
     if (material.diffuse) {
         material.shader->setTexture("u_texture", material.diffuse, 0); // the slot is hardcoded
     }
@@ -100,7 +102,7 @@ void EntityMesh::render(Camera* camera)
         current_lod->render(GL_TRIANGLES);
     }
     else {
-        // ATTRIBUTES ARE PER INSTANCE, UNIFORMS ARE PER mesh ¿
+        // ATTRIBUTES ARE PER INSTANCE, UNIFORMS ARE PER mesh
         mesh->renderInstanced(GL_TRIANGLES, must_render_models.data(), static_cast<int>(must_render_models.size()));
     }
 
