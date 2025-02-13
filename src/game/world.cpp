@@ -132,14 +132,12 @@ void World::update(float dt)
     // update the player
     player->update(dt);
 
-    // update the player
-    player->update(dt);
 
     // update camera
     camera->update(dt);
 
     // hay cosas ...
-    //skybox->model.setTranslation(camera->eye);
+    skybox->model.setTranslation(camera->eye);
 
     // delete pending entities
     for (auto entity : entities_to_destroy) {
