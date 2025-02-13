@@ -7,7 +7,7 @@
 #include "framework/camera.h"
 #include "graphics/texture.h"
 
-#define RENDER_DEBUG
+#include "game/game.h"
 
 EntityMesh::EntityMesh() : Entity()
 {
@@ -45,6 +45,33 @@ void EntityMesh::render(Camera* camera)
         Vector3 bb_center = global_matrix * mesh->box.center;
         Vector3 bb_halfsize = mesh->box.halfsize;
         must_render &= (camera->testBoxInFrustum(bb_center, bb_halfsize) != CLIP_OUTSIDE);
+
+        if (Game::instance->debug_view) {
+            Shader* debug_shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+            Mesh debug_bb;
+
+            debug_bb.createCube();
+            debug_bb.colors.push_back(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+        
+            /*debug_bb.box.center = mesh->box.center;
+            debug_bb.box.halfsize = mesh->box.halfsize;*/
+
+            /*debug_bb.box.center.set(mesh->box.center.x, mesh->box.center.y, mesh->box.center.z);
+            debug_bb.box.halfsize.set(mesh->box.halfsize.x, mesh->box.halfsize.y, mesh->box.halfsize.z);*/
+
+            debug_shader->enable();
+            debug_shader->setUniform("u_color", debug_bb.colors.front());
+            debug_shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
+            Matrix44 tmp = getGlobalMatrix();
+        
+            tmp.setScale(bb_halfsize.x, bb_halfsize.y, bb_halfsize.z);
+            tmp.translateGlobal(bb_center);
+        
+            debug_shader->setUniform("u_model", tmp);
+
+            debug_bb.render(GL_TRIANGLES);
+            debug_shader->disable();
+        }
     }
     else {
         float distance = 0.0f;
@@ -100,7 +127,6 @@ void EntityMesh::render(Camera* camera)
             }
         }
 
-
         //material.shader->setUniform("u_model", model);
         material.shader->setUniform("u_model", getGlobalMatrix());
         current_lod->render(GL_TRIANGLES);
@@ -116,23 +142,26 @@ void EntityMesh::render(Camera* camera)
     //material.shader->setUniform("u_time", time);
 
     // Disable shader after finishing rendering
+
+    if (Game::instance->debug_view) {
+        /*
+        float sphere_radius = 0.15f;
+        float sphere_ground_radius = 0.05f;
+        float player_height = 0.2f;
+        */
+
+        mesh->renderBounding(model);
+    }
+
     material.shader->disable();
-
-#ifdef RENDER_DEBUG
-    float sphere_radius = 0.15f;
-    float sphere_ground_radius = 0.05f;
-    float player_height = 0.2f;
-
-    // TODO: render collisions to debug (no sale nada en las fotos creo)
-#endif
 
     // TODO: also do Entity::render()
     //Entity::render(camera);
 }
 
-void EntityMesh::update(float elapsed_time)
+void EntityMesh::update(float dt)
 {
-    Entity::update(elapsed_time);
+    Entity::update(dt);
 }
 
 void EntityMesh::addInstance(const Matrix44& model)
@@ -148,4 +177,3 @@ void EntityMesh::addMeshLOD(Mesh* mesh, float distance)
         return a.distance > b.distance;
     });
 }
-

@@ -18,7 +18,7 @@ public:
     // methods
     virtual void init() {};
     virtual void render() {};
-    virtual void update(double dt) {};
+    virtual void update(float dt) {};
 
     // events
     virtual void onKeyDown(SDL_KeyboardEvent event) {};
@@ -42,7 +42,7 @@ public:
     // methods
     void init() override;
     void render() override;
-    void update(double dt) override;
+    void update(float dt) override;
     void onEnter(Stage* prev_stage) override;
     void onLeave(Stage* prev_stage) override;
 
@@ -59,7 +59,7 @@ public:
     // methods
     void init() override;
     void render() override;
-    void update(double dt) override;
+    void update(float dt) override;
     void onEnter(Stage* prev_stage) override;
     void onLeave(Stage* prev_stage) override;
 

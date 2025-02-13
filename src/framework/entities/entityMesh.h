@@ -32,7 +32,7 @@ public:
 
 	// Methods overwritten from base class
 	void render(Camera* camera) override;
-	void update(float elapsed_time) override;
+	void update(float dt) override;
 
 	// More methods
 	void addInstance(const Matrix44& model);

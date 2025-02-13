@@ -33,7 +33,7 @@ public:
 
     float angle = 0;
     float mouse_speed = 100.0f;
-
+    bool debug_view = false;
 
     Game(int window_width, int window_height, SDL_Window* window);
 
@@ -43,7 +43,7 @@ public:
     void update(double dt);
 
     // events
-    void setMouseLocked(bool mouse_lock);
+    static void setMouseLocked();
 
     void goToStage(TypeStages type_stage);
 

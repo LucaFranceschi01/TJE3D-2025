@@ -57,7 +57,7 @@ void PlayStage::render()
     drawGrid();
 }
 
-void PlayStage::update(double dt)
+void PlayStage::update(float dt)
 {
     World::getInstance()->update(dt);
 }
@@ -76,10 +76,15 @@ void PlayStage::onKeyDown(SDL_KeyboardEvent event)
 
     switch (event.keysym.sym) {
         case SDLK_TAB:
-            bool& free_camera = World::getInstance()->free_camera;
-            free_camera = !free_camera;
-            Game::instance->mouse_locked = !free_camera; // ns si está bien
+        {
+            Game::setMouseLocked();
             break;
+        }
+        case SDLK_RSHIFT:
+        {
+            Game::instance->debug_view = !Game::instance->debug_view;
+            break;
+        }
     }
 }
 
@@ -104,7 +109,7 @@ void MenuStage::render()
     Stage::render();
 }
 
-void MenuStage::update(double dt)
+void MenuStage::update(float dt)
 {
     Stage::update(dt);
 }

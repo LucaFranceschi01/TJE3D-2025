@@ -10,10 +10,10 @@ void Entity::render(Camera* camera)
 	}
 }
 
-void Entity::update(float delta_time)
+void Entity::update(float dt)
 {
 	for (int i = 0; i < children.size(); ++i) {
-		children[i]->update(delta_time);
+		children[i]->update(dt);
 	}
 }
 
