@@ -65,12 +65,12 @@ World::World()
     {
         Texture* cube_texture = new Texture();
         cube_texture->loadCubemap("landscape", {
-            "data/meshes/cubemap/right.png",
-            "data/meshes/cubemap/left.png",
-            "data/meshes/cubemap/bottom.png",
-            "data/meshes/cubemap/top.png",
-            "data/meshes/cubemap/front.png",
-            "data/meshes/cubemap/back.png"
+            "data/textures/cubemap/right.png",
+            "data/textures/cubemap/left.png",
+            "data/textures/cubemap/bottom.png",
+            "data/textures/cubemap/top.png",
+            "data/textures/cubemap/front.png",
+            "data/textures/cubemap/back.png"
         });
 
         //Texture::Get("landscape"); una vez que se carga la texture, se puede acceder por todo el código con esto.
