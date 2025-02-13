@@ -61,11 +61,16 @@ World::World()
     */
 
     // esto inicializa el sky, lo comento de momento
-    /*
+
     {
         Texture* cube_texture = new Texture();
         cube_texture->loadCubemap("landscape", {
-        // las 6 caras
+            "data/meshes/cubemap/right.png",
+            "data/meshes/cubemap/left.png",
+            "data/meshes/cubemap/bottom.png",
+            "data/meshes/cubemap/top.png",
+            "data/meshes/cubemap/front.png",
+            "data/meshes/cubemap/back.png"
         });
 
         //Texture::Get("landscape"); una vez que se carga la texture, se puede acceder por todo el código con esto.
@@ -73,12 +78,13 @@ World::World()
         // continuació
 
         Material cubemap_material;
-        cubemap_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs");
+        cubemap_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs"); // falla la textura. Se tiene que pedir el cubemap.fs por si es diferente
         cubemap_material.diffuse = cube_texture;
 
         skybox = new EntityMesh(Mesh::Get("data/meshes/cubemap.ASE"), cubemap_material);
     }
-    */
+
+
 
     // render player
     Material player_material;
@@ -101,9 +107,11 @@ void World::render()
     glDisable(GL_BLEND);
     glDisable(GL_CULL_FACE);
 
+
     glDisable(GL_DEPTH_TEST);
-    //skybox->render(camera);
+    skybox->render(camera);
     glEnable(GL_DEPTH_TEST);
+
 
     // draw the floor grid
     drawGrid();
@@ -124,11 +132,12 @@ void World::update(float dt)
     // update the player
     player->update(dt);
 
+
     // update camera
     camera->update(dt);
 
     // hay cosas ...
-    //skybox->model.setTranslation(camera->eye);
+    skybox->model.setTranslation(camera->eye);
 
     // delete pending entities
     for (auto entity : entities_to_destroy) {
@@ -136,18 +145,6 @@ void World::update(float dt)
         delete entity;
     }
     entities_to_destroy.clear();
-}
-
-
-void World::addEntity(Entity* entity)
-{
-    root->addChild(entity);
-}
-
-
-void World::destroyEntity(Entity* entity)
-{
-    entities_to_destroy.push_back(entity);
 }
 
 void Camera::update(float dt)
@@ -232,3 +229,15 @@ void Camera::update(float dt)
     }
     }
 }
+
+void World::addEntity(Entity* entity)
+{
+    root->addChild(entity);
+}
+
+
+void World::destroyEntity(Entity* entity)
+{
+    entities_to_destroy.push_back(entity);
+}
+
