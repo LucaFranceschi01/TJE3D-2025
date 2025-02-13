@@ -30,3 +30,5 @@ public:
     Matrix44 getGlobalMatrix();
     float distance(Entity* e);
 };
+
+

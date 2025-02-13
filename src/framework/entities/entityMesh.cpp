@@ -15,10 +15,11 @@ EntityMesh::EntityMesh() : Entity()
     isInstanced = false;
 }
 
-EntityMesh::EntityMesh(Mesh* mesh, const Material& material) : EntityMesh()
+EntityMesh::EntityMesh(Mesh* mesh, const Material& material, const std::string& name ) : EntityMesh()
 {
     this->mesh = mesh;
     this->material = material;
+    this->name = name;
     //this->materials = mesh->materials;
     //auto mat = mesh->materials.find("diffuse");
     //this->material.diffuse = mesh->materials.find("diffuse");
@@ -139,4 +140,29 @@ void EntityMesh::addMeshLOD(Mesh* mesh, float distance)
     std::sort(meshLods.begin(), meshLods.end(), [](const s_MeshLOD a, const s_MeshLOD& b) {
         return a.distance > b.distance;
     });
+}
+
+void EntityCollider::getCollisionsWithModel(const Matrix44& m, const Vector3& center,
+    std::vector<sColisionData> colisions, std::vector<sColisionData> grounded_colision)
+{
+    Vector3 colision_point;
+    Vector3 colision_normal;
+
+    // seguramente se tendran que canviar
+    float sphere_radius = 0.15f;
+    float sphere_ground_radius = 0.05f;
+    float player_height = 0.2f;
+
+    // check floor colisions
+    Vector3 floor_sphere_center = center + Vector3(0.0f, sphere_ground_radius, 0.0f);
+
+    /*
+    if (mesh->testSphereCollision(m, floor_sphere_center, sphere_radius, colision_point, colision_normal))
+        colisions.push_back({colision_point, colision_normal, floor_sphere_center, true, nullptr});
+        */
+
+}
+
+void EntityCollider::getCollisions(const Vector3& target_position, std::vector<sColisionData> colision_datas)
+{
 }

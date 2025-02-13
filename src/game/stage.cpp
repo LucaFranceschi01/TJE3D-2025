@@ -92,6 +92,7 @@ void PlayStage::onResize(int width, int height)
 {
     World* world = World::getInstance();
     world->camera->aspect = static_cast<float>(width) / static_cast<float>(height);
+    sColi
 }
 
 // está default ahora

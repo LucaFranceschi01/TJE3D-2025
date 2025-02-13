@@ -55,4 +55,7 @@ public:
 
     void addEntity(Entity* entity);
     void destroyEntity(Entity* entity);
+
+    // colisions
+
 };
