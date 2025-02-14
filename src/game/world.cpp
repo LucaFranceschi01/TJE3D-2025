@@ -62,6 +62,7 @@ World::World()
 
     // esto inicializa el sky, lo comento de momento
 
+    /*
     {
         Texture* cube_texture = new Texture();
         cube_texture->loadCubemap("landscape", {
@@ -83,6 +84,7 @@ World::World()
 
         skybox = new EntityMesh(Mesh::Get("data/meshes/cubemap.ASE"), cubemap_material);
     }
+    */
 
 
 
@@ -108,9 +110,11 @@ void World::render()
     glDisable(GL_CULL_FACE);
 
 
+    /*
     glDisable(GL_DEPTH_TEST);
     skybox->render(camera);
     glEnable(GL_DEPTH_TEST);
+    */
 
 
     // draw the floor grid
@@ -136,7 +140,7 @@ void World::update(float dt)
     camera->update(dt);
 
 
-    skybox->model.setTranslation(camera->eye);
+    //skybox->model.setTranslation(camera->eye);
 
     // delete pending entities
     for (auto entity : entities_to_destroy) {

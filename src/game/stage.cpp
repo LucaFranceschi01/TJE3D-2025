@@ -52,9 +52,6 @@ void PlayStage::render()
     */
 
     World::getInstance()->render();
-
-    // Draw the floor grid
-    drawGrid();
 }
 
 void PlayStage::update(float dt)
@@ -92,7 +89,7 @@ void PlayStage::onResize(int width, int height)
 {
     World* world = World::getInstance();
     world->camera->aspect = static_cast<float>(width) / static_cast<float>(height);
-    sColi
+    //sColi
 }
 
 // está default ahora
