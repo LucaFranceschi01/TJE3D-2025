@@ -3,6 +3,8 @@
 //
 
 #include "player.h"
+
+#include "game.h"
 #include "world.h"
 
 #include "framework/input.h"
@@ -10,20 +12,35 @@
 Player::Player(Mesh* mesh, const Material& material, const std::string& name) : EntityMesh(mesh, material, name)
 {
     model.setTranslation(0, 2, 0);
+
+
 }
+
+void Player::render(Camera* camera)
+{
+    drawText(Game::instance->window_width - 250, 2, "move dir: " + move_dir.to_string(), Vector3(1, 1, 1), 2);
+    drawText(Game::instance->window_width - 250, 20, "velocity: " + velocity.to_string(), Vector3(1, 1, 1), 2);
+    drawText(Game::instance->window_width - 250, 40, "position: " + model.getTranslation().to_string(), Vector3(1, 1, 1), 2);
+
+    EntityMesh::render(camera);
+}
+
 
 void Player::update(float dt)
 {
     if (World::getInstance()->camera_mode == World::e_camera_mode::FREE) return;
     // If camera is in free mode, avoid moving the player
 
-    Vector3 front = model.rightVector();
+    //Vector3 front = model.rightVector();
     // TODO: TAKE INTO ACCOUNT THAT THESE CHANGE, MAKE WORLD ONES THAT DO NOT CHANGE AND USE THEM IN CAMERA UPDATE ALSO
-    Vector3 right = model.frontVector();
+    //Vector3 right = model.frontVector();
+
+    Vector3 front = Vector3(1, 0, 0);
+    Vector3 right = Vector3(0, 0 ,1);
 
     Vector3 position = model.getTranslation();
 
-    Vector3 move_dir;
+    move_dir = Vector3();
 
     bool pressing_button = false;
 
@@ -66,16 +83,37 @@ void Player::update(float dt)
     // update player position
     position += velocity * dt;
 
+
+    Matrix44 translation_matrix = Matrix44();
+    translation_matrix.setTranslation(position);
+
+    Matrix44 rotation_matrix = Matrix44();
+    rotation_matrix.setRotation(pitch, Vector3(0, 0, 1));
+
+    model = rotation_matrix * translation_matrix;
+
+
+
+
+    /*
     model.setTranslation(position);
-    model.rotate(yaw, Vector3::UP);
+    //model.rotate(yaw, Vector3::UP);
     //model.rotate(pitch, Vector3(0.f, 0.f, 1.f));
+    */
+
+
+
+    //Matrix44
+
 
     // decrease when not moving
+
     if (!pressing_button) {
         velocity *= 0.5f;
-        yaw *= 0.99f;
-        pitch *= 0.99f;
+        //yaw *= 0.99f;
+        //pitch *= 0.99f;
     }
+
 
     // super->update
     EntityMesh::update(dt);
@@ -123,3 +161,5 @@ void Player::testCollisions(Vector3 position, float dt)
         velocity.y = 0.0f;
     }
 }
+
+

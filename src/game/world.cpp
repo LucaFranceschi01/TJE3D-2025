@@ -214,8 +214,9 @@ void Camera::update(float dt)
     }
     case World::THIRD_PERSON:
     {
-        Vector3 player_tr = world->player->model.getTranslation(); // TODO: TAKE INTO ACCOUNT THAT PLAYER PITCH MOVES ALSO
-        Vector3 front = world->player->model.rightVector().normalize();
+        Vector3 player_tr = world->player->model.getTranslation();
+        //Vector3 front = world->player->model.rightVector().normalize(); // TODO: TAKE INTO ACCOUNT THAT PLAYER PITCH MOVES ALSO
+        Vector3 front = Vector3(1, 0, 0);
         Vector3 eye, center;
 
         float orbit_distance = 8.0f;
