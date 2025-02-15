@@ -15,8 +15,11 @@ Player::Player(Mesh *mesh, const Material &material, const std::string &name) {
 
 void Player::update(float dt)
 {
-    Vector3 front = model.rightVector(); // TODO: TAKE INTO ACCOUNT THAT THESE CHANGE, MAKE WORLD ONES THAT DO NOT CHANGE AND USE THEM IN CAMERA UPDATE ALSO
-    Vector3 right = model.frontVector();
+    //Vector3 front = model.rightVector(); // TODO: TAKE INTO ACCOUNT THAT THESE CHANGE, MAKE WORLD ONES THAT DO NOT CHANGE AND USE THEM IN CAMERA UPDATE ALSO
+    //Vector3 right = model.frontVector();
+    
+    Vector3 front = World::front;
+    Vector3 right = World::right;
 
     Vector3 position = model.getTranslation();
 
@@ -26,35 +29,33 @@ void Player::update(float dt)
 
     if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) {
         move_dir += front * dt;
-        pitch += 5.f * dt;
+        pitch += rotational_speed * dt;
         pressing_button = true;
     }
     if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) {
         move_dir -= front * dt;
-        pitch -= 5.f * dt;
+        pitch -= rotational_speed * dt;
         pressing_button = true;
     }
     if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
         move_dir -= right * dt;
-        yaw -= 5.f * dt;
+        yaw += rotational_speed * dt;
         pressing_button = true;
     }
     if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
         move_dir += right * dt;
-        yaw += 5.f * dt;
+        yaw -= rotational_speed * dt;
         pressing_button = true;
     }
 
     float speed_mult = walk_speed;
 
     if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT))
-        speed_mult *= 0.3;
+        speed_mult *= 0.3f;
 
     move_dir.normalize();
     move_dir *= speed_mult;
 
-    // back up to calculate yaw and then update
-    Vector3 old_velocity = velocity;
     velocity += move_dir;
 
     // mirar colisions aquí
@@ -62,17 +63,37 @@ void Player::update(float dt)
     // update player position
     position += velocity * dt;
 
+    yaw = positive_modulo(yaw, 360.f*DEG2RAD);
+    pitch = positive_modulo(pitch, 360.f*DEG2RAD);
+
     model.setTranslation(position);
-    model.rotate(yaw, Vector3::UP);
-    //model.rotate(pitch, Vector3(0.f, 0.f, 1.f));
+    model.rotate(yaw, World::front);
+    model.rotate(pitch, World::right);
     
     // decrease when not moving
-    if (!pressing_button) {
-        velocity *= 0.5f;
-        yaw *= 0.99f;
-        pitch *= 0.99f;
-    }
+    velocity *= 0.9f;
 
+    if (move_dir.z == 0.f) {
+        dampen(&yaw, dt);
+    }
+    if (move_dir.x == 0.f) {
+        dampen(&pitch, dt);
+    }
+    
     // super->update
     EntityMesh::update(dt);
+}
+
+static void dampen(float* deg) {
+    if (*deg > 180.f*DEG2RAD) {
+        *deg *= 1.01f;
+    }
+    else {
+        *deg *= 0.99f;
+    }
+}
+
+inline static float positive_modulo(float i, float n) {
+    // props to https://stackoverflow.com/a/14997413
+    return std::fmod((std::fmod(i,n) + n), n);
 }
