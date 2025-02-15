@@ -7,18 +7,18 @@
 
 #include "framework/input.h"
 
-Player::Player(Mesh *mesh, const Material &material, const std::string &name) {
-    this->mesh = mesh;
-    this->material = material;
-    this->name = name;
+Player::Player(Mesh* mesh, const Material& material, const std::string& name) : EntityMesh(mesh, material, name)
+{
+    model.setTranslation(0, 2, 0);
 }
 
 void Player::update(float dt)
 {
+    if (World::getInstance()->camera_mode == World::e_camera_mode::FREE) return;
+    // If camera is in free mode, avoid moving the player
 
-    if (World::getInstance()->camera_mode == World::e_camera_mode::FREE) return; // If camera is in free mode, avoid moving the player
-
-    Vector3 front = model.rightVector(); // TODO: TAKE INTO ACCOUNT THAT THESE CHANGE, MAKE WORLD ONES THAT DO NOT CHANGE AND USE THEM IN CAMERA UPDATE ALSO
+    Vector3 front = model.rightVector();
+    // TODO: TAKE INTO ACCOUNT THAT THESE CHANGE, MAKE WORLD ONES THAT DO NOT CHANGE AND USE THEM IN CAMERA UPDATE ALSO
     Vector3 right = model.frontVector();
 
     Vector3 position = model.getTranslation();
@@ -61,6 +61,7 @@ void Player::update(float dt)
     velocity += move_dir;
 
     // mirar colisions aquí
+    //testCollisions(position, dt);
 
     // update player position
     position += velocity * dt;
@@ -68,7 +69,7 @@ void Player::update(float dt)
     model.setTranslation(position);
     model.rotate(yaw, Vector3::UP);
     //model.rotate(pitch, Vector3(0.f, 0.f, 1.f));
-    
+
     // decrease when not moving
     if (!pressing_button) {
         velocity *= 0.5f;
@@ -78,4 +79,47 @@ void Player::update(float dt)
 
     // super->update
     EntityMesh::update(dt);
+}
+
+void Player::testCollisions(Vector3 position, float dt)
+{
+    // Check collisions with the world entities
+    std::vector<sCollisionData> collisions;
+    std::vector<sCollisionData> ground_collisions;
+
+    World::getInstance()->test_scene_collisions(position + velocity * dt, collisions, ground_collisions);
+
+    // enviroment collisions
+    for (const sCollisionData& collision : collisions) {
+        // if normal is pointing upwards, it means it's a floor collision
+        float up_factor = fabs(collision.col_normal.dot(Vector3::UP));
+        if (up_factor > 0.8)
+            continue;
+
+        // move along wall when colliding
+        Vector3 new_direction = velocity.dot(collision.col_normal) * collision.col_normal;
+        // falta algo en esta multiplicacipn?
+        velocity.x -= new_direction.x;
+        velocity.z -= new_direction.z;
+    }
+
+    // ground collisions
+    bool is_grounded = false;
+
+    for (const sCollisionData& collision : ground_collisions) {
+        // if normal is pointing upwards, it means it's a floor collision
+        float up_factor = fabs(collision.col_normal.dot(Vector3::UP));
+        if (up_factor > 0.8)
+            is_grounded = true;
+    }
+
+    if (!is_grounded) {
+        velocity.y -= 9.8f * dt;
+    }
+    else if (Input::wasKeyPressed(SDL_SCANCODE_SPACE)) {
+        velocity.y = 3.f;
+    }
+    else {
+        velocity.y = 0.0f;
+    }
 }

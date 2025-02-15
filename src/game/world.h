@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "framework/entities/entityMesh.h"
+
 class Entity;
 class EntityMesh;
 class Player;
@@ -57,5 +59,7 @@ public:
     void destroyEntity(Entity* entity);
 
     // colisions
+    sCollisionData raycast(const Vector3& origin, const Vector3& direction, int layer = sColisionFilter::ALL, bool closest = true, float max_ray = 1000); // ns q es max_ray
+    void test_scene_collisions(const Vector3& position, std::vector<sCollisionData>& colisions, std::vector<sCollisionData>& ground_colisions);
 
 };

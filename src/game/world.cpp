@@ -218,8 +218,8 @@ void Camera::update(float dt)
         Vector3 front = world->player->model.rightVector().normalize();
         Vector3 eye, center;
 
-        float orbit_distance = 5.0f;
-        eye = player_tr - front * orbit_distance + 5.f * Vector3::UP;
+        float orbit_distance = 8.0f;
+        eye = player_tr - front * orbit_distance + 3.5f * Vector3::UP;
         center = player_tr + Vector3(0.f, 0.5f, 0.0f);
 
         camera->lookAt(eye, center, Vector3::UP);
@@ -244,3 +244,61 @@ void World::destroyEntity(Entity* entity)
     entities_to_destroy.push_back(entity);
 }
 
+sCollisionData World::raycast(const Vector3& origin, const Vector3& direction, int layer, bool closest, float max_ray)
+{
+    sCollisionData colision_data = {};
+    // ns si hay algo encima del for
+
+    for (auto entity : root->children) {
+
+        EntityCollider* entity_collider = dynamic_cast<EntityCollider*>(entity);
+
+        if (entity_collider == nullptr || !(entity_collider->layer & layer))
+            continue;
+
+        Vector3 colision_point, colision_normal;
+
+        if (!entity_collider->isInstanced) {
+
+            if (!entity_collider->mesh->testRayCollision(entity_collider->model, origin, direction, colision_point, colision_normal))
+                continue;
+
+            // there was a colision
+            float new_distance = static_cast<float>((colision_point - origin).length());
+
+            if (new_distance < colision_data.distance)
+                colision_data = {colision_point, colision_normal, new_distance, true, entity_collider};
+
+            if (!closest)
+                return colision_data;
+
+        } else {
+            for (const Matrix44& model : entity_collider->models) {
+
+                if (!entity_collider->mesh->testRayCollision(model, origin, direction, colision_point, colision_normal))
+                    continue;
+
+                float new_distance = static_cast<float>((colision_point - origin).length());
+
+                if (new_distance < colision_data.distance)
+                    colision_data = {colision_point, colision_normal, new_distance, true, entity_collider};
+
+                if (!closest)
+                    return colision_data;
+            }
+        }
+    }
+    return colision_data;
+}
+
+void World::test_scene_collisions(const Vector3& position, std::vector<sCollisionData>& colisions, std::vector<sCollisionData>& ground_colisions)
+{
+    for (auto entity : root->children) {
+        EntityCollider* entity_collider = dynamic_cast<EntityCollider*>(entity);
+
+        if (entity_collider == nullptr)
+            continue;
+
+        entity_collider->getCollisions(position, colisions, ground_colisions);
+    }
+}

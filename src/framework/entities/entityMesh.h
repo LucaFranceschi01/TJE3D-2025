@@ -42,7 +42,7 @@ public:
 
 class EntityCollider;
 
-struct sColisionData
+struct sCollisionData
 {
 	Vector3 col_point;
 	Vector3 col_normal;
@@ -51,15 +51,24 @@ struct sColisionData
 	EntityCollider* collider = nullptr;
 };
 
+enum sColisionFilter: int
+{
+	ALL, SCENARIO
+};
+
 class EntityCollider : public EntityMesh
 {
 private:
-	void getCollisionsWithModel(const Matrix44& m, const Vector3& center, std::vector<sColisionData> colisions, std::vector<sColisionData> grounded_colision); // falten parametres
+	void getCollisionsWithModel(const Matrix44& m, const Vector3& center, std::vector<sCollisionData> colisions, std::vector<sCollisionData> grounded_colision); // falten parametres
 
 public:
+
+	sColisionFilter layer = ALL;
+	bool is_static = true; // hace falta?
+
 	EntityCollider() = default;
 	EntityCollider(Mesh* mesh, const Material& material, const std::string& name = "") : EntityMesh(mesh, material, name) {};
 
-	void getCollisions(const Vector3& target_position, std::vector<sColisionData> colision_datas);
+	void getCollisions(const Vector3& target_position, std::vector<sCollisionData>& colisions, std::vector<sCollisionData>& ground_colisions);
 
 };

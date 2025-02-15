@@ -2,11 +2,14 @@
 // Created by Xavi Cañadas on 3/2/25.
 //
 #include "stage.h"
+#include "world.h"
 
 #include "game/game.h"
 #include "game/scene_parser.h"
 
-#include "world.h"
+#include "graphics/mesh.h"
+#include "graphics/shader.h"
+#include "graphics/texture.h"
 
 
 PlayStage::PlayStage()
@@ -81,6 +84,32 @@ void PlayStage::onKeyDown(SDL_KeyboardEvent event)
         {
             Game::instance->debug_view = !Game::instance->debug_view;
             break;
+        }
+        case SDLK_SPACE:
+        {
+            // este codigo se tendra que borrar, es para probar la funcion de raycast de world
+            Camera* camera = Camera::current;
+
+            // get ray direction
+            Vector3 ray_origin = camera->eye;
+            Vector3 ray_direction = camera->getRayDirection(
+                Input::mouse_position.x, Input::mouse_position.y,
+                Game::instance->window_width, Game::instance->window_height
+            );
+
+            // test colision and get data
+            sCollisionData data = World::getInstance()->raycast(ray_origin, ray_direction);
+
+            // in case of colision, add el balon, to prove if works well
+            if (data.collided) {
+                Material player_material;
+                player_material.diffuse = Texture::Get("data/meshes/faces.png");
+                player_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+
+                EntityMesh* balon = new EntityMesh(Mesh::Get("data/player/Don_Bolon.obj"), player_material, "player");
+                balon->model.setTranslation(data.col_point + Vector3(0.0f, 0.5f, 0.0f));
+                World::getInstance()->addEntity(balon);
+            }
         }
     }
 }

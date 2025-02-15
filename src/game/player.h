@@ -12,7 +12,7 @@ class Player : public EntityMesh
 private:
     float yaw = 0.f;
     float pitch = 0.f;
-    float walk_speed = 1.f;
+    float walk_speed = 0.1f;
     Vector3 velocity = Vector3(0.f);
 
 public:
@@ -20,4 +20,5 @@ public:
     Player(Mesh* mesh, const Material& material, const std::string& name = "");
 
     void update(float dt) override;
+    void testCollisions(Vector3 position, float dt);
 };
