@@ -4,6 +4,9 @@
 #include <cassert>
 #include <cmath> //for sqrt (square root) function
 #include <math.h> //atan2
+// to convert vector to string
+#include <sstream>
+#include <iomanip>
 
 #ifndef M_PI_2
     #define M_PI_2 1.57079632679489661923
@@ -76,7 +79,7 @@ Vector2 operator - (const Vector2& a, const Vector2& b) { return Vector2(a.x - b
 
 Vector3 Vector3::UP(0.f, 1.f, 0.f);
 
-double Vector3::length() 
+double Vector3::length()
 {
 	return sqrt(x*x + y*y + z*z);
 }
@@ -192,6 +195,16 @@ Vector3 lerp(const Vector3& a, const Vector3& b, float v)
 	r.z = lerp(a.z, b.z, v);
 	return r;
 }
+
+std::string Vector3::to_string()
+{
+	std::stringstream stringstream;
+	stringstream << std::fixed << std::setprecision(1);
+	stringstream << "(" << x << ", " << y << ", " << z << ")";
+	return stringstream.str();
+
+}
+
 
 //*********************************
 const Matrix44 Matrix44::IDENTITY;
@@ -369,7 +382,7 @@ Matrix44 Matrix44::getRotationOnly()
 bool Matrix44::getXYZ(float* euler) const
 {
 // Code adapted from www.geometrictools.com
-//	Matrix3<Real>::EulerResult Matrix3<Real>::ToEulerAnglesXYZ 
+//	Matrix3<Real>::EulerResult Matrix3<Real>::ToEulerAnglesXYZ
     // +-           -+   +-                                        -+
     // | r00 r01 r02 |   |  cy*cz           -cy*sz            sy    |
     // | r10 r11 r12 | = |  cz*sx*sy+cx*sz   cx*cz-sx*sy*sz  -cy*sx |
@@ -482,12 +495,12 @@ Matrix44 Matrix44::operator*(const Matrix44& matrix) const
 	Matrix44 ret;
 
 	unsigned int i,j,k;
-	for (i=0;i<4;i++) 	
+	for (i=0;i<4;i++)
 	{
-		for (j=0;j<4;j++) 
+		for (j=0;j<4;j++)
 		{
 			ret.M[i][j]=0.0;
-			for (k=0;k<4;k++) 
+			for (k=0;k<4;k++)
 				ret.M[i][j] += M[i][k] * matrix.M[k][j];
 		}
 	}
@@ -496,10 +509,10 @@ Matrix44 Matrix44::operator*(const Matrix44& matrix) const
 }
 
 //Multiplies a vector by a matrix and returns the new vector
-Vector3 operator * (const Matrix44& matrix, const Vector3& v) 
-{   
-   float x = matrix.m[0] * v.x + matrix.m[4] * v.y + matrix.m[8] * v.z + matrix.m[12]; 
-   float y = matrix.m[1] * v.x + matrix.m[5] * v.y + matrix.m[9] * v.z + matrix.m[13]; 
+Vector3 operator * (const Matrix44& matrix, const Vector3& v)
+{
+   float x = matrix.m[0] * v.x + matrix.m[4] * v.y + matrix.m[8] * v.z + matrix.m[12];
+   float y = matrix.m[1] * v.x + matrix.m[5] * v.y + matrix.m[9] * v.z + matrix.m[13];
    float z = matrix.m[2] * v.x + matrix.m[6] * v.y + matrix.m[10] * v.z + matrix.m[14];
    return Vector3(x,y,z);
 }
@@ -584,7 +597,7 @@ void Matrix44::setFrontAndOrthonormalize(Vector3 front)
 	m[0] = right.x;
 	m[1] = right.y;
 	m[2] = right.z;
-	
+
 }
 
 bool Matrix44::inverse()
@@ -598,7 +611,7 @@ bool Matrix44::inverse()
 
    unsigned int m,n;
    m = n = 4;
-	
+
    for (i = 0; i < m; i++)
    {
       // Look for largest element in column
@@ -609,7 +622,7 @@ bool Matrix44::inverse()
 		 if ( fabs(temp.M[j][i]) > fabs( temp.M[swap][i]) )
             swap = j;
 	  }
-   
+
       if (swap != i)
       {
          // Swap rows.
@@ -1192,7 +1205,7 @@ void Quaternion::toEulerAngles(Vector3 &euler) const
 	euler.y = atan2f(sy, cy);
 	//euler->y = (yr * 180.0f) / (float)M_PI;
 
-	// AVOID DIVIDE BY ZERO ERROR ONLY WHERE Y= +-90 or +-270 
+	// AVOID DIVIDE BY ZERO ERROR ONLY WHERE Y= +-90 or +-270
 	// NOT CHECKING cy BECAUSE OF PRECISION ERRORS
 	if (sy != 1.0f && sy != -1.0f)
 	{
@@ -1265,14 +1278,14 @@ bool RaySphereCollision(const Vector3& center, const float& radius, const Vector
 		return false;
 	float discr = b * b - c;
 
-	// A negative discriminant corresponds to ray missing sphere 
+	// A negative discriminant corresponds to ray missing sphere
 	if (discr < 0.0f)
 		return false;
 
 	// Ray now found to intersect sphere, compute smallest t value of intersection
 	float t = -b - sqrt(discr);
 
-	// If t is negative, ray started inside sphere so clamp t to zero 
+	// If t is negative, ray started inside sphere so clamp t to zero
 	if (t < 0.0f)
 		t = 0.0f;
 	coll = ray_origin + t * ray_dir;
