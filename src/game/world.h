@@ -5,6 +5,7 @@
 #pragma once
 
 #include <vector>
+#include "framework/framework.h"
 
 class Entity;
 class EntityMesh;
@@ -42,6 +43,10 @@ public:
     };
 
     e_camera_mode camera_mode = THIRD_PERSON;
+
+    static const Vector3 front;
+    static const Vector3 right;
+    static const Vector3 up;
 
     // constructor
     World();

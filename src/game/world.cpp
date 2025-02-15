@@ -20,6 +20,10 @@
 
 World* World::instance = nullptr;
 
+const Vector3 World::front(1.f, 0.f, 0.f);
+const Vector3 World::right(0.f, 0.f, 1.f);
+const Vector3 World::up(0.f, 1.f, 0.f);
+
 World* World::getInstance()
 {
     if (instance == nullptr) {
