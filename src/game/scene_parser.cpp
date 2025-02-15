@@ -55,7 +55,7 @@ bool SceneParser::parse(const char* filename, Entity* root)
 			continue;
 
 		Material mat = render_data.material;
-		EntityMesh* new_entity = nullptr;
+		EntityCollider* new_entity = nullptr;
 
 		size_t tag = data.first.find("@tag"); // TODO: use parser tags
 
@@ -66,7 +66,7 @@ bool SceneParser::parse(const char* filename, Entity* root)
 		}
 		else {
 			Mesh* mesh = Mesh::Get(mesh_name.c_str());
-			new_entity = new EntityMesh(mesh, mat);
+			new_entity = new EntityCollider(mesh, mat);
 		}
 
 		if (!new_entity) {

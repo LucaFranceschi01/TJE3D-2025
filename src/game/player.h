@@ -21,6 +21,7 @@ public:
     Player(Mesh* mesh, const Material& material, const std::string& name = "");
 
     void update(float dt) override;
+    void testCollisions(Vector3 position, float dt);
 };
 
 static void dampen(float* deg);
