@@ -39,7 +39,6 @@ public:
     enum e_camera_mode {
         FREE,
         FIXED,
-        FIRST_PERSON,
         THIRD_PERSON,
         NR_CAMERA_MODES
     };

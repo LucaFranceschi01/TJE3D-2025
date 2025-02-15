@@ -160,6 +160,7 @@ void Camera::update(float dt)
     World* world = World::getInstance();
     
     float speed = dt * Game::instance->mouse_speed; //the speed is defined by the seconds_elapsed so it goes constant
+    float orbit_distance = 8.0f;
 
     switch (world->camera_mode)
     {
@@ -189,44 +190,13 @@ void Camera::update(float dt)
         // TODO
         break;
     }
-    case World::FIRST_PERSON:
-    {
-        // get camera delta
-        world->camera_yaw -= Input::mouse_delta.x * dt * world->mouse_speed;
-        world->camera_pitch -= Input::mouse_delta.y * dt * world->mouse_speed;
-
-        // restrict pitch angle
-        world->camera_pitch = clamp(world->camera_pitch, static_cast<float>(- M_PI * 0.4), static_cast<float>(M_PI * 0.4));
-
-        Matrix44 mYaw;
-        mYaw.setRotation(world->camera_yaw, Vector3(0.f, 1.f, 0.f));
-
-        Matrix44 mPitch;
-        mPitch.setRotation(world->camera_pitch, Vector3(-1.f, 0.f, 0.f));
-
-        Vector3 front = (mPitch * mYaw).frontVector().normalize();
-        Vector3 eye, center;
-
-        Vector3 player_tr = world->player->model.getTranslation();
-
-        float orbit_distance = 5.f;
-        eye = player_tr - front * orbit_distance;
-        center = player_tr + Vector3(0.f, 0.5f, 0.f);
-
-        camera->lookAt(eye, center, Vector3::UP);
-        break;
-    }
     case World::THIRD_PERSON:
     {
-        Vector3 player_tr = world->player->model.getTranslation(); // TODO: TAKE INTO ACCOUNT THAT PLAYER PITCH MOVES ALSO
-        Vector3 front = world->player->model.rightVector().normalize();
-        Vector3 eye, center;
+        Vector3 player_tr = world->player->model.getTranslation();
 
-        float orbit_distance = 8.0f;
-        eye = player_tr - front * orbit_distance + 3.5f * Vector3::UP;
-        center = player_tr + Vector3(0.f, 0.5f, 0.0f);
+        Vector3 eye = player_tr - World::front * orbit_distance + Vector3::UP * 3.5f;
 
-        camera->lookAt(eye, center, Vector3::UP);
+        camera->lookAt(eye, player_tr, Vector3::UP);
 
         break;
     }

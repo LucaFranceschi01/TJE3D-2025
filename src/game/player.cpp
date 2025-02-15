@@ -17,10 +17,8 @@ Player::Player(Mesh* mesh, const Material& material, const std::string& name) : 
 
 void Player::update(float dt)
 {
-    if (World::getInstance()->camera_mode == World::e_camera_mode::FREE) return;
     // If camera is in free mode, avoid moving the player
-    //Vector3 front = model.rightVector(); // TODO: TAKE INTO ACCOUNT THAT THESE CHANGE, MAKE WORLD ONES THAT DO NOT CHANGE AND USE THEM IN CAMERA UPDATE ALSO
-    //Vector3 right = model.frontVector();
+    if (World::getInstance()->camera_mode == World::e_camera_mode::FREE) return;
     
     Vector3 front = World::front;
     Vector3 right = World::right;
