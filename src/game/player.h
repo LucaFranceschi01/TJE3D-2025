@@ -14,7 +14,7 @@ class Player : public EntityMesh
 private:
     float yaw = 0.f;
     float pitch = 0.f;
-    float walk_speed = 0.1f;
+    float walk_speed = 15.f;
     Vector3 velocity = Vector3(0.f);
     Vector3 move_dir; // lo he puesto a aqui porque queria imprimirlo en la pantalla para probar cosas
 

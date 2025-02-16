@@ -46,22 +46,22 @@ void Player::update(float dt)
 
     if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) {
         move_dir += front * dt;
-        pitch += 5.f * dt;
+        pitch += 10.f * dt;
         pressing_button = true;
     }
     if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) {
         move_dir -= front * dt;
-        pitch -= 5.f * dt;
+        pitch -= 10.f * dt;
         pressing_button = true;
     }
     if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
         move_dir -= right * dt;
-        yaw -= 5.f * dt;
+        yaw += 5.f * dt;
         pressing_button = true;
     }
     if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
         move_dir += right * dt;
-        yaw += 5.f * dt;
+        yaw -= 5.f * dt;
         pressing_button = true;
     }
 
@@ -75,13 +75,14 @@ void Player::update(float dt)
 
     // back up to calculate yaw and then update
     Vector3 old_velocity = velocity;
-    velocity += move_dir;
+    //velocity += move_dir;
+    //velocity.normalize();
 
     // mirar colisions aquí
     //testCollisions(position, dt);
 
     // update player position
-    position += velocity * dt;
+    position += move_dir * dt;
 
 
     Matrix44 translation_matrix = Matrix44();
@@ -89,29 +90,18 @@ void Player::update(float dt)
 
     Matrix44 rotation_matrix = Matrix44();
     rotation_matrix.setRotation(pitch, Vector3(0, 0, 1));
+    rotation_matrix.rotate(yaw, Vector3(1, 0, 0));
 
     model = rotation_matrix * translation_matrix;
 
 
-
-
-    /*
-    model.setTranslation(position);
-    //model.rotate(yaw, Vector3::UP);
-    //model.rotate(pitch, Vector3(0.f, 0.f, 1.f));
-    */
-
-
-
-    //Matrix44
-
-
-    // decrease when not moving
+    // reset after move
+    move_dir = Vector3();
 
     if (!pressing_button) {
-        velocity *= 0.5f;
-        //yaw *= 0.99f;
-        //pitch *= 0.99f;
+        //velocity *= 0.5f;
+        yaw *= 0.5f;
+        pitch *= 0.5f;
     }
 
 
