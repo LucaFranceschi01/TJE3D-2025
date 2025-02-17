@@ -119,8 +119,7 @@ void EntityMesh::render(Camera* camera)
 
     material.shader->disable();
 
-    // TODO: also do Entity::render()
-    //Entity::render(camera);
+    Entity::render(camera);
 }
 
 void EntityMesh::update(float dt)
