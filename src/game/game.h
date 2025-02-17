@@ -35,31 +35,20 @@ public:
     float mouse_speed = 100.0f;
     bool debug_view = false;
 
-    Game(int window_width, int window_height, SDL_Window* window);
+	//main functions
+	void render( void );
+	void update( double dt );
 
-    //main functions
-    void render(void);
+	void setMouseLocked(bool must_lock);
 
-    void update(double dt);
-
-    // events
-    static void setMouseLocked();
-
+	//events
     void goToStage(TypeStages type_stage);
-
-    void onKeyDown(SDL_KeyboardEvent event);
-
-    void onKeyUp(SDL_KeyboardEvent event);
-
-    void onMouseButtonDown(SDL_MouseButtonEvent event);
-
-    void onMouseButtonUp(SDL_MouseButtonEvent event);
-
-    void onMouseWheel(SDL_MouseWheelEvent event);
-
-    void onGamepadButtonDown(SDL_JoyButtonEvent event);
-
-    void onGamepadButtonUp(SDL_JoyButtonEvent event);
-
-    void onResize(int width, int height);
+	void onKeyDown( SDL_KeyboardEvent event );
+	void onKeyUp(SDL_KeyboardEvent event);
+	void onMouseButtonDown( SDL_MouseButtonEvent event );
+	void onMouseButtonUp(SDL_MouseButtonEvent event);
+	void onMouseWheel(SDL_MouseWheelEvent event);
+	void onGamepadButtonDown(SDL_JoyButtonEvent event);
+	void onGamepadButtonUp(SDL_JoyButtonEvent event);
+	void onResize(int width, int height);
 };

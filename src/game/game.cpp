@@ -187,3 +187,12 @@ void Game::onResize(int width, int height)
     if (currentStage != nullptr)
         currentStage->onResize(width, height);
 }
+
+void Game::setMouseLocked(bool must_lock)
+{
+	SDL_ShowCursor(!must_lock);
+
+	SDL_SetRelativeMouseMode((SDL_bool)must_lock);
+
+	mouse_locked = must_lock;
+}
