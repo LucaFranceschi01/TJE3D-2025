@@ -92,18 +92,6 @@ void Game::update(double dt)
         currentStage->update(static_cast<float>(dt));
 }
 
-void Game::setMouseLocked()
-{
-    World::e_camera_mode* camera_mode = &World::getInstance()->camera_mode;
-    *camera_mode = World::e_camera_mode((*camera_mode + 1) % World::NR_CAMERA_MODES);
-    if (*camera_mode == World::FIXED) {
-        Game::instance->mouse_locked = true;
-    }
-    else {
-        Game::instance->mouse_locked = false;
-    }
-}
-
 void Game::goToStage(TypeStages type_stage)
 {
     Stage* new_stage = stages[type_stage];
@@ -188,11 +176,23 @@ void Game::onResize(int width, int height)
         currentStage->onResize(width, height);
 }
 
-void Game::setMouseLocked(bool must_lock)
+void Game::setMouseLocked()
 {
-	SDL_ShowCursor(!must_lock);
+    bool must_lock = false;
+
+    World::e_camera_mode* camera_mode = &World::getInstance()->camera_mode;
+    *camera_mode = World::e_camera_mode((*camera_mode + 1) % World::NR_CAMERA_MODES);
+    
+    if (*camera_mode == World::FIXED) {
+        must_lock = true;
+    }
+    
+    Game::instance->mouse_locked = must_lock;
+
+    SDL_ShowCursor(!must_lock);
 
 	SDL_SetRelativeMouseMode((SDL_bool)must_lock);
 
 	mouse_locked = must_lock;
+
 }

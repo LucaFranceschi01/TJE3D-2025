@@ -35,11 +35,13 @@ public:
     float mouse_speed = 100.0f;
     bool debug_view = false;
 
-	//main functions
+    Game(int window_width, int window_height, SDL_Window* window);
+
+    //main functions
 	void render( void );
 	void update( double dt );
 
-	void setMouseLocked(bool must_lock);
+	void setMouseLocked();
 
 	//events
     void goToStage(TypeStages type_stage);

@@ -77,7 +77,7 @@ void PlayStage::onKeyDown(SDL_KeyboardEvent event)
     switch (event.keysym.sym) {
         case SDLK_TAB:
         {
-            Game::setMouseLocked();
+            Game::instance->setMouseLocked();
             break;
         }
         case SDLK_RSHIFT:
