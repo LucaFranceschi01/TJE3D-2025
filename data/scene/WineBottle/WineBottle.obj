@@ -1,7 +1,7 @@
 # Blender 3.4.1
 # www.blender.org
 mtllib WineBottle.mtl
-o WineBottle
+o WineBottle.010
 v 6.570200 4.056400 0.000000
 v 6.513900 4.056400 -0.857600
 v 6.537700 8.588500 -0.860700
