@@ -9,6 +9,8 @@
 
 #include "game/game.h"
 
+constexpr auto CULLING_DIST = 400.f;
+
 EntityMesh::EntityMesh() : Entity()
 {
     mesh = nullptr;
@@ -40,7 +42,7 @@ void EntityMesh::render(Camera* camera)
         Matrix44 global_matrix = getGlobalMatrix(); // a nivel de mundo
         float distance = camera->eye.distance(global_matrix.getTranslation());
 
-        must_render &= (distance < 200.0f);
+        must_render &= (distance < CULLING_DIST);
         
         BoundingBox global_bb = transformBoundingBox(global_matrix, mesh->box);
         must_render &= (camera->testBoxInFrustum(global_bb.center, global_bb.halfsize) != CLIP_OUTSIDE);
@@ -57,7 +59,7 @@ void EntityMesh::render(Camera* camera)
             bb_center = global_matrix * mesh->box.center;
             bb_halfsize = mesh->box.halfsize;
 
-            if (distance < 200.0f && (camera->testBoxInFrustum(bb_center, bb_halfsize) != CLIP_OUTSIDE)) {
+            if (distance < CULLING_DIST && (camera->testBoxInFrustum(bb_center, bb_halfsize) != CLIP_OUTSIDE)) {
                 must_render_models.push_back(model);
             }
         }
