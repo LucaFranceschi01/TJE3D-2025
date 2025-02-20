@@ -29,7 +29,7 @@ public:
     //some vars
     bool mouse_locked; //tells if the mouse is locked (not seen)
     Stage* currentStage = nullptr;
-    std::map<TypeStages, Stage*> stages;
+    std::map<StageType, Stage*> stages;
 
     float angle = 0;
     float mouse_speed = 100.0f;
@@ -44,7 +44,7 @@ public:
 	void setMouseLocked();
 
 	//events
-    void goToStage(TypeStages type_stage);
+    void goToStage(StageType stage);
 	void onKeyDown( SDL_KeyboardEvent event );
 	void onKeyUp(SDL_KeyboardEvent event);
 	void onMouseButtonDown( SDL_MouseButtonEvent event );

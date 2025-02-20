@@ -5,9 +5,9 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include "framework/framework.h"
-
-#include "framework/entities/entityMesh.h"
+#include "framework/entities/entityCollider.h"
 
 class Entity;
 class EntityMesh;
@@ -21,11 +21,26 @@ private:
 public:
     static World* getInstance();
 
+    enum e_MapID {
+        TESTING, MAP1, UNDEFINED_MAP
+    };
+
+    enum e_camera_mode {
+        FREE,
+        FIXED,
+        THIRD_PERSON,
+        NR_CAMERA_MODES
+    };
+
     // attributes
-    Entity* root = nullptr;
+    //Entity* root = nullptr;
     EntityMesh* skybox = nullptr;
     Player* player = nullptr;
     Camera* camera = nullptr;
+    Camera* camera2D = nullptr;
+
+    e_MapID current_map;
+    std::map<e_MapID, Entity*> root;
 
     float camera_yaw = 0.f;
     float camera_pitch = 0.f;
@@ -34,14 +49,6 @@ public:
 
     float window_height = 0.f;
     float window_width = 0.f;
-
-    //bool free_camera = true; // esto es para mover la cámara por el mapa (god mode)
-    enum e_camera_mode {
-        FREE,
-        FIXED,
-        THIRD_PERSON,
-        NR_CAMERA_MODES
-    };
 
     e_camera_mode camera_mode = THIRD_PERSON;
 
@@ -55,6 +62,7 @@ public:
     // methods
     void render();
     void update(float dt);
+    void init(e_MapID map);
 
     // scene
     std::vector<Entity*> entities_to_destroy;

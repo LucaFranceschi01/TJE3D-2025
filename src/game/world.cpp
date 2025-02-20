@@ -12,7 +12,7 @@
 #include "framework/camera.h"
 #include "framework/utils.h"
 #include "framework/entities/entity.h"
-#include "framework/entities/entityMesh.h"
+#include "framework/entities/entityCollider.h"
 
 #include "graphics/mesh.h"
 #include "graphics/shader.h"
@@ -42,7 +42,7 @@ World::World()
     //position the camera and point to 0,0,0
     camera->setPerspective(72.f, window_width / window_height, 0.1f, 10000.f);
 
-    root = new Entity();
+    /*root = new Entity();*/
 
     // create height map
     // esto lo pongo pq lo ha puesto en clase, ns si lo usaremos
@@ -90,17 +90,27 @@ World::World()
     }
     */
 
+    // TODO: Init IN-GAME UI
 
-
-    // render player
+    // Init player
     Material player_material;
     player_material.diffuse = Texture::Get("data/meshes/faces.png");
     player_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
-
     player = new Player(Mesh::Get("data/player/Don_Bolon.obj"), player_material, "player");
 
+    for (int m = 0; m != UNDEFINED_MAP; m++) {
+        e_MapID map = static_cast<e_MapID>(m);
+        root[map] = new Entity();
+    }
+}
+
+void World::init(e_MapID map)
+{
+    current_map = map;
+
+    // Parse scene
     SceneParser parser;
-    bool completed = parser.parse("data/myscene.scene", root); // TODO: in blender do @player tag parser thing
+    bool completed = parser.parse("data/myscene.scene", root[map]); // TODO: in blender do @player tag parser thing
     assert(completed);
 }
 
@@ -128,14 +138,14 @@ void World::render()
     player->render(camera);
 
     // render all scene tree
-    root->render(camera);
+    root[current_map]->render(camera);
 }
 
 
 void World::update(float dt)
 {
     // update all elements in the scene
-    root->update(dt);
+    root[current_map]->update(dt);
 
     // update the player
     player->update(dt);
@@ -148,7 +158,7 @@ void World::update(float dt)
 
     // delete pending entities
     for (auto entity : entities_to_destroy) {
-        root->removeChild(entity);
+        root[current_map]->removeChild(entity);
         delete entity;
     }
     entities_to_destroy.clear();
@@ -209,7 +219,7 @@ void Camera::update(float dt)
 
 void World::addEntity(Entity* entity)
 {
-    root->addChild(entity);
+    root[current_map]->addChild(entity);
 }
 
 
@@ -223,7 +233,7 @@ sCollisionData World::raycast(const Vector3& origin, const Vector3& direction, i
     sCollisionData colision_data = {};
     // ns si hay algo encima del for
 
-    for (auto entity : root->children) {
+    for (auto entity : root[current_map]->children) {
 
         EntityCollider* entity_collider = dynamic_cast<EntityCollider*>(entity);
 
@@ -267,7 +277,7 @@ sCollisionData World::raycast(const Vector3& origin, const Vector3& direction, i
 
 void World::test_scene_collisions(const Vector3& position, std::vector<sCollisionData>& colisions, std::vector<sCollisionData>& ground_colisions)
 {
-    for (auto entity : root->children) {
+    for (auto entity : root[current_map]->children) {
         EntityCollider* entity_collider = dynamic_cast<EntityCollider*>(entity);
 
         if (entity_collider == nullptr)

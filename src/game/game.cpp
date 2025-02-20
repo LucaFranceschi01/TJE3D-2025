@@ -41,15 +41,16 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 
 
     // stages
-    stages[MENU_STAGE] = new MenuStage();
-    stages[PLAY_STAGE] = new PlayStage();
+    stages[MAIN_MENU_ST] = new MenuStage(MenuStage::MAIN);
+    stages[MAP_SEL_ST] = new MenuStage(MenuStage::MAP_SEL);
+    stages[PLAY_ST] = new PlayStage();
 
     for (auto entry : stages) {
         Stage* stage = entry.second;
         stage->init();
     }
 
-    goToStage(PLAY_STAGE);
+    goToStage(PLAY_ST);
 
     // OpenGL flags
     glEnable(GL_CULL_FACE); //render both sides of every triangle
@@ -92,9 +93,9 @@ void Game::update(double dt)
         currentStage->update(static_cast<float>(dt));
 }
 
-void Game::goToStage(TypeStages type_stage)
+void Game::goToStage(StageType stage)
 {
-    Stage* new_stage = stages[type_stage];
+    Stage* new_stage = stages[stage];
     assert(new_stage);
 
     if (currentStage != nullptr)

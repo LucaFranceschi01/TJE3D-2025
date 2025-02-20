@@ -6,9 +6,13 @@
 
 #include "framework/input.h"
 
+class EntityUI;
+class Entity;
+class Camera;
+
 typedef enum {
-    MENU_STAGE, PLAY_STAGE
-} TypeStages;
+    MAIN_MENU_ST, MAP_SEL_ST, PLAY_ST, DEATH_ST, WIN_ST, UNDEFINED_ST
+} StageType;
 
 class Stage
 {
@@ -53,8 +57,17 @@ public:
 class MenuStage : public Stage
 {
 public:
+    enum e_MenuID {
+        MAIN, MAP_SEL, PAUSE, UNDEFINED
+    };
+
+    e_MenuID menu;
+
+    Entity* UI_root = nullptr;
+    Camera* camera2D = nullptr;
+
     // constructor
-    MenuStage();
+    MenuStage(e_MenuID menu);
 
     // methods
     void init() override;

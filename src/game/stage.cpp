@@ -11,6 +11,11 @@
 #include "graphics/shader.h"
 #include "graphics/texture.h"
 
+#include "framework/camera.h"
+#include "framework/entities/entityMesh.h"
+#include "framework/entities/entityCollider.h"
+#include "framework/entities/entityUI.h"
+
 
 PlayStage::PlayStage()
 {
@@ -23,6 +28,7 @@ PlayStage::PlayStage()
 
 void PlayStage::init()
 {
+    World::getInstance()->init(World::TESTING);
 }
 
 
@@ -121,18 +127,44 @@ void PlayStage::onResize(int width, int height)
     //sColi
 }
 
-// está default ahora
-MenuStage::MenuStage()
+MenuStage::MenuStage(e_MenuID menu)
 {
+    /*camera2D = new Camera();
+    camera2D->lookAt(Vector3(0.f, 10.f, 10.f), Vector3(0.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f));
+    camera2D->setPerspective(72.f, window_width / window_height, 0.1f, 10000.f);
+    this->menu = menu;*/
 }
 
 void MenuStage::init()
 {
+    switch (menu)
+    {
+    case MenuStage::MAIN:
+    {
+        Material mat;
+        UI_root = new Entity();
+        EntityUI* btn = new EntityUI(Vector2(100.f, 100.f), Vector2(100.f, 100.f), EntityUI::e_UIButtonID::EXIT, mat);
+
+        UI_root->addChild(btn);
+        break;
+    }
+    case MenuStage::MAP_SEL:
+        break;
+    case MenuStage::PAUSE:
+        break;
+    case MenuStage::UNDEFINED:
+        break;
+    default:
+        break;
+    }
+    
     Stage::init();
 }
 
 void MenuStage::render()
 {
+    
+    UI_root->render();
     Stage::render();
 }
 

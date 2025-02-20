@@ -4,7 +4,7 @@
 #include "graphics/mesh.h"
 
 #include "framework/utils.h"
-#include "framework/entities/entityMesh.h"
+#include "framework/entities/entityCollider.h"
 
 #include <fstream>
 
