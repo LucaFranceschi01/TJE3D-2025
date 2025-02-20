@@ -22,9 +22,6 @@ EntityMesh::EntityMesh(Mesh* mesh, const Material& material, const std::string& 
     this->mesh = mesh;
     this->material = material;
     this->name = name;
-    //this->materials = mesh->materials;
-    //auto mat = mesh->materials.find("diffuse");
-    //this->material.diffuse = mesh->materials.find("diffuse");
 }
 
 void EntityMesh::render(Camera* camera)
@@ -52,14 +49,13 @@ void EntityMesh::render(Camera* camera)
         Matrix44 global_matrix;
         Vector3 bb_center, bb_halfsize;
         for (const Matrix44& model : models) {
-            global_matrix = model * parent->getGlobalMatrix();
             // same as getGlobalMatrix() but now "model" is not valid, we have to make this operation ourselves
+            global_matrix = model * parent->getGlobalMatrix();
+
             distance = camera->eye.distance(global_matrix.getTranslation());
-
-            bb_center = global_matrix * mesh->box.center;
-            bb_halfsize = mesh->box.halfsize;
-
-            if (distance < CULLING_DIST && (camera->testBoxInFrustum(bb_center, bb_halfsize) != CLIP_OUTSIDE)) {
+            
+            BoundingBox global_bb = transformBoundingBox(global_matrix, mesh->box);
+            if (distance < CULLING_DIST && (camera->testBoxInFrustum(global_bb.center, global_bb.halfsize) != CLIP_OUTSIDE)) {
                 must_render_models.push_back(model);
             }
         }
@@ -100,7 +96,6 @@ void EntityMesh::render(Camera* camera)
             }
         }
 
-        //material.shader->setUniform("u_model", model);
         material.shader->setUniform("u_model", getGlobalMatrix());
         current_lod->render(GL_TRIANGLES);
     }
@@ -108,10 +103,6 @@ void EntityMesh::render(Camera* camera)
         // ATTRIBUTES ARE PER INSTANCE, UNIFORMS ARE PER mesh
         mesh->renderInstanced(GL_TRIANGLES, must_render_models.data(), static_cast<int>(must_render_models.size()));
     }
-
-    //long now = SDL_GetTicks();
-    //float time = float(now * 0.001);
-    //material.shader->setUniform("u_time", time);
 
     // Disable shader after finishing rendering
     material.shader->disable();
