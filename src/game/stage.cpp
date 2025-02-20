@@ -132,24 +132,33 @@ MenuStage::MenuStage(e_MenuID menu)
     World* instance = World::getInstance();
 
     camera2D = new Camera();
+    //camera2D->lookAt(Vector3(0.f), Vector3(0.f, 0.f, -1.f), Vector3::UP);
+    camera2D->view_matrix = Matrix44(); // Set View to identity
     camera2D->setOrthographic(0.f, instance->window_width, instance->window_height, 0.f, -1.f, 1.f);
+
     this->menu = menu;
 }
 
 void MenuStage::init()
 {
+    World* instance = World::getInstance();
+    float width = instance->window_width;
+    float height = instance->window_height;
+    Vector2 btn_size(128.f, 64.f);
+
     switch (menu)
     {
     case MenuStage::MAIN:
     {
         UI_root = new Entity();
+        
         Material mat;
-
         mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
-        EntityUI* btn = new EntityUI(Vector2(100.f, 100.f), Vector2(100.f, 100.f), EntityUI::e_UIButtonID::EXIT, mat, "exit");
+
+        EntityUI* btn = new EntityUI(Vector2(width / 3.f, 500.f), btn_size, EntityUI::e_UIButtonID::START_MAP, mat, "play");
         UI_root->addChild(btn);
 
-        btn = new EntityUI(Vector2(300.f, 300.f), Vector2(100.f, 100.f), EntityUI::e_UIButtonID::START_MAP, mat, "play");
+        btn = new EntityUI(Vector2(width * 2.f / 3.f, 500.f), btn_size, EntityUI::e_UIButtonID::EXIT, mat, "exit");
         UI_root->addChild(btn);
         break;
     }

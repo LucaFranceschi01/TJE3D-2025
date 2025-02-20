@@ -18,7 +18,7 @@ EntityUI::EntityUI(Vector2 position, Vector2 size, e_UIButtonID buttonID, const 
 	this->buttonID = buttonID;
 
 	mesh = new Mesh();
-	mesh->createQuad(position.x, position.y, size.x, size.y, false);
+	mesh->createQuad(position.x, position.y, size.x, size.y, true);
 
 	this->material = mat;
 
@@ -41,8 +41,12 @@ void EntityUI::render(Camera* camera2D)
 
 	glDisable(GL_CULL_FACE);
 
-	//glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// props to ChatGPT for these two lines of code
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	material.shader->enable();
 
