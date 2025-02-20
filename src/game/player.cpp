@@ -9,8 +9,7 @@
 #include "framework/input.h"
 #include "graphics/mesh.h"
 #include "graphics/shader.h"
-
-#define RENDER_DEBUG
+#include "game/game.h"
 
 Player::Player(Mesh* mesh, const Material& material, const std::string& name) : EntityMesh(mesh, material, name)
 {
@@ -25,29 +24,27 @@ void Player::render(Camera* camera)
     // Render entity
     EntityMesh::render(camera);
 
-#ifdef RENDER_DEBUG
-    float sphere_radious = 1.f;
+    if (Game::instance->debug_view) {
+        float sphere_radious = 1.f;
 
-    Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
-    Mesh* mesh = Mesh::Get("data/meshes/sphere.obj");
-    Matrix44 m = model;
+        Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+        Mesh* mesh = Mesh::Get("data/meshes/sphere.obj");
+        Matrix44 m = model;
 
-    shader->enable();
+        shader->enable();
 
-    {
-        Vector4 color = (colision) ? Vector4(0.0f, 0.0f, 1.0f, 1.0f) : Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-        m.scale(sphere_radious, sphere_radious, sphere_radious);
-        shader->setUniform("u_color", color);
-        shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
-        shader->setUniform("u_model", m);
+        {
+            Vector4 color = (colision) ? Vector4(0.0f, 0.0f, 1.0f, 1.0f) : Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+            m.scale(sphere_radious, sphere_radious, sphere_radious);
+            shader->setUniform("u_color", color);
+            shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
+            shader->setUniform("u_model", m);
 
-        mesh->render(GL_LINES);
+            mesh->render(GL_LINES);
+        }
+
+        shader->disable();
     }
-
-    shader->disable();
-
-#endif
-
 }
 
 
