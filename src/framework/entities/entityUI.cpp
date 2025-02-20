@@ -84,6 +84,7 @@ void EntityUI::update(float dt)
 				break;
 			case EntityUI::START_MAP:
 				instance->goToStage(PLAY_ST);
+				break;
 			case EntityUI::PAUSE:
 				break;
 			case EntityUI::RESUME:

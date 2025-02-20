@@ -50,7 +50,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
         stage->init();
     }
 
-    goToStage(PLAY_ST);
+    goToStage(MAIN_MENU_ST);
 
     // OpenGL flags
     glEnable(GL_CULL_FACE); //render both sides of every triangle

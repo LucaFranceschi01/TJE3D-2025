@@ -129,10 +129,11 @@ void PlayStage::onResize(int width, int height)
 
 MenuStage::MenuStage(e_MenuID menu)
 {
-    /*camera2D = new Camera();
-    camera2D->lookAt(Vector3(0.f, 10.f, 10.f), Vector3(0.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f));
-    camera2D->setPerspective(72.f, window_width / window_height, 0.1f, 10000.f);
-    this->menu = menu;*/
+    World* instance = World::getInstance();
+
+    camera2D = new Camera();
+    camera2D->setOrthographic(0.f, instance->window_width, instance->window_height, 0.f, -1.f, 1.f);
+    this->menu = menu;
 }
 
 void MenuStage::init()
@@ -144,7 +145,9 @@ void MenuStage::init()
         Material mat;
         UI_root = new Entity();
         EntityUI* btn = new EntityUI(Vector2(100.f, 100.f), Vector2(100.f, 100.f), EntityUI::e_UIButtonID::EXIT, mat);
+        UI_root->addChild(btn);
 
+        btn = new EntityUI(Vector2(300.f, 300.f), Vector2(100.f, 100.f), EntityUI::e_UIButtonID::START_MAP, mat);
         UI_root->addChild(btn);
         break;
     }
@@ -163,13 +166,13 @@ void MenuStage::init()
 
 void MenuStage::render()
 {
-    
-    UI_root->render();
+    UI_root->render(camera2D);
     Stage::render();
 }
 
 void MenuStage::update(float dt)
 {
+    UI_root->update(dt);
     Stage::update(dt);
 }
 
