@@ -1,9 +1,11 @@
 #pragma once
 
+#include <string>
 #include "entityMesh.h"
 #include "framework/framework.h"
 
 class Material;
+class Texture;
 
 class EntityUI : public EntityMesh
 {
@@ -27,9 +29,12 @@ public:
 
 	e_UIButtonID buttonID = UNDEFINED;
 
+	Texture* base = nullptr;
+	Texture* pressed = nullptr;
+
 	// update3d not needed
 
-	EntityUI(Vector2 position, Vector2 size, e_UIButtonID buttonID, const Material& mat);
+	EntityUI(Vector2 position, Vector2 size, e_UIButtonID buttonID, const Material& mat, const char* name);
 	~EntityUI() {};
 
 	void render(Camera* camera2D) override;

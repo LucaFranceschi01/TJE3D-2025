@@ -1,13 +1,17 @@
 #include "entityUI.h"
 
+#include <string>
+#include <sstream>
+#include <iostream>
+
 #include "graphics/mesh.h"
 #include "graphics/shader.h"
 #include "framework/camera.h"
 #include "framework/input.h"
 #include "game/game.h"
+#include "graphics/texture.h"
 
-
-EntityUI::EntityUI(Vector2 position, Vector2 size, e_UIButtonID buttonID, const Material& mat)
+EntityUI::EntityUI(Vector2 position, Vector2 size, e_UIButtonID buttonID, const Material& mat, const char* name)
 {
 	this->position = position;
 	this->size = size;
@@ -17,6 +21,11 @@ EntityUI::EntityUI(Vector2 position, Vector2 size, e_UIButtonID buttonID, const 
 	mesh->createQuad(position.x, position.y, size.x, size.y, false);
 
 	this->material = mat;
+
+	this->base = Texture::Get((std::string("data/textures/ui/") + std::string(name) + std::string("_base.png")).c_str()); // vaya basura
+	this->pressed = Texture::Get((std::string("data/textures/ui/") + std::string(name) + std::string("_press.png")).c_str()); // vaya basura
+
+	this->material.diffuse = this->base;
 
 	if (!this->material.shader) {
 		this->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
@@ -65,9 +74,12 @@ void EntityUI::update(float dt)
 	if (above_btn && buttonID != e_UIButtonID::UNDEFINED) {
 
 		material.color = Vector4(2.f);
+		this->material.diffuse = this->pressed;
 
 		if (Input::wasMousePressed(SDL_BUTTON_LEFT)) {
 			Game* instance = Game::instance;
+
+
 			switch (buttonID)
 			{
 			case EntityUI::ENTER_MAP_SELECTOR:
@@ -98,6 +110,7 @@ void EntityUI::update(float dt)
 	}
 	else {
 		material.color = Vector4::WHITE;
+		this->material.diffuse = this->base;
 	}
 
 	Entity::update(dt);

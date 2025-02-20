@@ -142,12 +142,14 @@ void MenuStage::init()
     {
     case MenuStage::MAIN:
     {
-        Material mat;
         UI_root = new Entity();
-        EntityUI* btn = new EntityUI(Vector2(100.f, 100.f), Vector2(100.f, 100.f), EntityUI::e_UIButtonID::EXIT, mat);
+        Material mat;
+
+        mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+        EntityUI* btn = new EntityUI(Vector2(100.f, 100.f), Vector2(100.f, 100.f), EntityUI::e_UIButtonID::EXIT, mat, "exit");
         UI_root->addChild(btn);
 
-        btn = new EntityUI(Vector2(300.f, 300.f), Vector2(100.f, 100.f), EntityUI::e_UIButtonID::START_MAP, mat);
+        btn = new EntityUI(Vector2(300.f, 300.f), Vector2(100.f, 100.f), EntityUI::e_UIButtonID::START_MAP, mat, "play");
         UI_root->addChild(btn);
         break;
     }
