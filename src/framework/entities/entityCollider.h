@@ -27,7 +27,7 @@ enum sColisionFilter : int
 class EntityCollider : public EntityMesh
 {
 private:
-	void getCollisionsWithModel(const Matrix44& m, const Vector3& center, std::vector<sCollisionData> colisions, std::vector<sCollisionData> grounded_colision); // falten parametres
+	void getCollisionsWithModel(const Matrix44& m, const Vector3& center, std::vector<sCollisionData>& colisions, std::vector<sCollisionData>& grounded_colision); // falten parametres
 
 public:
 

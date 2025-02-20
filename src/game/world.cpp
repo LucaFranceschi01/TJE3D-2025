@@ -24,6 +24,9 @@ const Vector3 World::front(1.f, 0.f, 0.f);
 const Vector3 World::right(0.f, 0.f, 1.f);
 const Vector3 World::up(0.f, 1.f, 0.f);
 
+
+EntityMesh* bola_prova = nullptr;
+
 World* World::getInstance()
 {
     if (instance == nullptr) {
@@ -102,6 +105,9 @@ World::World()
         e_MapID map = static_cast<e_MapID>(m);
         root[map] = new Entity();
     }
+
+    bola_prova = new EntityMesh();
+    bola_prova->mesh = new Mesh();
 }
 
 void World::init(e_MapID map)
@@ -149,6 +155,8 @@ void World::update(float dt)
 
     // update the player
     player->update(dt);
+
+    //bola_prova->model = player->model;
 
     // update camera
     camera->update(dt);
@@ -275,6 +283,14 @@ sCollisionData World::raycast(const Vector3& origin, const Vector3& direction, i
     return colision_data;
 }
 
+/**
+ * This method tries if a given position collides with any object in the world, in root.
+ * For every entity calls getCollision.
+ *
+ * @param position position to look the collisions
+ * @param colisions array of the collisions found in position.
+ * @param ground_colisions colisions with the ground
+ */
 void World::test_scene_collisions(const Vector3& position, std::vector<sCollisionData>& colisions, std::vector<sCollisionData>& ground_colisions)
 {
     for (auto entity : root[current_map]->children) {

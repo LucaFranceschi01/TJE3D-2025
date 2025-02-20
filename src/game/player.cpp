@@ -4,16 +4,53 @@
 
 #include "player.h"
 #include "world.h"
+#include "framework/camera.h"
 
 #include "framework/input.h"
+#include "graphics/mesh.h"
+#include "graphics/shader.h"
+
+#define RENDER_DEBUG
 
 Player::Player(Mesh* mesh, const Material& material, const std::string& name) : EntityMesh(mesh, material, name)
 {
     this->mesh = mesh;
     this->material = material;
     this->name = name;
-    model.setTranslation(0, 2, 0);
+    model.setTranslation(0, 5, 0);
 }
+
+void Player::render(Camera* camera)
+{
+    // Render entity
+    EntityMesh::render(camera);
+
+#ifdef RENDER_DEBUG
+    float sphere_radious = 1.f;
+
+    Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+    Mesh* mesh = Mesh::Get("data/meshes/sphere.obj");
+    Matrix44 m = model;
+
+    shader->enable();
+
+    {
+        Vector4 color = (colision) ? Vector4(0.0f, 0.0f, 1.0f, 1.0f) : Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        m.scale(sphere_radious, sphere_radious, sphere_radious);
+        shader->setUniform("u_color", color);
+        shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
+        shader->setUniform("u_model", m);
+
+        mesh->render(GL_LINES);
+    }
+
+    shader->disable();
+
+#endif
+
+}
+
+
 
 void Player::update(float dt)
 {
@@ -61,7 +98,7 @@ void Player::update(float dt)
     velocity += move_dir;
 
     // mirar colisions aquí
-    //testCollisions(position, dt);
+    testCollisions(position, dt);
 
     // update player position
     position += velocity * dt;
@@ -93,6 +130,7 @@ void Player::testCollisions(Vector3 position, float dt)
     std::vector<sCollisionData> collisions;
     std::vector<sCollisionData> ground_collisions;
 
+    // calls test_scene_collision to check if the new position collides with something.
     World::getInstance()->test_scene_collisions(position + velocity * dt, collisions, ground_collisions);
 
     // enviroment collisions
@@ -107,6 +145,8 @@ void Player::testCollisions(Vector3 position, float dt)
         // falta algo en esta multiplicacipn?
         velocity.x -= new_direction.x;
         velocity.z -= new_direction.z;
+
+
     }
 
     // ground collisions
@@ -120,7 +160,7 @@ void Player::testCollisions(Vector3 position, float dt)
     }
 
     if (!is_grounded) {
-        velocity.y -= 9.8f * dt;
+        velocity.y -=  5 * 9.8f * dt;
     }
     else if (Input::wasKeyPressed(SDL_SCANCODE_SPACE)) {
         velocity.y = 3.f;
@@ -128,6 +168,7 @@ void Player::testCollisions(Vector3 position, float dt)
     else {
         velocity.y = 0.0f;
     }
+    colision = (collisions.size() > 0);
 }
 
 static void dampen(float* deg) {

@@ -32,7 +32,7 @@ public:
     std::map<StageType, Stage*> stages;
 
     float angle = 0;
-    float mouse_speed = 100.0f;
+    float mouse_speed = 50.0f;
     bool debug_view = false;
 
     Game(int window_width, int window_height, SDL_Window* window);

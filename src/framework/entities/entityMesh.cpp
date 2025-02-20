@@ -11,6 +11,8 @@
 
 constexpr auto CULLING_DIST = 400.f;
 
+#define RENDER_DEBUG
+
 EntityMesh::EntityMesh() : Entity()
 {
     mesh = nullptr;
@@ -122,6 +124,30 @@ void EntityMesh::render(Camera* camera)
     material.shader->disable();
 
     Entity::render(camera);
+
+
+#ifdef RENDER_DEBUG
+    float sphere_radious = 2.f;
+
+    Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+    Mesh* mesh = new Mesh();
+    mesh->createWireBox();
+    Matrix44 m = model;
+
+    shader->enable();
+
+    {
+        //m.scale(sphere_radious, sphere_radious, sphere_radious);
+        shader->setUniform("u_color", Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+        shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
+        shader->setUniform("u_model", m);
+
+        mesh->render(GL_LINES);
+    }
+
+    shader->disable();
+
+#endif
 }
 
 void EntityMesh::update(float dt)
