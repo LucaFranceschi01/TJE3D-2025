@@ -7,7 +7,7 @@
 #include "framework/includes.h"
 #include "framework/camera.h"
 #include "framework/utils.h"
-#include "game/stage.h"
+#include "game/stages/stage.h"
 
 class Game
 {

@@ -49,24 +49,26 @@ void PlayStage::onKeyDown(SDL_KeyboardEvent event)
     //World::getInstance()->player->onKeyDown(event);
 
     switch (event.keysym.sym) {
-    case SDLK_TAB:
-    {
-        Game::instance->setMouseLocked();
-        break;
-    }
-    case SDLK_RSHIFT:
-    {
-        Game::instance->debug_view = !Game::instance->debug_view;
-        break;
-    }
-    case SDLK_1:
-    {
-
-    }
-    case SDLK_2:
-    {
-
-    }
+        case SDLK_TAB:
+        {
+            Game::instance->setMouseLocked();
+            break;
+        }
+        case SDLK_RSHIFT:
+        {
+            Game::instance->debug_view = !Game::instance->debug_view;
+            break;
+        }
+        case SDLK_1:
+        {
+            World::getInstance()->game_mode = World::DEBUG;
+            break;
+        }
+        case SDLK_2:
+        {
+            World::getInstance()->game_mode = World::RELEASE;
+            break;
+        }
     }
 }
 

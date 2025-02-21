@@ -32,6 +32,11 @@ public:
         NR_CAMERA_MODES
     };
 
+    // move the player free with awsd or default only right to left
+    enum e_game_mode {
+        DEBUG, RELEASE
+    };
+
     // attributes
     //Entity* root = nullptr;
     EntityMesh* skybox = nullptr;
@@ -51,6 +56,7 @@ public:
     float window_width = 0.f;
 
     e_camera_mode camera_mode = THIRD_PERSON;
+    e_game_mode game_mode = DEBUG;
 
     static const Vector3 front;
     static const Vector3 right;

@@ -8,13 +8,15 @@
 #include "framework/utils.h"
 #include "framework/input.h"
 #include "framework/entities/entityMesh.h"
+#include "framework/audio.h"
 
 #include "game/scene_parser.h"
 #include "game/world.h"
 
-#include <cmath>
+#include "stages/menuStage.h"
+#include "stages/playStage.h"
 
-#include "framework/audio.h"
+#include <cmath>
 
 //some globals
 Mesh* mesh = NULL;

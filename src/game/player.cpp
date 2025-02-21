@@ -4,12 +4,15 @@
 
 #include "player.h"
 #include "world.h"
+#include "stages/stage.h"
+
 #include "framework/audio.h"
 #include "framework/camera.h"
-
 #include "framework/input.h"
+
 #include "graphics/mesh.h"
 #include "graphics/shader.h"
+
 #include "game/game.h"
 
 Player::Player(Mesh* mesh, const Material& material, const std::string& name) : EntityMesh(mesh, material, name)
@@ -46,6 +49,7 @@ void Player::render(Camera* camera)
 void Player::update(float dt)
 {
 
+    World* world_instance = World::getInstance();
     Vector3 position = model.getTranslation();
 
     if (live <= 0 || position.y <= 0) {
@@ -54,7 +58,7 @@ void Player::update(float dt)
     }
 
     // If camera is in free mode, avoid moving the player
-    if (World::getInstance()->camera_mode == World::e_camera_mode::FREE) return;
+    if (world_instance->camera_mode == World::e_camera_mode::FREE) return;
     
     Vector3 front = World::front;
     Vector3 right = World::right;
@@ -65,12 +69,16 @@ void Player::update(float dt)
 
     bool pressing_button = false;
 
-    if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) {
+    if (world_instance->game_mode == World::RELEASE ||
+        (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP))) {
+
         move_dir += front * dt;
         pitch += rotational_speed * dt;
         pressing_button = true;
     }
-    if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) {
+    if (world_instance->game_mode == World::DEBUG  &&
+        (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN))) {
+
         move_dir -= front * dt;
         pitch -= rotational_speed * dt;
         pressing_button = true;
