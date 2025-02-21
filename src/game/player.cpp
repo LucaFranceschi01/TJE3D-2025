@@ -22,7 +22,7 @@ Player::Player(Mesh* mesh, const Material& material, const std::string& name) : 
 void Player::init()
 {
     life = 3;
-    model.setTranslation(0, 25, 0);
+    model.setTranslation(0, 10, 0);
     // add more
 }
 
@@ -45,7 +45,11 @@ void Player::render(Camera* camera)
 void Player::update(float dt)
 {
 
-    if (life <= 0) Game::instance->goToStage(MAIN_MENU_ST);
+    Vector3 position = model.getTranslation();
+
+    if (life <= 0 || position.y <= 0) {
+        Game::instance->goToStage(MAIN_MENU_ST);
+    }
 
     // If camera is in free mode, avoid moving the player
     if (World::getInstance()->camera_mode == World::e_camera_mode::FREE) return;
@@ -53,7 +57,7 @@ void Player::update(float dt)
     Vector3 front = World::front;
     Vector3 right = World::right;
 
-    Vector3 position = model.getTranslation();
+
 
     Vector3 move_dir;
 
