@@ -21,7 +21,7 @@ Player::Player(Mesh* mesh, const Material& material, const std::string& name) : 
 
 void Player::init()
 {
-    life = 3;
+    live = 3;
     model.setTranslation(0, 10, 0);
     // add more
 }
@@ -32,8 +32,8 @@ void Player::render(Camera* camera)
     EntityMesh::render(camera);
 
     // render life text. todo: es temporal
-    std::string life_text = "lifes: " + std::to_string(life) + "/3";
-    drawText(700, 2, life_text, Vector3(1, 1, 1), 2);
+    std::string live_text = "lives: " + std::to_string(live) + "/3";
+    drawText(700, 2, live_text, Vector3(1, 1, 1), 2);
 
     if (Game::instance->debug_view) {
         renderDebug(camera);
@@ -47,7 +47,7 @@ void Player::update(float dt)
 
     Vector3 position = model.getTranslation();
 
-    if (life <= 0 || position.y <= 0) {
+    if (live <= 0 || position.y <= 0) {
         Game::instance->goToStage(MAIN_MENU_ST);
     }
 
@@ -157,7 +157,7 @@ void Player::testCollisions(Vector3 position, float dt)
             }
             case OBSTACLE: {
                 // quit one life
-                life--;
+                live--;
 
                 // send the object to delete
                 World::getInstance()->destroyEntity(collision_data.collider);

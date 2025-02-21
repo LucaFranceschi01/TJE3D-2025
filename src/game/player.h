@@ -20,7 +20,7 @@ private:
 
     float jump_time = 0.0f;
 
-    int life = 3;
+    int live = 3;
 
 
 public:
