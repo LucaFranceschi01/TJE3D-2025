@@ -57,16 +57,26 @@ bool SceneParser::parse(const char* filename, Entity* root)
 		Material mat = render_data.material;
 		EntityCollider* new_entity = nullptr;
 
-		size_t tag = data.first.find("@tag"); // TODO: use parser tags
+		size_t tag = data.first.find("@Tag"); // TODO: use parser tags
+
+		Mesh* mesh = Mesh::Get(mesh_name.c_str());
+		new_entity = new EntityCollider(mesh, mat);
+
 
 		if (tag != std::string::npos) {
-			Mesh* mesh = Mesh::Get("...");
-			// Create a different type of entity
-			// new_entity = new ...
-		}
-		else {
-			Mesh* mesh = Mesh::Get(mesh_name.c_str());
-			new_entity = new EntityCollider(mesh, mat);
+
+			if (data.first.find("@Tag.Ground")) {
+				new_entity->layer = GROUND;
+
+			} else if (data.first.find("@Tag.Fluid")) {
+				new_entity->layer = FLUID;
+			}
+
+
+		} else {
+			//Mesh* mesh = Mesh::Get(mesh_name.c_str());
+			//new_entity = new EntityCollider(mesh, mat);
+			new_entity->layer = OBSTACLE;
 		}
 
 		if (!new_entity) {

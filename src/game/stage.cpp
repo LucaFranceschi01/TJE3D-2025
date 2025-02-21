@@ -2,6 +2,8 @@
 // Created by Xavi Cañadas on 3/2/25.
 //
 #include "stage.h"
+
+#include "player.h"
 #include "world.h"
 
 #include "game/game.h"
@@ -70,6 +72,9 @@ void PlayStage::update(float dt)
 
 void PlayStage::onEnter(Stage* prev_stage)
 {
+    World::getInstance()->init(World::MAP1);
+    World::getInstance()->player->init();
+
 }
 
 void PlayStage::onLeave(Stage* prev_stage)

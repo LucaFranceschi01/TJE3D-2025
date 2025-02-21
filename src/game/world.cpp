@@ -140,11 +140,11 @@ void World::render()
     // draw the floor grid
     drawGrid();
 
-    // render entity player
-    player->render(camera);
-
     // render all scene tree
     root[current_map]->render(camera);
+
+    // render entity player
+    player->render(camera);
 }
 
 

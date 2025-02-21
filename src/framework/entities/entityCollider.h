@@ -19,19 +19,19 @@ struct sCollisionData
 	EntityCollider* collider = nullptr;
 };
 
-enum sColisionFilter : int
+enum eColisionFilter : int
 {
-	ALL, SCENARIO
+	ALL, OBSTACLE, GROUND, FLUID, NONE
 };
 
 class EntityCollider : public EntityMesh
 {
 private:
-	void getCollisionsWithModel(const Matrix44& m, const Vector3& center, std::vector<sCollisionData>& colisions, std::vector<sCollisionData>& grounded_colision); // falten parametres
+	void getCollisionsWithModel(const Matrix44& m, const Vector3& center, std::vector<sCollisionData>& collisions, std::vector<sCollisionData>& grounded_collision); // falten parametres
 
 public:
 
-	sColisionFilter layer = ALL;
+	eColisionFilter layer = ALL;
 	bool is_static = true; // hace falta?
 
 	EntityCollider() = default;

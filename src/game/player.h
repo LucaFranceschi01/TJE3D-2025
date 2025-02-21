@@ -18,16 +18,25 @@ private:
     Vector3 velocity = Vector3(0.f);
 
 
+    float jump_time = 0.0f;
+
+    int life = 3;
+
+
 public:
 
-    bool colision = false;
+    bool collision = false;
+    bool collision_fluid = false;
 
     Player() = default;
     Player(Mesh* mesh, const Material& material, const std::string& name = "");
 
+    void init();
     void render(Camera* camera) override;
     void update(float dt) override;
     void testCollisions(Vector3 position, float dt);
+    void renderDebug(Camera* camera);
+
 };
 
 static void dampen(float* deg);

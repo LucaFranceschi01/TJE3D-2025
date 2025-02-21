@@ -16,7 +16,14 @@ Player::Player(Mesh* mesh, const Material& material, const std::string& name) : 
     this->mesh = mesh;
     this->material = material;
     this->name = name;
-    model.setTranslation(0, 5, 0);
+}
+
+
+void Player::init()
+{
+    life = 3;
+    model.setTranslation(0, 25, 0);
+    // add more
 }
 
 void Player::render(Camera* camera)
@@ -24,26 +31,12 @@ void Player::render(Camera* camera)
     // Render entity
     EntityMesh::render(camera);
 
+    // render life text. todo: es temporal
+    std::string life_text = "lifes: " + std::to_string(life) + "/3";
+    drawText(700, 2, life_text, Vector3(1, 1, 1), 2);
+
     if (Game::instance->debug_view) {
-        float sphere_radious = 1.f;
-
-        Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
-        Mesh* mesh = Mesh::Get("data/meshes/sphere.obj");
-        Matrix44 m = model;
-
-        shader->enable();
-
-        {
-            Vector4 color = (colision) ? Vector4(0.0f, 0.0f, 1.0f, 1.0f) : Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-            m.scale(sphere_radious, sphere_radious, sphere_radious);
-            shader->setUniform("u_color", color);
-            shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
-            shader->setUniform("u_model", m);
-
-            mesh->render(GL_LINES);
-        }
-
-        shader->disable();
+        renderDebug(camera);
     }
 }
 
@@ -51,6 +44,9 @@ void Player::render(Camera* camera)
 
 void Player::update(float dt)
 {
+
+    if (life <= 0) Game::instance->goToStage(MAIN_MENU_ST);
+
     // If camera is in free mode, avoid moving the player
     if (World::getInstance()->camera_mode == World::e_camera_mode::FREE) return;
     
@@ -108,7 +104,8 @@ void Player::update(float dt)
     model.rotate(pitch, World::right);
     
     // decrease when not moving
-    velocity *= 0.9f;
+    velocity.x *= 0.9f;
+    velocity.z *= 0.9f;
 
     if (move_dir.z == 0.f) {
         dampen(&yaw);
@@ -130,43 +127,112 @@ void Player::testCollisions(Vector3 position, float dt)
     // calls test_scene_collision to check if the new position collides with something.
     World::getInstance()->test_scene_collisions(position + velocity * dt, collisions, ground_collisions);
 
-    // enviroment collisions
-    for (const sCollisionData& collision : collisions) {
-        // if normal is pointing upwards, it means it's a floor collision
-        float up_factor = fabs(collision.col_normal.dot(Vector3::UP));
-        if (up_factor > 0.8)
-            continue;
-
-        // move along wall when colliding
-        Vector3 new_direction = velocity.dot(collision.col_normal) * collision.col_normal;
-        // falta algo en esta multiplicacipn?
-        velocity.x -= new_direction.x;
-        velocity.z -= new_direction.z;
-
-
-    }
 
     // ground collisions
     bool is_grounded = false;
+    collision_fluid = false;
 
-    for (const sCollisionData& collision : ground_collisions) {
+    // enviroment collisions
+    for (const sCollisionData& collision_data : collisions) {
+
         // if normal is pointing upwards, it means it's a floor collision
-        float up_factor = fabs(collision.col_normal.dot(Vector3::UP));
-        if (up_factor > 0.8)
-            is_grounded = true;
+        float up_factor = fabs(collision_data.col_normal.dot(Vector3::UP));
+
+
+        switch (collision_data.collider->layer) {
+            case GROUND: {
+                if (up_factor > 0.8f) {
+                    is_grounded = true;
+                    // If we're falling, stop at ground level
+                    if (velocity.y < 0) {
+                        position.y = collision_data.col_point.y;
+                        velocity.y = 0.0f;
+                    }
+                }
+                break;
+            }
+            case OBSTACLE: {
+                // quit one life
+                life--;
+
+                // send the object to delete
+                World::getInstance()->destroyEntity(collision_data.collider);
+                break;
+            }
+
+            case FLUID: {
+                // todo: no detecta las colisiones con el objeto fluido
+                collision_fluid = true;
+                break;
+            }
+
+
+            default:
+                break;
+        }
+
     }
 
-    if (!is_grounded) {
-        velocity.y -=  5 * 9.8f * dt;
+    float gravity = 100.0f;
+    float jump_force = 1.f;
+
+
+    // this part is to make the jump fluid
+    if (jump_time > 0) {
+        jump_time -= dt;
+        velocity.y += jump_force * jump_time;
     }
+
+    if (!is_grounded && jump_time <= 0) {
+        velocity.y += -gravity * dt;
+        jump_time = 0;
+    }
+    // Handle jumping with better feel
     else if (Input::wasKeyPressed(SDL_SCANCODE_SPACE)) {
-        velocity.y = 3.f;
+        jump_time = 0.25f;
     }
-    else {
-        velocity.y = 0.0f;
-    }
-    colision = (collisions.size() > 0);
+
+    collision = (!collisions.empty());
 }
+
+void Player::renderDebug(Camera* camera)
+{
+    float sphere_radious = 1.f;
+
+    Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+    Mesh* mesh = Mesh::Get("data/meshes/sphere.obj");
+    Matrix44 m = model;
+
+    shader->enable();
+
+    {
+
+        Vector4 color;
+
+        if (collision_fluid) {
+            color = Vector4(0.0f, 1.0f, 1.0f, 1.0f);
+
+        } else if (collision) {
+            color = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+        } else {
+            color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+
+
+        m.scale(sphere_radious, sphere_radious, sphere_radious);
+        shader->setUniform("u_color", color);
+        shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
+        shader->setUniform("u_model", m);
+
+        mesh->render(GL_LINES);
+    }
+
+    shader->disable();
+}
+
+
+
+
 
 static void dampen(float* deg) {
     if (*deg > 180.f*DEG2RAD) {

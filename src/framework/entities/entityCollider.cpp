@@ -4,12 +4,22 @@
 
 
 void EntityCollider::getCollisionsWithModel(const Matrix44& m, const Vector3& center,
-                                            std::vector<sCollisionData>& colisions, std::vector<sCollisionData>& grounded_colision)
+                                            std::vector<sCollisionData>& collisions, std::vector<sCollisionData>& grounded_collision)
 {
-    // TODO: se tiene que preguntar esta funcion porque ns que poner.
     Vector3 colision_point;
     Vector3 colision_normal;
 
+    float sphere_radious = 1.0f;
+
+    // He hecho cambios en como se miran las colisiones. todas se ponen en el array de collision y se diferencian con el collision filter
+    if (mesh->testSphereCollision(m, center, sphere_radious, colision_point, colision_normal)) {
+        //float distance =
+        collisions.push_back({colision_point, colision_normal.normalize(), -1, true, this});
+    }
+
+
+    // de momento dejo este bloque de código que es el que habia antes
+    /*
     // seguramente se tendran que canviar
     float sphere_radius = 1.2f;
     float sphere_ground_radius = 0.05f;
@@ -29,8 +39,6 @@ void EntityCollider::getCollisionsWithModel(const Matrix44& m, const Vector3& ce
 
         //se tiene que pasar el puntero del objeto actual como último atributo?
 
-
-
     // check wall colisions
     Vector3 character_center = center + Vector3(0.0f, player_height, 0.0f); // to not consider the ground colisions
 
@@ -40,32 +48,17 @@ void EntityCollider::getCollisionsWithModel(const Matrix44& m, const Vector3& ce
         colisions.push_back({colision_point, colision_normal.normalize(), -1, true, this});
 
 
+    */
+
     /*
     if (mesh->testRayCollision(m, center, Vector3(0, -1, 0), colision_point, colision_normal))
         colisions.push_back({colision_point, colision_normal.normalize(), -1, true, this});
         */
-
-
-
 }
 
-// TODO: se tiene que preguntar
 
-// aqui s'ha de diferenciar entre instanced i no instanced
 void EntityCollider::getCollisions(const Vector3& target_position, std::vector<sCollisionData>& colisions, std::vector<sCollisionData>& ground_colisions)
 {
-    //if (!layer & filter)
-
-    // aqui supongo que se llama a la funcion de arriba.
-
-
-    // esta funcion sirve para ver si la target position colisiona con este objeto?
-
-    // los dos arrays de colisions lo unico que se hace aqui es que si colisiona el objeto actual con la target colision,
-    // se añade este objeto al array. Asi cuando se llame desde world esta funcion por todos los objetos de root,
-    // el array se llenara.
-
-
     if (!isInstanced) {
         Matrix44 global_matrix = getGlobalMatrix(); // a nivel de mundo
         getCollisionsWithModel(global_matrix, target_position, colisions, ground_colisions);
