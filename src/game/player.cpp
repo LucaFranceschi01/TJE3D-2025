@@ -4,6 +4,7 @@
 
 #include "player.h"
 #include "world.h"
+#include "framework/audio.h"
 #include "framework/camera.h"
 
 #include "framework/input.h"
@@ -48,6 +49,7 @@ void Player::update(float dt)
     Vector3 position = model.getTranslation();
 
     if (live <= 0 || position.y <= 0) {
+        Audio::Play("data/sounds/sad_horn.wav");
         Game::instance->goToStage(MAIN_MENU_ST);
     }
 

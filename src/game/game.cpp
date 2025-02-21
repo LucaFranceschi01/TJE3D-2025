@@ -14,6 +14,8 @@
 
 #include <cmath>
 
+#include "framework/audio.h"
+
 //some globals
 Mesh* mesh = NULL;
 Texture* texture = NULL;
@@ -38,6 +40,9 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     time = 0.0f;
     elapsed_time = 0.0f;
     mouse_locked = false;
+
+    // audio init
+    Audio::Init();
 
 
     // stages

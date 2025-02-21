@@ -17,7 +17,6 @@ private:
     float sphere_radious = 10.f;
     Vector3 velocity = Vector3(0.f);
 
-
     float jump_time = 0.0f;
 
     int live = 3;

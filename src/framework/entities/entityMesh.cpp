@@ -108,7 +108,13 @@ void EntityMesh::render(Camera* camera)
     material.shader->disable();
 
     if (Game::instance->debug_view) {
-        mesh->renderBounding(model);
+        if (!isInstanced) {
+            mesh->renderBounding(model);
+        } else {
+            for (auto& m : models) {
+                mesh->renderBounding(m);
+            }
+        }
     }
 
     Entity::render(camera);
