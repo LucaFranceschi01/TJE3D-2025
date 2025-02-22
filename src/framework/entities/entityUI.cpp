@@ -16,6 +16,7 @@ EntityUI::EntityUI(Vector2 position, Vector2 size, e_UIButtonID buttonID, const 
 	this->position = position;
 	this->size = size;
 	this->buttonID = buttonID;
+	this->is_pixel_art = true;
 
 	mesh = new Mesh();
 	mesh->createQuad(position.x, position.y, size.x, size.y, true);
@@ -24,6 +25,27 @@ EntityUI::EntityUI(Vector2 position, Vector2 size, e_UIButtonID buttonID, const 
 
 	this->base = Texture::Get((std::string("data/textures/ui/") + std::string(name) + std::string("_base.png")).c_str()); // vaya basura
 	this->pressed = Texture::Get((std::string("data/textures/ui/") + std::string(name) + std::string("_press.png")).c_str()); // vaya basura
+
+	this->material.diffuse = this->base;
+
+	if (!this->material.shader) {
+		this->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+	}
+}
+
+EntityUI::EntityUI(Vector2 position, Vector2 size, const Material& mat, const char* name)
+{
+	this->position = position;
+	this->size = size;
+	this->buttonID = UNDEFINED;
+	this->is_pixel_art = false;
+
+	mesh = new Mesh();
+	mesh->createQuad(position.x, position.y, size.x, size.y, true);
+
+	this->material = mat;
+
+	this->base = Texture::Get(name);
 
 	this->material.diffuse = this->base;
 
@@ -44,9 +66,16 @@ void EntityUI::render(Camera* camera2D)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// props to ChatGPT for these two lines of code
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	// TODO: why does this not work ???
+	if (this->is_pixel_art) {
+		// props to ChatGPT for these two lines of code
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+	else {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
 
 	material.shader->enable();
 

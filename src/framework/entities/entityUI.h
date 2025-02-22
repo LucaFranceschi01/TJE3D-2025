@@ -15,6 +15,7 @@ public:
 	//bool is3D = false;
 	bool visible = true;
 	//Vector3 pos3d;
+	bool is_pixel_art;
 
 	enum e_UIButtonID {
 		ENTER_MAP_SELECTOR,
@@ -35,6 +36,7 @@ public:
 	// update3d not needed
 
 	EntityUI(Vector2 position, Vector2 size, e_UIButtonID buttonID, const Material& mat, const char* name);
+	EntityUI(Vector2 position, Vector2 size, const Material& mat, const char* name);
 	~EntityUI() {};
 
 	void render(Camera* camera2D) override;
@@ -42,12 +44,3 @@ public:
 
 	EntityUI() = default;
 };
-
-//update3d
-//visible true
-//
-//project position3d 
-//
-//if in the frustum render
-//
-//dentro del menustage tiene background y 
