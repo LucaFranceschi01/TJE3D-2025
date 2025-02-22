@@ -5,7 +5,7 @@
 #include "world.h"
 #include "game.h"
 #include "scene_parser.h"
-#include "player/player.h"
+#include "player.h"
 
 #include "framework/input.h"
 #include "framework/includes.h"
@@ -17,7 +17,6 @@
 #include "graphics/mesh.h"
 #include "graphics/shader.h"
 #include "graphics/texture.h"
-#include "player/halfPlayer.h"
 
 World* World::instance = nullptr;
 
@@ -26,6 +25,7 @@ const Vector3 World::right(0.f, 0.f, 1.f);
 const Vector3 World::up(0.f, 1.f, 0.f);
 
 
+EntityMesh* bola_prova = nullptr;
 
 World* World::getInstance()
 {
@@ -45,6 +45,54 @@ World::World()
     //position the camera and point to 0,0,0
     camera->setPerspective(72.f, window_width / window_height, 0.1f, 10000.f);
 
+    /*root = new Entity();*/
+
+    // create height map
+    // esto lo pongo pq lo ha puesto en clase, ns si lo usaremos
+    /*
+    {
+        float size = 100.0f;
+        Mesh* heightmap_mesh = new Mesh();
+        heightmap_mesh->createSubdividedPlane(size);
+
+        Material heightmap_material = {
+            Shader::Get("data/shaders/height_map.vs", "data/shaders/height_map.fs"),
+            Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+            Texture::Get("data/textures/heightmap.png")
+        };
+
+        EntityMesh* heightmap = new EntityMesh(heightmap_mesh ,heightmap_material);
+        heightmap->model.translate(-size * 0.5f, 0.0f, -size * 0.5f);
+        root->addChild(heightmap);
+    }
+    */
+
+    // esto inicializa el sky, lo comento de momento
+
+    /*
+    {
+        Texture* cube_texture = new Texture();
+        cube_texture->loadCubemap("landscape", {
+            "data/textures/cubemap/right.png",
+            "data/textures/cubemap/left.png",
+            "data/textures/cubemap/bottom.png",
+            "data/textures/cubemap/top.png",
+            "data/textures/cubemap/front.png",
+            "data/textures/cubemap/back.png"
+        });
+
+        //Texture::Get("landscape"); una vez que se carga la texture, se puede acceder por todo el código con esto.
+
+        // continuació
+
+        Material cubemap_material;
+        cubemap_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs");
+        cubemap_material.diffuse = cube_texture;
+
+        skybox = new EntityMesh(Mesh::Get("data/meshes/cubemap.ASE"), cubemap_material);
+    }
+    */
+
     // TODO: Init IN-GAME UI
 
     // Init player
@@ -53,15 +101,13 @@ World::World()
     player_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
     player = new Player(Mesh::Get("data/player/Don_Bolon.obj"), player_material, "player");
 
-    // Init half player
-    half_player_left = new HalfPlayer(Mesh::Get("data/player/Don_Bolon.obj"), player_material, true, "player");
-    half_player_right = new HalfPlayer(Mesh::Get("data/player/Don_Bolon.obj"), player_material, false, "player");
-
-
     for (int m = 0; m != UNDEFINED_MAP; m++) {
         e_MapID map = static_cast<e_MapID>(m);
         root[map] = new Entity();
     }
+
+    bola_prova = new EntityMesh();
+    bola_prova->mesh = new Mesh();
 }
 
 void World::init(e_MapID map)
@@ -72,8 +118,6 @@ void World::init(e_MapID map)
     SceneParser parser;
     bool completed = parser.parse("data/myscene.scene", root[map]); // TODO: in blender do @player tag parser thing
     assert(completed);
-
-    half_player = false;
 }
 
 
@@ -100,17 +144,7 @@ void World::render()
     root[current_map]->render(camera);
 
     // render entity player
-    if (!half_player) {
-        player->render(camera);
-    } else {
-        half_player_left->render(camera);
-        half_player_right->render(camera);
-    }
-
-
-    // render life text. todo: es temporal
-    std::string live_text = "lives: " + std::to_string(live) + "/3";
-    drawText(700, 2, live_text, Vector3(1, 1, 1), 2);
+    player->render(camera);
 }
 
 
@@ -120,13 +154,9 @@ void World::update(float dt)
     root[current_map]->update(dt);
 
     // update the player
-    if (!half_player) {
-        player->update(dt);
-    } else {
-        half_player_left->update(dt);
-        half_player_right->update(dt);
-    }
+    player->update(dt);
 
+    //bola_prova->model = player->model;
 
     // update camera
     camera->update(dt);
@@ -146,10 +176,9 @@ void Camera::update(float dt)
 {
     Camera * camera = Camera::current;
     World* world = World::getInstance();
-
+    
     float speed = dt * Game::instance->mouse_speed; //the speed is defined by the seconds_elapsed so it goes constant
     float orbit_distance = 8.0f;
-    float up_factor = 3.5;
 
     switch (world->camera_mode)
     {
@@ -181,20 +210,9 @@ void Camera::update(float dt)
     }
     case World::THIRD_PERSON:
     {
-        Vector3 player_tr = Vector3(0.0f);
-        if (!world->half_player) {
-            player_tr = world->player->model.getTranslation();
-            orbit_distance = 10;
-            up_factor = 3.5;
-        } else {
-            player_tr = world->midPointHalfPlayers();
-            orbit_distance = 20;
-            up_factor = 10;
-        }
+        Vector3 player_tr = world->player->model.getTranslation();
 
-        Vector3 eye = player_tr - World::front * orbit_distance + Vector3::UP * up_factor;
-
-
+        Vector3 eye = player_tr - World::front * orbit_distance + Vector3::UP * 3.5f;
 
         camera->lookAt(eye, player_tr, Vector3::UP);
 
@@ -215,10 +233,7 @@ void World::addEntity(Entity* entity)
 
 void World::destroyEntity(Entity* entity)
 {
-    // find to avoid inserting the same entity twice
-    if (entities_to_destroy.find(entity) != entities_to_destroy.end()) {
-        entities_to_destroy.insert(entity);
-    }
+    entities_to_destroy.push_back(entity);
 }
 
 sCollisionData World::raycast(const Vector3& origin, const Vector3& direction, int layer, bool closest, float max_ray)
@@ -287,105 +302,3 @@ void World::test_scene_collisions(const Vector3& position, std::vector<sCollisio
         entity_collider->getCollisions(position, colisions, ground_colisions);
     }
 }
-
-void World::onKeyDown(SDL_KeyboardEvent event)
-{
-    switch (event.keysym.sym) {
-        case SDLK_1:
-        {
-            game_mode = DEBUG;
-            break;
-        }
-        case SDLK_2:
-        {
-            game_mode = RELEASE;
-            break;
-        }
-        case SDLK_e:
-        {
-            if (!half_player) {
-                half_player = true;
-                half_player_left->init(player->model.getTranslation());
-                half_player_right->init(player->model.getTranslation());
-            } else {
-                half_player = false;
-                player->model.setTranslation(midPointHalfPlayers());
-            }
-            break;
-        }
-    }
-}
-
-Vector3 World::midPointHalfPlayers()
-{
-    Vector3 mid_point = Vector3(0.0f);
-
-    // the two players will have the same x and y
-    // the only thing that changes is the z, we decided to make the half point between the two.
-    const Vector3 half_player_left_pos = half_player_left->model.getTranslation();
-    const Vector3& half_player_right_pos = half_player_right->model.getTranslation();
-
-    float half_point_x = (half_player_left_pos.x - half_player_right_pos.x) / 2;
-    mid_point.x = half_point_x + half_player_right_pos.x;
-
-    mid_point.y = half_player_left_pos.y;
-
-
-    /*
-    float half_point_z = (half_player_left_pos.z - half_player_right_pos.z) / 2;
-    mid_point.z = half_point_z + half_player_right_pos.z;
-    */
-    mid_point.z = 0.0f;
-
-    return mid_point;
-}
-
-
-// TODO: este codigo estaba en el constructor
-
-// create height map
-// esto lo pongo pq lo ha puesto en clase, ns si lo usaremos
-/*
-{
-    float size = 100.0f;
-    Mesh* heightmap_mesh = new Mesh();
-    heightmap_mesh->createSubdividedPlane(size);
-
-    Material heightmap_material = {
-        Shader::Get("data/shaders/height_map.vs", "data/shaders/height_map.fs"),
-        Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-        Texture::Get("data/textures/heightmap.png")
-    };
-
-    EntityMesh* heightmap = new EntityMesh(heightmap_mesh ,heightmap_material);
-    heightmap->model.translate(-size * 0.5f, 0.0f, -size * 0.5f);
-    root->addChild(heightmap);
-}
-*/
-
-// esto inicializa el sky, lo comento de momento
-
-/*
-{
-    Texture* cube_texture = new Texture();
-    cube_texture->loadCubemap("landscape", {
-        "data/textures/cubemap/right.png",
-        "data/textures/cubemap/left.png",
-        "data/textures/cubemap/bottom.png",
-        "data/textures/cubemap/top.png",
-        "data/textures/cubemap/front.png",
-        "data/textures/cubemap/back.png"
-    });
-
-    //Texture::Get("landscape"); una vez que se carga la texture, se puede acceder por todo el código con esto.
-
-    // continuació
-
-    Material cubemap_material;
-    cubemap_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs");
-    cubemap_material.diffuse = cube_texture;
-
-    skybox = new EntityMesh(Mesh::Get("data/meshes/cubemap.ASE"), cubemap_material);
-}
-*/
-

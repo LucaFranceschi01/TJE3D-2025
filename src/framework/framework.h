@@ -128,7 +128,7 @@ public:
 	void operator -= (const Vector3& v) { x -= v.x; y -= v.y; z -= v.z; }
 
 	/// we added this function to be able to print a vector more easily for test pursposes.
-	std::string to_string() const;
+	std::string to_string();
 };
 
 Vector3 normalize(Vector3 n);

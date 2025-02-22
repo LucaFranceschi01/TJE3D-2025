@@ -6,15 +6,12 @@
 
 #include <vector>
 #include <map>
-#include <set>
-
 #include "framework/framework.h"
 #include "framework/entities/entityCollider.h"
 
 class Entity;
 class EntityMesh;
 class Player;
-class HalfPlayer;
 class Camera;
 
 class World
@@ -43,16 +40,9 @@ public:
     // attributes
     //Entity* root = nullptr;
     EntityMesh* skybox = nullptr;
-
+    Player* player = nullptr;
     Camera* camera = nullptr;
     Camera* camera2D = nullptr;
-
-    // players
-    Player* player = nullptr;
-    HalfPlayer* half_player_left = nullptr;
-    HalfPlayer* half_player_right = nullptr;
-    bool half_player = false;
-    int live = 3; // esto lo he puesto a aqui para no tenerlo duplicado en el half_player
 
     e_MapID current_map;
     std::map<e_MapID, Entity*> root;
@@ -79,9 +69,10 @@ public:
     void render();
     void update(float dt);
     void init(e_MapID map);
+    void resetWorld();
 
     // scene
-    std::set<Entity*> entities_to_destroy;
+    std::vector<Entity*> entities_to_destroy;
 
     void addEntity(Entity* entity);
     void destroyEntity(Entity* entity);
@@ -90,7 +81,6 @@ public:
     sCollisionData raycast(const Vector3& origin, const Vector3& direction, int layer = eColisionFilter::ALL, bool closest = true, float max_ray = 1000); // ns q es max_ray
     void test_scene_collisions(const Vector3& position, std::vector<sCollisionData>& colisions, std::vector<sCollisionData>& ground_colisions);
 
-    void onKeyDown(SDL_KeyboardEvent event);
 
-    Vector3 midPointHalfPlayers();
+
 };

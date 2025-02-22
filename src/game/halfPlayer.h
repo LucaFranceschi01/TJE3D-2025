@@ -25,18 +25,8 @@ así en update elegir un control u otro.
 
  */
 
-class HalfPlayer : public Player {
-public:
-    bool is_left;
+class HalfPlayer : Player {
 
-    HalfPlayer(Mesh* mesh, const Material& material, bool is_left, const std::string& name = ""): Player(mesh, material, name)
-    {
-        this->is_left = is_left;
-    }
-
-    void init(Vector3 pos = Vector3(0, 10, 0)) override;
-
-    void moveControl(Vector3& move_dir,  float dt);
 };
 
 

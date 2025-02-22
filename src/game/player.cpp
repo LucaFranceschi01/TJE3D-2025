@@ -3,8 +3,8 @@
 //
 
 #include "player.h"
-#include "game/world.h"
-#include "game/stages/stage.h"
+#include "world.h"
+#include "stages/stage.h"
 
 #include "framework/audio.h"
 #include "framework/camera.h"
@@ -22,30 +22,30 @@ Player::Player(Mesh* mesh, const Material& material, const std::string& name) : 
     this->name = name;
 }
 
-void Player::init(Vector3 pos)
-{
-    World::getInstance()->live = 3;
-    model.setTranslation(pos);
-}
 
+void Player::init()
+{
+    live = 3;
+    model.setTranslation(0, 10, 0);
+    // add more
+}
 
 void Player::render(Camera* camera)
 {
     // Render entity
     EntityMesh::render(camera);
 
+    // render life text. todo: es temporal
+    std::string live_text = "lives: " + std::to_string(live) + "/3";
+    drawText(700, 2, live_text, Vector3(1, 1, 1), 2);
+
+    std::string front_debug_str = "front: " + front.to_string();
+    drawText(550, 32, front_debug_str, Vector3(1, 1, 1), 2);
+
+    std::string normal_debug_str = "normal_orig: " + normal_orig.to_string();
+    drawText(500, 16, normal_debug_str, Vector3(1, 1, 1), 2);
 
     if (Game::instance->debug_view) {
-
-        const std::string normal_debug_str = "normal_orig: " + normal_orig.to_string();
-        drawText(500, 16, normal_debug_str, Vector3(1, 1, 1), 2);
-
-        const std::string front_debug_str = "front: " + front.to_string();
-        drawText(550, 32, front_debug_str, Vector3(1, 1, 1), 2);
-
-        const std::string velocity_debug_str = "velocity: " + velocity.to_string();
-        drawText(500, 48, velocity_debug_str, Vector3(1, 1, 1), 2);
-
         renderDebug(camera);
     }
 }
@@ -58,7 +58,7 @@ void Player::update(float dt)
     World* world_instance = World::getInstance();
     Vector3 position = model.getTranslation();
 
-    if (world_instance->live <= 0 || position.y <= 0) {
+    if (live <= 0 || position.y <= 0) {
         Audio::Play("data/sounds/sad_horn.wav");
         Game::instance->goToStage(MAIN_MENU_ST);
     }
@@ -67,12 +67,10 @@ void Player::update(float dt)
     if (world_instance->camera_mode == World::e_camera_mode::FREE) return;
 
     front = World::front;
-    right = World::right;
+    Vector3 right = World::right;
 
-    // mirar collisions aquí
+    // mirar colisions aquí
     testCollisions(position, dt);
-
-
 
     Vector3 move_dir;
 
@@ -81,9 +79,27 @@ void Player::update(float dt)
     if (world_instance->game_mode == World::RELEASE ||
         (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP))) {
 
-    Vector3 move_dir = Vector3(0.0f);
+        move_dir += front * dt;
+        pitch += rotational_speed * dt;
+        pressing_button = true;
+    }
+    if (world_instance->game_mode == World::DEBUG  &&
+        (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN))) {
 
-    moveControl(move_dir, dt);
+        move_dir -= front * dt;
+        pitch -= rotational_speed * dt;
+        pressing_button = true;
+    }
+    if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
+        move_dir -= right * dt;
+        yaw += rotational_speed * dt;
+        pressing_button = true;
+    }
+    if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
+        move_dir += right * dt;
+        yaw -= rotational_speed * dt;
+        pressing_button = true;
+    }
 
     float speed_mult = walk_speed;
 
@@ -91,8 +107,9 @@ void Player::update(float dt)
         speed_mult *= 0.3f;
 
     move_dir.normalize();
+    move_dir *= speed_mult;
 
-    velocity += (move_dir * speed_mult);
+    velocity += move_dir;
 
     // update player position
     position += velocity * dt;
@@ -119,32 +136,6 @@ void Player::update(float dt)
     EntityMesh::update(dt);
 }
 
-void Player::moveControl(Vector3& move_dir, const float dt)
-{
-    World* world_instance = World::getInstance();
-    if (world_instance->game_mode == World::RELEASE ||
-        (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP))) {
-
-        move_dir += front * dt;
-        pitch += rotational_speed * dt;
-        }
-    if (world_instance->game_mode == World::DEBUG &&
-        (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN))) {
-
-        move_dir -= front * dt;
-        pitch -= rotational_speed * dt;
-        }
-    if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
-        move_dir -= right * dt;
-        yaw += rotational_speed * dt;
-    }
-    if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
-        move_dir += right * dt;
-        yaw -= rotational_speed * dt;
-    }
-}
-
-
 void Player::testCollisions(Vector3 position, float dt)
 {
     // Check collisions with the world entities
@@ -158,7 +149,7 @@ void Player::testCollisions(Vector3 position, float dt)
     bool is_grounded = false;
     collision_fluid = false;
 
-    // environment collisions
+    // enviroment collisions
     for (const sCollisionData& collision_data : collisions) {
         switch (collision_data.collider->layer) {
             case GROUND:
@@ -183,10 +174,9 @@ void Player::testCollisions(Vector3 position, float dt)
             case OBSTACLE:
             {
                 // quit one life
-                World::getInstance()->live--;
+                live--;
 
                 // send the object to delete
-
                 World::getInstance()->destroyEntity(collision_data.collider);
                 break;
             }
@@ -203,11 +193,10 @@ void Player::testCollisions(Vector3 position, float dt)
     }
 
     float gravity = 100.0f;
-
+    float jump_force = 2.f;
 
     // this part is to make the jump fluid
     if (jump_time > 0) {
-        float jump_force = 1.f;
         jump_time -= dt;
         velocity.y += jump_force * jump_time;
     }

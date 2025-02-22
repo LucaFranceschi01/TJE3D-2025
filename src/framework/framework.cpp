@@ -58,7 +58,7 @@ void Vector2::parseFromText(const char* text)
 			{
 				case 0: x = (float)atof(num); break;
 				case 1: y = (float)atof(num); break;
-				default: return;
+				default: return; break;
 			}
 			++pos;
 			if (*current == '\0')
@@ -165,7 +165,7 @@ void Vector3::parseFromText(const char* text, const char separator)
 					case 0: x = (float)atof(num); break;
 					case 1: y = (float)atof(num); break;
 					case 2: z = (float)atof(num); break;
-					default: return;
+					default: return; break;
 				}
 
 			++pos;
@@ -196,7 +196,7 @@ Vector3 lerp(const Vector3& a, const Vector3& b, float v)
 	return r;
 }
 
-std::string Vector3::to_string() const
+std::string Vector3::to_string()
 {
 	std::stringstream stringstream;
 	stringstream << std::fixed << std::setprecision(1);
