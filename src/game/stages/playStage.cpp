@@ -4,7 +4,7 @@
 
 #include "playStage.h"
 
-#include "game/player.h"
+#include "game/player/player.h"
 #include "game/world.h"
 #include "game/game.h"
 
@@ -46,7 +46,7 @@ void PlayStage::onLeave(Stage* prev_stage)
 
 void PlayStage::onKeyDown(SDL_KeyboardEvent event)
 {
-    //World::getInstance()->player->onKeyDown(event);
+    World::getInstance()->onKeyDown(event);
 
     switch (event.keysym.sym) {
         case SDLK_TAB:
@@ -57,16 +57,6 @@ void PlayStage::onKeyDown(SDL_KeyboardEvent event)
         case SDLK_RSHIFT:
         {
             Game::instance->debug_view = !Game::instance->debug_view;
-            break;
-        }
-        case SDLK_1:
-        {
-            World::getInstance()->game_mode = World::DEBUG;
-            break;
-        }
-        case SDLK_2:
-        {
-            World::getInstance()->game_mode = World::RELEASE;
             break;
         }
     }
