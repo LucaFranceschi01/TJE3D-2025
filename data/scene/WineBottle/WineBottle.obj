@@ -1,7 +1,7 @@
 # Blender 4.3.2
 # www.blender.org
-mtllib WineBottle.001.mtl
-o WineBottle.011
+mtllib WineBottle.mtl
+o WineBottle.010
 v 6.570200 4.056400 0.000000
 v 6.513900 4.056400 -0.857600
 v 6.537700 8.588500 -0.860700
@@ -10412,7 +10412,7 @@ vt 0.978600 0.203600
 vt 0.003600 0.962600
 vt 0.832200 0.627300
 s 1
-usemtl WineBottle.001
+usemtl WineBottle
 f 156/1/1 22/2/2 18/3/3
 f 17/4/4 12/5/5 16/6/6
 f 9/7/7 1682/8/8 1683/9/9

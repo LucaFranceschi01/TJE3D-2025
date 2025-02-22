@@ -39,6 +39,12 @@ void Player::render(Camera* camera)
     std::string live_text = "lives: " + std::to_string(live) + "/3";
     drawText(700, 2, live_text, Vector3(1, 1, 1), 2);
 
+    std::string front_debug_str = "front: " + front.to_string();
+    drawText(550, 32, front_debug_str, Vector3(1, 1, 1), 2);
+
+    std::string normal_debug_str = "normal_orig: " + normal_orig.to_string();
+    drawText(500, 16, normal_debug_str, Vector3(1, 1, 1), 2);
+
     if (Game::instance->debug_view) {
         renderDebug(camera);
     }
@@ -149,7 +155,9 @@ void Player::testCollisions(Vector3 position, float dt)
         switch (collision_data.collider->layer) {
             case GROUND:
             {
-                Vector4 normal = Vector4(collision_data.col_normal, 0.f);
+                normal_orig = collision_data.col_normal;
+
+                Vector4 normal = Vector4(normal_orig.normalize(), 0.f);
                 Matrix44 rot_mat;
                 rot_mat.setRotation(PI / 2.f, World::right);
                 Vector4 new_front = rot_mat * normal;
@@ -195,9 +203,13 @@ void Player::testCollisions(Vector3 position, float dt)
         velocity.y += jump_force * jump_time;
     }
 
-    if (!is_grounded && jump_time <= 0) {
-        velocity.y += -gravity * dt;
-        jump_time = 0;
+
+    if (!is_grounded) {
+        front[1] = 0.f;
+        if (jump_time <= 0) {
+            velocity.y += -gravity * dt;
+            jump_time = 0;
+        }
     }
     // Handle jumping with better feel
     else if (Input::wasKeyPressed(SDL_SCANCODE_SPACE)) {
