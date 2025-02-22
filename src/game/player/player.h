@@ -9,7 +9,7 @@
 
 class Player : public EntityMesh
 {
-private:
+protected:
     float yaw = 0.f;
     float pitch = 0.f;
     float walk_speed = 3.f;
@@ -19,9 +19,8 @@ private:
 
     float jump_time = 0.0f;
 
-    int live = 3;
-
     Vector3 front = Vector3(0.f);
+    Vector3 right = Vector3(0.0f);
     Vector3 normal_orig;
 
 public:
@@ -32,9 +31,11 @@ public:
     Player() = default;
     Player(Mesh* mesh, const Material& material, const std::string& name = "");
 
-    void init();
+    virtual void init(Vector3 pos = Vector3(0, 10, 0));
     void render(Camera* camera) override;
     void update(float dt) override;
+    virtual void moveControl(Vector3& move_dir, float dt);
+
     void testCollisions(Vector3 position, float dt);
     void renderDebug(Camera* camera);
 
