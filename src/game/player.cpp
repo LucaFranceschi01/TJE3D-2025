@@ -65,12 +65,14 @@ void Player::update(float dt)
 
     // If camera is in free mode, avoid moving the player
     if (world_instance->camera_mode == World::e_camera_mode::FREE) return;
-    
+
+    front = World::front;
+    Vector3 right = World::right;
+
     // mirar colisions aquí
     testCollisions(position, dt);
 
-    //front = World::front;
-    Vector3 right = World::right;
+
 
     Vector3 move_dir;
 
@@ -162,6 +164,7 @@ void Player::testCollisions(Vector3 position, float dt)
                 rot_mat.setRotation(PI / 2.f, World::right);
                 Vector4 new_front = rot_mat * normal;
                 front = new_front.xyz();
+                front.normalize();
                 
                 is_grounded = true;
                 // If we're falling, stop at ground level
