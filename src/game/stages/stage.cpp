@@ -3,7 +3,7 @@
 //
 #include "stage.h"
 
-#include "game/player.h"
+#include "game/player/player.h"
 #include "game/world.h"
 #include "game/game.h"
 #include "game/scene_parser.h"
