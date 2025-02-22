@@ -22,7 +22,7 @@ private:
     int live = 3;
 
     Vector3 front = Vector3(0.f);
-    Vector3 normal_orig;
+    Vector3 normal_orig; // to debug
 
 public:
 

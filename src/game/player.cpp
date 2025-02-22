@@ -72,8 +72,6 @@ void Player::update(float dt)
     // mirar colisions aquí
     testCollisions(position, dt);
 
-
-
     Vector3 move_dir;
 
     bool pressing_button = false;
@@ -147,7 +145,6 @@ void Player::testCollisions(Vector3 position, float dt)
     // calls test_scene_collision to check if the new position collides with something.
     World::getInstance()->test_scene_collisions(position + velocity * dt, collisions, ground_collisions);
 
-
     // ground collisions
     bool is_grounded = false;
     collision_fluid = false;
@@ -174,7 +171,8 @@ void Player::testCollisions(Vector3 position, float dt)
                 }
                 break;
             }
-            case OBSTACLE: {
+            case OBSTACLE:
+            {
                 // quit one life
                 live--;
 
@@ -182,14 +180,12 @@ void Player::testCollisions(Vector3 position, float dt)
                 World::getInstance()->destroyEntity(collision_data.collider);
                 break;
             }
-
-            case FLUID: {
+            case FLUID:
+            {
                 // todo: no detecta las colisiones con el objeto fluido
                 collision_fluid = true;
                 break;
             }
-
-
             default:
                 break;
         }
@@ -197,8 +193,7 @@ void Player::testCollisions(Vector3 position, float dt)
     }
 
     float gravity = 100.0f;
-    float jump_force = 1.f;
-
+    float jump_force = 2.f;
 
     // this part is to make the jump fluid
     if (jump_time > 0) {
@@ -206,16 +201,13 @@ void Player::testCollisions(Vector3 position, float dt)
         velocity.y += jump_force * jump_time;
     }
 
-
     if (!is_grounded) {
         front[1] = 0.f;
         if (jump_time <= 0) {
             velocity.y += -gravity * dt;
             jump_time = 0;
         }
-    }
-    // Handle jumping with better feel
-    else if (Input::wasKeyPressed(SDL_SCANCODE_SPACE)) {
+    } else if (Input::wasKeyPressed(SDL_SCANCODE_SPACE)) { // Handle jumping with better feel
         jump_time = 0.25f;
     }
 
@@ -233,7 +225,6 @@ void Player::renderDebug(Camera* camera)
     shader->enable();
 
     {
-
         Vector4 color;
 
         if (collision_fluid) {
@@ -244,7 +235,6 @@ void Player::renderDebug(Camera* camera)
         } else {
             color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
         }
-
 
         m.scale(sphere_radious, sphere_radious, sphere_radious);
         shader->setUniform("u_color", color);
