@@ -21,6 +21,7 @@ private:
 
     int live = 3;
 
+    Vector3 front = Vector3(0.f);
 
 public:
 

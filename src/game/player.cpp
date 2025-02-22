@@ -60,10 +60,11 @@ void Player::update(float dt)
     // If camera is in free mode, avoid moving the player
     if (world_instance->camera_mode == World::e_camera_mode::FREE) return;
     
-    Vector3 front = World::front;
+    // mirar colisions aquí
+    testCollisions(position, dt);
+
+    //front = World::front;
     Vector3 right = World::right;
-
-
 
     Vector3 move_dir;
 
@@ -103,9 +104,6 @@ void Player::update(float dt)
     move_dir *= speed_mult;
 
     velocity += move_dir;
-
-    // mirar colisions aquí
-    testCollisions(position, dt);
 
     // update player position
     position += velocity * dt;
@@ -148,20 +146,20 @@ void Player::testCollisions(Vector3 position, float dt)
 
     // enviroment collisions
     for (const sCollisionData& collision_data : collisions) {
-
-        // if normal is pointing upwards, it means it's a floor collision
-        float up_factor = fabs(collision_data.col_normal.dot(Vector3::UP));
-
-
         switch (collision_data.collider->layer) {
-            case GROUND: {
-                if (up_factor > 0.8f) {
-                    is_grounded = true;
-                    // If we're falling, stop at ground level
-                    if (velocity.y < 0) {
-                        position.y = collision_data.col_point.y;
-                        velocity.y = 0.0f;
-                    }
+            case GROUND:
+            {
+                Vector4 normal = Vector4(collision_data.col_normal, 0.f);
+                Matrix44 rot_mat;
+                rot_mat.setRotation(PI / 2.f, World::right);
+                Vector4 new_front = rot_mat * normal;
+                front = new_front.xyz();
+                
+                is_grounded = true;
+                // If we're falling, stop at ground level
+                if (velocity.y < 0) {
+                    position.y = collision_data.col_point.y;
+                    velocity.y = 0.0f;
                 }
                 break;
             }
