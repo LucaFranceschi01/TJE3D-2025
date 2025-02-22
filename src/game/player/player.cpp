@@ -81,42 +81,43 @@ void Player::update(float dt)
     if (world_instance->game_mode == World::RELEASE ||
         (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP))) {
 
-    Vector3 move_dir = Vector3(0.0f);
+        Vector3 move_dir = Vector3(0.0f);
 
-    moveControl(move_dir, dt);
+        moveControl(move_dir, dt);
 
-    float speed_mult = walk_speed;
+        float speed_mult = walk_speed;
 
-    if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT))
-        speed_mult *= 0.3f;
+        if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT))
+            speed_mult *= 0.3f;
 
-    move_dir.normalize();
+        move_dir.normalize();
 
-    velocity += (move_dir * speed_mult);
+        velocity += (move_dir * speed_mult);
 
-    // update player position
-    position += velocity * dt;
+        // update player position
+        position += velocity * dt;
 
-    yaw = positive_modulo(yaw, 360.f*DEG2RAD);
-    pitch = positive_modulo(pitch, 360.f*DEG2RAD);
+        yaw = positive_modulo(yaw, 360.f * DEG2RAD);
+        pitch = positive_modulo(pitch, 360.f * DEG2RAD);
 
-    model.setTranslation(position);
-    model.rotate(yaw, World::front);
-    model.rotate(pitch, World::right);
-    
-    // decrease when not moving
-    velocity.x *= 0.9f;
-    velocity.z *= 0.9f;
+        model.setTranslation(position);
+        model.rotate(yaw, World::front);
+        model.rotate(pitch, World::right);
 
-    if (move_dir.z == 0.f) {
-        dampen(&yaw);
+        // decrease when not moving
+        velocity.x *= 0.9f;
+        velocity.z *= 0.9f;
+
+        if (move_dir.z == 0.f) {
+            dampen(&yaw);
+        }
+        if (move_dir.x == 0.f) {
+            dampen(&pitch);
+        }
+
+        // super->update
+        EntityMesh::update(dt);
     }
-    if (move_dir.x == 0.f) {
-        dampen(&pitch);
-    }
-    
-    // super->update
-    EntityMesh::update(dt);
 }
 
 void Player::moveControl(Vector3& move_dir, const float dt)
@@ -257,10 +258,6 @@ void Player::renderDebug(Camera* camera)
 
     shader->disable();
 }
-
-
-
-
 
 static void dampen(float* deg) {
     if (*deg > 180.f*DEG2RAD) {
