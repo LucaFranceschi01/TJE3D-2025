@@ -20,8 +20,8 @@ protected:
     float jump_time = 0.0f;
 
     Vector3 front = Vector3(0.f);
-    Vector3 right = Vector3(0.f);
-    Vector3 normal_orig = Vector3(0.f);
+    Vector3 right = Vector3(0.0f);
+    Vector3 normal_orig;
 
 public:
 
