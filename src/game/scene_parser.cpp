@@ -65,10 +65,10 @@ bool SceneParser::parse(const char* filename, Entity* root)
 
 		if (tag != std::string::npos) {
 
-			if (data.first.find("@Tag.Ground")) {
+			if (data.first.find("@Tag.Ground") != std::string::npos) {
 				new_entity->layer = GROUND;
 
-			} else if (data.first.find("@Tag.Fluid")) {
+			} else if (data.first.find("@Tag.Fluid") != std::string::npos) {
 				new_entity->layer = FLUID;
 			}
 

@@ -89,6 +89,9 @@ void Player::update(float dt)
 
     velocity += (move_dir * speed_mult);
 
+    if (collision_fluid) {
+        velocity.z *= 1.06;
+    }
 
     // update player position
     position += velocity * dt;
