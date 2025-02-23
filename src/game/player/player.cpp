@@ -43,7 +43,7 @@ void Player::render(Camera* camera)
         const std::string front_debug_str = "front: " + front.to_string();
         drawText(550, 32, front_debug_str, Vector3(1, 1, 1), 2);
 
-        const std::string velocity_debug_str = "velocity: " + velocity.to_string();
+        const std::string velocity_debug_str = "velocity: " + move_dir.to_string();
         drawText(500, 48, velocity_debug_str, Vector3(1, 1, 1), 2);
 
         renderDebug(camera);
@@ -75,7 +75,7 @@ void Player::update(float dt)
     testCollisions(position, dt);
 
 
-    Vector3 move_dir = Vector3(0.0f);
+    move_dir = Vector3(0.0f);
 
     moveControl(move_dir, dt);
 
@@ -86,7 +86,14 @@ void Player::update(float dt)
 
     move_dir.normalize();
 
-    velocity += (move_dir * speed_mult);
+
+    if (move_dir.x > 0) {
+        velocity.x += speed_mult;
+    } else if (move_dir.x < 0) {
+        velocity.x -= speed_mult;
+    }
+
+    velocity.z += (move_dir.z * speed_mult);
 
     // update player position
     position += velocity * dt;
