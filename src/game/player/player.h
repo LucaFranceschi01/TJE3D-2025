@@ -31,7 +31,7 @@ public:
     Player() = default;
     Player(Mesh* mesh, const Material& material, const std::string& name = "");
 
-    virtual void init(Vector3 pos = Vector3(0, 10, 0));
+    virtual void init(Vector3 pos = Vector3(5, 10, 0));
     void render(Camera* camera) override;
     void update(float dt) override;
     virtual void moveControl(Vector3& move_dir, float dt);
