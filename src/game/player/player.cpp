@@ -58,10 +58,12 @@ void Player::update(float dt)
     World* world_instance = World::getInstance();
     Vector3 position = model.getTranslation();
 
+    /*
     if (world_instance->live <= 0 || position.y <= 0) {
         Audio::Play("data/sounds/sad_horn.wav");
         Game::instance->goToStage(MAIN_MENU_ST);
     }
+    */
 
     // If camera is in free mode, avoid moving the player
     if (world_instance->camera_mode == World::e_camera_mode::FREE) return;

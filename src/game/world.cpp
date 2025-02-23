@@ -216,7 +216,7 @@ void World::addEntity(Entity* entity)
 void World::destroyEntity(Entity* entity)
 {
     // find to avoid inserting the same entity twice
-    if (entities_to_destroy.find(entity) != entities_to_destroy.end()) {
+    if (entities_to_destroy.find(entity) == entities_to_destroy.end()) {
         entities_to_destroy.insert(entity);
     }
 }
