@@ -62,6 +62,39 @@ World::World()
         e_MapID map = static_cast<e_MapID>(m);
         root[map] = new Entity();
     }
+
+    {
+        Texture* cube_texture = new Texture();
+        /*
+        cube_texture->loadCubemap("landscape", {
+            "data/textures/cubemap/right.png",
+            "data/textures/cubemap/left.png",
+            "data/textures/cubemap/bottom.png",
+            "data/textures/cubemap/top.png",
+            "data/textures/cubemap/front.png",
+            "data/textures/cubemap/back.png"
+            });
+        */
+
+        cube_texture->loadCubemap("landscape", {
+            "data/textures/cubemap/px.png",
+            "data/textures/cubemap/nx.png",
+            "data/textures/cubemap/ny.png",
+            "data/textures/cubemap/py.png",
+            "data/textures/cubemap/pz.png",
+            "data/textures/cubemap/nz.png"
+            });
+
+        //Texture::Get("landscape"); una vez que se carga la texture, se puede acceder por todo el código con esto.
+
+        // continuació
+
+        Material cubemap_material;
+        cubemap_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs");
+        cubemap_material.diffuse = cube_texture;
+
+        skybox = new EntityMesh(Mesh::Get("data/meshes/cubemap.ASE"), cubemap_material);
+    }
 }
 
 void World::init(e_MapID map)
@@ -86,12 +119,9 @@ void World::render()
     glDisable(GL_CULL_FACE);
 
 
-    /*
     glDisable(GL_DEPTH_TEST);
     skybox->render(camera);
     glEnable(GL_DEPTH_TEST);
-    */
-
 
     // draw the floor grid
     drawGrid();
@@ -131,8 +161,7 @@ void World::update(float dt)
     // update camera
     camera->update(dt);
 
-
-    //skybox->model.setTranslation(camera->eye);
+    skybox->model.setTranslation(camera->eye);
 
     // delete pending entities
     for (auto entity : entities_to_destroy) {
@@ -364,28 +393,3 @@ Vector3 World::midPointHalfPlayers()
 */
 
 // esto inicializa el sky, lo comento de momento
-
-/*
-{
-    Texture* cube_texture = new Texture();
-    cube_texture->loadCubemap("landscape", {
-        "data/textures/cubemap/right.png",
-        "data/textures/cubemap/left.png",
-        "data/textures/cubemap/bottom.png",
-        "data/textures/cubemap/top.png",
-        "data/textures/cubemap/front.png",
-        "data/textures/cubemap/back.png"
-    });
-
-    //Texture::Get("landscape"); una vez que se carga la texture, se puede acceder por todo el código con esto.
-
-    // continuació
-
-    Material cubemap_material;
-    cubemap_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs");
-    cubemap_material.diffuse = cube_texture;
-
-    skybox = new EntityMesh(Mesh::Get("data/meshes/cubemap.ASE"), cubemap_material);
-}
-*/
-

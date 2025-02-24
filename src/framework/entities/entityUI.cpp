@@ -66,6 +66,15 @@ void EntityUI::render(Camera* camera2D)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	material.shader->enable();
+
+	material.shader->setUniform("u_model", model);
+	material.shader->setUniform("u_color", material.color); // TODO: CHECK IF SHADER USES U_COLOR
+	material.shader->setUniform("u_viewprojection", camera2D->viewprojection_matrix);
+	material.shader->setUniform("u_camera_pos", camera2D->eye);
+
+	if (material.diffuse) material.shader->setUniform("u_texture", material.diffuse, 0);
+
 	// TODO: why does this not work ???
 	if (this->is_pixel_art) {
 		// props to ChatGPT for these two lines of code
@@ -77,20 +86,13 @@ void EntityUI::render(Camera* camera2D)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 
-	material.shader->enable();
-
-	material.shader->setUniform("u_model", model);
-	material.shader->setUniform("u_color", material.color); // TODO: CHECK IF SHADER USES U_COLOR
-	material.shader->setUniform("u_viewprojection", camera2D->viewprojection_matrix);
-	material.shader->setUniform("u_camera_pos", camera2D->eye);
-
-	if (material.diffuse) material.shader->setUniform("u_texture", material.diffuse, 0);
-
 	mesh->render(GL_TRIANGLES);
 
 	material.shader->disable();
 
 	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+
 
 	Entity::render(camera2D);
 }
