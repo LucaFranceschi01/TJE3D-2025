@@ -34,9 +34,9 @@ public:
         this->is_left = is_left;
     }
 
-    void init(Vector3 pos = Vector3(0, 10, 0)) override;
+    void init(Vector3 pos) override;
 
-    void moveControl(Vector3& move_dir,  float dt);
+    void moveControl(Vector3& move_dir,  float dt) override;
 };
 
 

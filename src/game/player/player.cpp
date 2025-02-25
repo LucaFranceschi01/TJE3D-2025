@@ -22,7 +22,7 @@ Player::Player(Mesh* mesh, const Material& material, const std::string& name) : 
     this->name = name;
 }
 
-void Player::init(Vector3 pos)
+void Player::init(const Vector3 pos)
 {
     World::getInstance()->live = 3;
     model.setTranslation(pos);
@@ -46,10 +46,12 @@ void Player::render(Camera* camera)
         const std::string velocity_debug_str = "velocity: " + velocity.to_string();
         drawText(500, 48, velocity_debug_str, Vector3(1, 1, 1), 2);
 
+        const std::string move_dir_str = "move_dir: " + move_dir.to_string();
+        drawText(500, 64, move_dir_str, Vector3(1, 1, 1), 2);
+
         renderDebug(camera);
     }
 }
-
 
 
 void Player::update(float dt)
@@ -83,8 +85,7 @@ void Player::update(float dt)
     if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT))
         speed_mult *= 0.3f;
 
-    move_dir.normalize();
-
+    //move_dir.normalize(); If we do not normalize, the halfplayer will be always be parallel. I dont know if its ok to no normalize
 
     velocity += (move_dir * speed_mult);
 
@@ -102,7 +103,7 @@ void Player::update(float dt)
     model.setTranslation(position);
     model.rotate(yaw, World::front);
     model.rotate(pitch, World::right);
-    
+
     // decrease when not moving
     velocity.x *= 0.9f;
     velocity.z *= 0.9f;
@@ -113,7 +114,7 @@ void Player::update(float dt)
     if (move_dir.x == 0.f) {
         dampen(&pitch);
     }
-    
+
     // super->update
     EntityMesh::update(dt);
 }
@@ -124,21 +125,21 @@ void Player::moveControl(Vector3& move_dir, const float dt)
     if (world_instance->game_mode == World::RELEASE ||
         (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP))) {
 
-        move_dir += front * dt;
+        move_dir += front;
         pitch += rotational_speed * dt;
         }
     if (world_instance->game_mode == World::DEBUG &&
         (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN))) {
 
-        move_dir -= front * dt;
+        move_dir -= front;
         pitch -= rotational_speed * dt;
         }
     if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
-        move_dir -= right * dt;
+        move_dir -= right;
         yaw += rotational_speed * dt;
     }
     if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
-        move_dir += right * dt;
+        move_dir += right;
         yaw -= rotational_speed * dt;
     }
 }
@@ -177,7 +178,7 @@ bool Player::testCollisions(Vector3 position, float dt)
                 Vector4 new_front = rot_mat * normal;
                 front = new_front.xyz();
                 front.normalize();
-                
+
                 is_grounded = true;
                 // If we're falling, stop at ground level
                 if (velocity.y < 0) {

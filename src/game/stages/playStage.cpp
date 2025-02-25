@@ -36,7 +36,7 @@ void PlayStage::update(float dt)
 void PlayStage::onEnter(Stage* prev_stage)
 {
     World::getInstance()->init(World::MAP1);
-    World::getInstance()->player->init();
+    World::getInstance()->player->init(Vector3(5, 10, 0));
 
 }
 
