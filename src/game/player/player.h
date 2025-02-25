@@ -37,7 +37,7 @@ public:
     void update(float dt) override;
     virtual void moveControl(Vector3& move_dir, float dt);
 
-    void testCollisions(Vector3 position, float dt);
+    bool testCollisions(Vector3 position, float dt);
     void renderDebug(Camera* camera);
 
 };

@@ -72,8 +72,7 @@ void Player::update(float dt)
     right = World::right;
 
     // mirar collisions aquí
-    testCollisions(position, dt);
-
+    bool collision_passing = testCollisions(position, dt);
 
     move_dir = Vector3(0.0f);
 
@@ -94,7 +93,8 @@ void Player::update(float dt)
     }
 
     // update player position
-    position += velocity * dt;
+
+    position += (collision_passing) ? velocity * dt : -velocity * 10 * dt;
 
     yaw = positive_modulo(yaw, 360.f*DEG2RAD);
     pitch = positive_modulo(pitch, 360.f*DEG2RAD);
@@ -144,7 +144,7 @@ void Player::moveControl(Vector3& move_dir, const float dt)
 }
 
 
-void Player::testCollisions(Vector3 position, float dt)
+bool Player::testCollisions(Vector3 position, float dt)
 {
     // Check collisions with the world entities
     std::vector<sCollisionData> collisions;
@@ -166,6 +166,12 @@ void Player::testCollisions(Vector3 position, float dt)
                 normal_orig = collision_data.col_normal;
 
                 Vector4 normal = Vector4(normal_orig.normalize(), 0.f);
+                float res = normal_orig.dot(Vector3::UP);
+                if (res < 0.1) {
+                    return false;
+                }
+
+
                 Matrix44 rot_mat;
                 rot_mat.setRotation(PI / 2.f, World::right);
                 Vector4 new_front = rot_mat * normal;
@@ -185,7 +191,6 @@ void Player::testCollisions(Vector3 position, float dt)
                 World::getInstance()->live--;
 
                 // send the object to delete
-
                 World::getInstance()->destroyEntity(collision_data.collider);
                 break;
             }
@@ -227,6 +232,7 @@ void Player::testCollisions(Vector3 position, float dt)
     }
 
     collision = (!collisions.empty());
+    return true;
 }
 
 void Player::renderDebug(Camera* camera)
