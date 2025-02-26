@@ -2,22 +2,23 @@
 
 #include "graphics/mesh.h"
 
-
-void EntityCollider::getCollisionsWithModel(const Matrix44& m, const Vector3& center,
-                                            std::vector<sCollisionData>& collisions, std::vector<sCollisionData>& grounded_collision)
+void EntityCollider::getCollisionsWithModel(const Matrix44& m,
+    const Vector3& center,
+    std::vector<sCollisionData>& collisions,
+    std::vector<sCollisionData>& grounded_collision)
 {
     Vector3 colision_point;
     Vector3 colision_normal;
 
-    float sphere_radious = 1.0f;
+    float sphere_radius = 1.0f;
 
-    // He hecho cambios en como se miran las colisiones. todas se ponen en el array de collision y se diferencian con el collision filter
-    if (mesh->testSphereCollision(m, center, sphere_radious, colision_point, colision_normal)) {
-        //float distance =
+    // He hecho cambios en como se miran las colisiones. todas se ponen en el array de collision
+    // y se diferencian con el collision filter
+    if (mesh->testSphereCollision(m, center, sphere_radius, colision_point, colision_normal)) {
         collisions.push_back({colision_point, colision_normal.normalize(), -1, true, this});
     }
 
-
+    // TODO: remove if not needed
     // de momento dejo este bloque de código que es el que habia antes
     /*
     // seguramente se tendran que canviar
@@ -56,22 +57,23 @@ void EntityCollider::getCollisionsWithModel(const Matrix44& m, const Vector3& ce
         */
 }
 
-
-void EntityCollider::getCollisions(const Vector3& target_position, std::vector<sCollisionData>& colisions, std::vector<sCollisionData>& ground_colisions)
+void EntityCollider::getCollisions(const Vector3& target_position,
+    std::vector<sCollisionData>& colisions,
+    std::vector<sCollisionData>& ground_colisions)
 {
+    Matrix44 global_matrix;
+
     if (!isInstanced) {
-        Matrix44 global_matrix = getGlobalMatrix(); // a nivel de mundo
+        global_matrix = getGlobalMatrix(); // a nivel de mundo
         getCollisionsWithModel(global_matrix, target_position, colisions, ground_colisions);
     }
     else {
         float distance = 0.0f;
         Vector3 bb_center, bb_halfsize;
         for (const Matrix44& model : models) {
-            Matrix44 global_matrix = model * parent->getGlobalMatrix();
             // same as getGlobalMatrix() but now "model" is not valid, we have to make this operation ourselves
+            global_matrix = model * parent->getGlobalMatrix();
             getCollisionsWithModel(global_matrix, target_position, colisions, ground_colisions);
         }
     }
-
 }
-

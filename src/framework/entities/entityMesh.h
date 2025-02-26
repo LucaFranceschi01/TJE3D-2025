@@ -1,10 +1,16 @@
+/*  by Xavier Cañadas and Luca Franceschi 2025
+	Here we define the EntityMesh class and the MeshLOD structure
+*/
+
 #pragma once
 
 #include "entity.h"
 #include "graphics/material.h"
 
+// Forward declarations
 class Mesh;
 
+// Level Of Detail of mesh
 struct s_MeshLOD
 {
     Mesh* mesh;
@@ -17,21 +23,24 @@ public:
 
 	EntityMesh();
 	EntityMesh(Mesh* mesh, const Material& material, const std::string& name = "");
-	virtual ~EntityMesh() {};
+	virtual ~EntityMesh() = default;
 
 	// Attributes of the derived class  
 	Mesh* mesh;
 	Material material;
 
+	// Attributes needed for instancing
 	bool isInstanced;
 	std::vector<Matrix44> models;
+
+	// Attributes needed for LOD
 	std::vector<s_MeshLOD> meshLods;
 
 	// Methods overwritten from base class
 	void render(Camera* camera) override;
-	void update(float dt) override;
 
 	// More methods
 	void addInstance(const Matrix44& model);
 	void addMeshLOD(Mesh* mesh, float distance);
+	Mesh* getLOD(Camera* camera);
 };

@@ -1,7 +1,9 @@
 #include "entity.h"
-#include "framework/camera.h"
 
 #include <algorithm>
+
+#include "framework/includes.h"
+#include "framework/camera.h"
 
 void Entity::render(Camera* camera)
 {
@@ -48,14 +50,14 @@ void Entity::removeChild(Entity* child)
 	child->parent = nullptr;
 }
 
-Matrix44 Entity::getGlobalMatrix()
+Matrix44 Entity::getGlobalMatrix() const
 {
 	if (parent)
 		return model * parent->getGlobalMatrix();
 	return model;
 }
 
-float Entity::distance(Entity* e)
+float Entity::distance(Entity* e) const
 {
 	return model.getTranslation().distance(e->model.getTranslation());
 }

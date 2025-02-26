@@ -1,34 +1,36 @@
+/*  by Xavier Cañadas and Luca Franceschi 2025
+    Here we define the base Entity class
+*/
+
 #pragma once
 
-#include "framework/includes.h"
-#include "framework/framework.h"
+#include "framework/framework.h" // includes string, vector, Matrix44
 
+// Forward declarations
 class Camera;
 
 class Entity
 {
 public:
-    Entity() {}; // Constructor
-    virtual ~Entity() {}; // Destructor
+    Entity() = default; // Constructor
+    virtual ~Entity() = default; // Destructor
 
     std::string name;
-
     Matrix44 model;
 
+    // Needed if we have nested entities
     Entity* parent = nullptr;
     std::vector<Entity*> children;
 
-    void addChild(Entity* child);
-    void removeChild(Entity* child);
+    // Methods of the base class
+    virtual void addChild(Entity* child) final;
+    virtual void removeChild(Entity* child) final;
 
-    // Methods that should be overwritten
-    // by derived classes
+    // Methods that should be overwritten by derived classes
     virtual void render(Camera* camera);
     virtual void update(float dt);
 
     // Some useful methods
-    Matrix44 getGlobalMatrix();
-    float distance(Entity* e);
+    Matrix44 getGlobalMatrix() const;
+    float distance(Entity* e) const;
 };
-
-

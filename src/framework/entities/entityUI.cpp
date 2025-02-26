@@ -1,51 +1,39 @@
 #include "entityUI.h"
 
-#include <string>
-#include <sstream>
-#include <iostream>
+#include "framework/camera.h"
+#include "framework/input.h"
 
 #include "graphics/mesh.h"
 #include "graphics/shader.h"
-#include "framework/camera.h"
-#include "framework/input.h"
-#include "game/game.h"
 #include "graphics/texture.h"
 
-EntityUI::EntityUI(Vector2 position, Vector2 size, e_UIButtonID buttonID, const Material& mat, const char* name)
+#include "game/game.h"
+
+/**
+* If the buttonID is undefined (no interaction) the string name is taken literally.
+* If it is not, it will be used to load _base and _press textures.
+*/
+EntityUI::EntityUI(const Material& material, Vector2 position, Vector2 size,
+	const std::string& name, e_UIButtonID buttonID)
 {
+	this->material = material;
 	this->position = position;
 	this->size = size;
 	this->buttonID = buttonID;
-	this->is_pixel_art = true;
-
+	this->name = name;
+	
 	mesh = new Mesh();
-	mesh->createQuad(position.x, position.y, size.x, size.y, true);
+	mesh->createQuad(position.x, position.y, size.x, size.y, true); // uvs are flipped in the horizontal axis
 
-	this->material = mat;
-
-	this->base = Texture::Get((std::string("data/textures/ui/") + std::string(name) + std::string("_base.png")).c_str()); // vaya basura
-	this->pressed = Texture::Get((std::string("data/textures/ui/") + std::string(name) + std::string("_press.png")).c_str()); // vaya basura
-
-	this->material.diffuse = this->base;
-
-	if (!this->material.shader) {
-		this->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+	if (buttonID == UNDEFINED) {
+		this->is_pixel_art = false;
+		this->base = Texture::Get(name.c_str());
 	}
-}
-
-EntityUI::EntityUI(Vector2 position, Vector2 size, const Material& mat, const char* name)
-{
-	this->position = position;
-	this->size = size;
-	this->buttonID = UNDEFINED;
-	this->is_pixel_art = false;
-
-	mesh = new Mesh();
-	mesh->createQuad(position.x, position.y, size.x, size.y, true);
-
-	this->material = mat;
-
-	this->base = Texture::Get(name);
+	else {
+		this->is_pixel_art = true;
+		this->base = Texture::Get((std::string("data/textures/ui/") + name + std::string("_base.png")).c_str());
+		this->pressed = Texture::Get((std::string("data/textures/ui/") + name + std::string("_press.png")).c_str());
+	}
 
 	this->material.diffuse = this->base;
 
@@ -58,7 +46,6 @@ void EntityUI::render(Camera* camera2D)
 {
 	if (!visible) return;
 
-	// we do not have any 3d UI element, then we always
 	glDisable(GL_DEPTH_TEST);
 
 	glDisable(GL_CULL_FACE);
@@ -75,8 +62,7 @@ void EntityUI::render(Camera* camera2D)
 
 	if (material.diffuse) material.shader->setUniform("u_texture", material.diffuse, 0);
 
-	// TODO: why does this not work ???
-	if (this->is_pixel_art) {
+	if (is_pixel_art) {
 		// props to ChatGPT for these two lines of code
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -93,7 +79,6 @@ void EntityUI::render(Camera* camera2D)
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 
-
 	Entity::render(camera2D);
 }
 
@@ -108,12 +93,10 @@ void EntityUI::update(float dt)
 
 	if (above_btn && buttonID != e_UIButtonID::UNDEFINED) {
 
-		material.color = Vector4(2.f);
 		this->material.diffuse = this->pressed;
 
 		if (Input::wasMousePressed(SDL_BUTTON_LEFT)) {
 			Game* instance = Game::instance;
-
 
 			switch (buttonID)
 			{
@@ -144,7 +127,6 @@ void EntityUI::update(float dt)
 		}
 	}
 	else {
-		material.color = Vector4::WHITE;
 		this->material.diffuse = this->base;
 	}
 

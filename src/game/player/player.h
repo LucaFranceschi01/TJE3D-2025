@@ -1,20 +1,18 @@
-//
-// Created by Xavi Cañadas on 6/2/25.
-//
+/*  by Xavier Cañadas and Luca Franceschi 2025
+    Here we define the Player class and some helper functions for the movement
+*/
 
 #pragma once
 
 #include "framework/entities/entityMesh.h"
-
 
 class Player : public EntityMesh
 {
 protected:
     float yaw = 0.f;
     float pitch = 0.f;
-    float walk_speed = 3.f;
+    float walk_speed = 900.f;
     float rotational_speed = 30.f;
-    float sphere_radious = 10.f;
     Vector3 velocity = Vector3(0.f);
 
     float jump_time = 0.0f;
@@ -25,22 +23,23 @@ protected:
     Vector3 move_dir;
 
 public:
-
     bool collision = false;
     bool collision_fluid = false;
 
     Player() = default;
-    Player(Mesh* mesh, const Material& material, const std::string& name = "");
+    Player(Mesh* mesh, const Material& material, const std::string& name) : EntityMesh(mesh, material, name) {};
 
-    virtual void init(Vector3 pos);
+    ~Player() = default;
+
     void render(Camera* camera) override;
     void update(float dt) override;
+    virtual void init(const Vector3& pos);
     virtual void moveControl(Vector3& move_dir, float dt);
 
-    bool testCollisions(Vector3 position, float dt);
+    bool testCollisions(const Vector3& position, float dt);
     void renderDebug(Camera* camera);
-
 };
 
+// Helper functions
 static void dampen(float* deg);
 inline static float positive_modulo(float i, float n);

@@ -1,12 +1,10 @@
-//
-// Created by Xavi Cañadas on 20/2/25.
-//
+/*  by Xavier Cañadas and Luca Franceschi 2025
+    Here we define the HalfPlayer class
+*/
 
 #pragma once
 
 #include "player.h"
-
-
 
 /*
 
@@ -29,15 +27,9 @@ class HalfPlayer : public Player {
 public:
     bool is_left;
 
-    HalfPlayer(Mesh* mesh, const Material& material, bool is_left, const std::string& name = ""): Player(mesh, material, name)
-    {
-        this->is_left = is_left;
-    }
+    HalfPlayer(Mesh* mesh, const Material& material, bool is_left, const std::string& name = "");
 
-    void init(Vector3 pos) override;
+    void init(const Vector3& pos) override;
 
-    void moveControl(Vector3& move_dir,  float dt) override;
+    void moveControl(Vector3& move_dir, const float dt) override;
 };
-
-
-

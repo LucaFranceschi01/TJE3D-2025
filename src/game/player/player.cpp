@@ -1,8 +1,6 @@
-//
-// Created by Xavi Cañadas on 6/2/25.
-//
-
 #include "player.h"
+
+#include "game/game.h"
 #include "game/world.h"
 #include "game/stages/stage.h"
 
@@ -13,68 +11,52 @@
 #include "graphics/mesh.h"
 #include "graphics/shader.h"
 
-#include "game/game.h"
-
-Player::Player(Mesh* mesh, const Material& material, const std::string& name) : EntityMesh(mesh, material, name)
-{
-    this->mesh = mesh;
-    this->material = material;
-    this->name = name;
-}
-
-void Player::init(const Vector3 pos)
+void Player::init(const Vector3& pos)
 {
     World::getInstance()->live = 3;
     model.setTranslation(pos);
 }
 
-
 void Player::render(Camera* camera)
 {
-    // Render entity
-    EntityMesh::render(camera);
-
-
     if (Game::instance->debug_view) {
+        std::string debug_str = "normal_orig: " + normal_orig.to_string();
+        drawText(500, 16, debug_str, Vector3(1, 1, 1), 2);
 
-        const std::string normal_debug_str = "normal_orig: " + normal_orig.to_string();
-        drawText(500, 16, normal_debug_str, Vector3(1, 1, 1), 2);
+        debug_str = "front: " + front.to_string();
+        drawText(550, 32, debug_str, Vector3(1, 1, 1), 2);
 
-        const std::string front_debug_str = "front: " + front.to_string();
-        drawText(550, 32, front_debug_str, Vector3(1, 1, 1), 2);
+        debug_str = "velocity: " + velocity.to_string();
+        drawText(500, 48, debug_str, Vector3(1, 1, 1), 2);
 
-        const std::string velocity_debug_str = "velocity: " + velocity.to_string();
-        drawText(500, 48, velocity_debug_str, Vector3(1, 1, 1), 2);
-
-        const std::string move_dir_str = "move_dir: " + move_dir.to_string();
-        drawText(500, 64, move_dir_str, Vector3(1, 1, 1), 2);
+        debug_str = "move_dir: " + move_dir.to_string();
+        drawText(500, 64, debug_str, Vector3(1, 1, 1), 2);
 
         renderDebug(camera);
     }
+    EntityMesh::render(camera);
 }
-
 
 void Player::update(float dt)
 {
-
     World* world_instance = World::getInstance();
     Vector3 position = model.getTranslation();
 
-
+    // Death cutscene
     if (world_instance->live <= 0 || position.y <= 0) {
         Audio::Play("data/sounds/sad_horn.wav");
         Game::instance->goToStage(MAIN_MENU_ST);
     }
 
-
     // If camera is in free mode, avoid moving the player
     if (world_instance->camera_mode == World::e_camera_mode::FREE) return;
 
+    // Set moving directions
     front = World::front;
     right = World::right;
 
-    // mirar collisions aquí
-    bool collision_passing = testCollisions(position, dt);
+    // Test collisions
+    bool is_colliding = testCollisions(position, dt);
 
     move_dir = Vector3(0.0f);
 
@@ -85,7 +67,9 @@ void Player::update(float dt)
     if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT))
         speed_mult *= 0.3f;
 
-    //move_dir.normalize(); If we do not normalize, the halfplayer will be always be parallel. I dont know if its ok to no normalize
+    // TODO: decide
+    //move_dir.normalize(); If we do not normalize, the halfplayer will be always be parallel.
+    // I dont know if its ok to no normalize
 
     velocity += (move_dir * speed_mult);
 
@@ -93,18 +77,19 @@ void Player::update(float dt)
         velocity.z *= 1.06;
     }
 
-    // update player position
+    // Update player position
+    position += (is_colliding) ? velocity * dt : -velocity * 10.f * dt;
 
-    position += (collision_passing) ? velocity * dt : -velocity * 10 * dt;
-
+    // Get the rotation of the ball
     yaw = positive_modulo(yaw, 360.f*DEG2RAD);
     pitch = positive_modulo(pitch, 360.f*DEG2RAD);
 
+    // Rotate the ball according to current pitch and yaw
     model.setTranslation(position);
     model.rotate(yaw, World::front);
     model.rotate(pitch, World::right);
 
-    // decrease when not moving
+    // Decrease velocities and rotations when not moving
     velocity.x *= 0.9f;
     velocity.z *= 0.9f;
 
@@ -115,7 +100,6 @@ void Player::update(float dt)
         dampen(&pitch);
     }
 
-    // super->update
     EntityMesh::update(dt);
 }
 
@@ -124,38 +108,33 @@ void Player::moveControl(Vector3& move_dir, const float dt)
     World* world_instance = World::getInstance();
     if (world_instance->game_mode == World::RELEASE ||
         (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP))) {
-
-        move_dir += front;
+        move_dir += front * dt;
         pitch += rotational_speed * dt;
         }
-    if (world_instance->game_mode == World::DEBUG &&
-        (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN))) {
-
-        move_dir -= front;
+    if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) {
+        move_dir -= front * dt;
         pitch -= rotational_speed * dt;
         }
     if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
-        move_dir -= right;
+        move_dir -= right * dt;
         yaw += rotational_speed * dt;
     }
     if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
-        move_dir += right;
+        move_dir += right * dt;
         yaw -= rotational_speed * dt;
     }
 }
 
-
-bool Player::testCollisions(Vector3 position, float dt)
+bool Player::testCollisions(const Vector3& position, float dt)
 {
     // Check collisions with the world entities
     std::vector<sCollisionData> collisions;
     std::vector<sCollisionData> ground_collisions;
+    World* instance = World::getInstance();
 
     // calls test_scene_collision to check if the new position collides with something.
-    World::getInstance()->test_scene_collisions(position + velocity * dt, collisions, ground_collisions);
+    instance->test_scene_collisions(position + velocity * dt, collisions, ground_collisions);
 
-
-    // ground collisions
     bool is_grounded = false;
     collision_fluid = false;
 
@@ -172,7 +151,6 @@ bool Player::testCollisions(Vector3 position, float dt)
                     return false;
                 }
 
-
                 Matrix44 rot_mat;
                 rot_mat.setRotation(PI / 2.f, World::right);
                 Vector4 new_front = rot_mat * normal;
@@ -181,28 +159,23 @@ bool Player::testCollisions(Vector3 position, float dt)
 
                 is_grounded = true;
                 // If we're falling, stop at ground level
-                if (velocity.y < 0) {
-                    position.y = collision_data.col_point.y;
-                    velocity.y = 0.0f;
-                }
+                velocity.y = std::max(0.f, velocity.y);
                 break;
             }
             case OBSTACLE: {
                 // quit one life
-                World::getInstance()->live--;
+                instance->live--;
 
                 // send the object to delete
-                World::getInstance()->destroyEntity(collision_data.collider);
+                instance->destroyEntity(collision_data.collider);
                 break;
             }
 
             case FLUID: {
-                // todo: no detecta las colisiones con el objeto fluido
+                // TODO: no detecta las colisiones con el objeto fluido
                 collision_fluid = true;
                 break;
             }
-
-
             default:
                 break;
         }
@@ -211,14 +184,12 @@ bool Player::testCollisions(Vector3 position, float dt)
 
     float gravity = 100.0f;
 
-
     // this part is to make the jump fluid
     if (jump_time > 0) {
         float jump_force = 1.f;
         jump_time -= dt;
         velocity.y += jump_force * jump_time;
     }
-
 
     if (!is_grounded) {
         front[1] = 0.f;
@@ -238,7 +209,7 @@ bool Player::testCollisions(Vector3 position, float dt)
 
 void Player::renderDebug(Camera* camera)
 {
-    float sphere_radious = 1.f;
+    float sphere_radius = 1.f;
 
     Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
     Mesh* mesh = Mesh::Get("data/meshes/sphere.obj");
@@ -247,7 +218,6 @@ void Player::renderDebug(Camera* camera)
     shader->enable();
 
     {
-
         Vector4 color;
 
         if (collision_fluid) {
@@ -260,20 +230,15 @@ void Player::renderDebug(Camera* camera)
         }
 
 
-        m.scale(sphere_radious, sphere_radious, sphere_radious);
+        m.scale(sphere_radius, sphere_radius, sphere_radius);
         shader->setUniform("u_color", color);
         shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
         shader->setUniform("u_model", m);
 
         mesh->render(GL_LINES);
     }
-
     shader->disable();
 }
-
-
-
-
 
 static void dampen(float* deg) {
     if (*deg > 180.f*DEG2RAD) {

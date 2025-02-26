@@ -1,9 +1,12 @@
+/*  by Xavier Cañadas and Luca Franceschi 2025
+	Here we define the EntityUI derived class
+*/
+
 #pragma once
 
-#include <string>
 #include "entityMesh.h"
-#include "framework/framework.h"
 
+// Forward declarations
 class Material;
 class Texture;
 
@@ -12,9 +15,8 @@ class EntityUI : public EntityMesh
 public:
 	Vector2 position;
 	Vector2 size;
-	//bool is3D = false;
+
 	bool visible = true;
-	//Vector3 pos3d;
 	bool is_pixel_art;
 
 	enum e_UIButtonID {
@@ -28,19 +30,20 @@ public:
 		UNDEFINED
 	};
 
-	e_UIButtonID buttonID = UNDEFINED;
+	e_UIButtonID buttonID;
 
 	Texture* base = nullptr;
 	Texture* pressed = nullptr;
 
-	// update3d not needed
+	// ctors
+	EntityUI() = default;
+	EntityUI(const Material& material, Vector2 position, Vector2 size,
+		const std::string& name = "", e_UIButtonID buttonID = UNDEFINED);
+	
+	// dtor
+	~EntityUI() = default;
 
-	EntityUI(Vector2 position, Vector2 size, e_UIButtonID buttonID, const Material& mat, const char* name);
-	EntityUI(Vector2 position, Vector2 size, const Material& mat, const char* name);
-	~EntityUI() {};
-
+	// Override virtual methods
 	void render(Camera* camera2D) override;
 	void update(float dt) override;
-
-	EntityUI() = default;
 };

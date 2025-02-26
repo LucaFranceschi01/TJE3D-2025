@@ -40,15 +40,19 @@ void MenuStage::init()
 
         Material mat;
         mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
-
-        EntityUI* btn = new EntityUI(Vector2(width/2.f, height/2.f), Vector2(width, height), mat, "data/textures/ui/background.png");
+        
+        EntityUI* btn = new EntityUI(mat, Vector2(width/2.f, height/2.f),
+            Vector2(width, height), std::string("data/textures/ui/background.png"));
         UI_root->addChild(btn);
 
-        btn = new EntityUI(Vector2(width / 3.f, 500.f), btn_size, EntityUI::e_UIButtonID::START_MAP, mat, "play");
+        btn = new EntityUI(mat, Vector2(width / 3.f, 500.f),
+            btn_size, "play", EntityUI::e_UIButtonID::START_MAP);
         UI_root->addChild(btn);
 
-        btn = new EntityUI(Vector2(width * 2.f / 3.f, 500.f), btn_size, EntityUI::e_UIButtonID::EXIT, mat, "exit");
+        btn = new EntityUI(mat, Vector2(width * 2.f / 3.f, 500.f), btn_size,
+            "exit", EntityUI::e_UIButtonID::EXIT);
         UI_root->addChild(btn);
+
         break;
     }
     case MenuStage::MAP_SEL:

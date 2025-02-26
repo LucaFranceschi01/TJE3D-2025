@@ -1,10 +1,12 @@
-#pragma once
+/*  by Xavier Cañadas and Luca Franceschi 2025
+	Here we define the EntityCollider derived class
+*/
 
-#include <vector>
-#include <string>
+#pragma once
 
 #include "entityMesh.h"
 
+// Forward declarations
 class Matrix44;
 class Vector3;
 class Material;
@@ -27,15 +29,20 @@ enum eColisionFilter : int
 class EntityCollider : public EntityMesh
 {
 private:
-	void getCollisionsWithModel(const Matrix44& m, const Vector3& center, std::vector<sCollisionData>& collisions, std::vector<sCollisionData>& grounded_collision); // falten parametres
+	void getCollisionsWithModel(const Matrix44& m, const Vector3& center, std::vector<sCollisionData>& collisions,
+		std::vector<sCollisionData>& grounded_collision); // TODO: falten parametres
 
 public:
 
 	eColisionFilter layer = ALL;
-	bool is_static = true; // hace falta?
+	bool is_static = true; // TODO: hace falta?
 
 	EntityCollider() = default;
 	EntityCollider(Mesh* mesh, const Material& material, const std::string& name = "") : EntityMesh(mesh, material, name) {};
+	
+	~EntityCollider() = default;
 
-	void getCollisions(const Vector3& target_position, std::vector<sCollisionData>& colisions, std::vector<sCollisionData>& ground_colisions);
+	void getCollisions(const Vector3& target_position,
+		std::vector<sCollisionData>& colisions,
+		std::vector<sCollisionData>& ground_colisions);
 };
