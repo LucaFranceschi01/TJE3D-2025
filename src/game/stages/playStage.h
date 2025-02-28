@@ -1,17 +1,20 @@
-//
-// Created by Xavi Cañadas on 22/2/25.
-//
+/*  by Xavier Cañadas and Luca Franceschi 2025
+    Here we define the PlayStage class which is an in-game stage
+*/
 
 #pragma once
 
 #include "stage.h"
 
-
 class PlayStage : public Stage
 {
 public:
-    // constructor
-    PlayStage();
+    Entity* UI_root = nullptr;
+    Camera* camera2D = nullptr;
+
+    // ctor and dtor
+    PlayStage() = default;
+    ~PlayStage() = default;
 
     // methods
     void init() override;
@@ -23,6 +26,3 @@ public:
     void onKeyDown(SDL_KeyboardEvent event) override;
     void onResize(int width, int height) override;
 };
-
-
-

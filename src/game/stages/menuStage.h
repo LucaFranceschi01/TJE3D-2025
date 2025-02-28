@@ -1,11 +1,10 @@
-//
-// Created by Xavi Cañadas on 22/2/25.
-//
+/*  by Xavier Cañadas and Luca Franceschi 2025
+    Here we define the PlayStage class which is a menu with some UI
+*/
 
 #pragma once
 
 #include "stage.h"
-
 
 class MenuStage : public Stage
 {
@@ -21,14 +20,10 @@ public:
 
     // constructor
     MenuStage(e_MenuID menu);
+    ~MenuStage() = default;
 
     // methods
     void init() override;
     void render() override;
     void update(float dt) override;
-    void onEnter(Stage* prev_stage) override;
-    void onLeave(Stage* prev_stage) override;
-
-    void onKeyDown(SDL_KeyboardEvent event) override;
-    void onResize(int width, int height) override;
 };

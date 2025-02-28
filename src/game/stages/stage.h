@@ -1,12 +1,11 @@
-//
-// Created by Xavi Cañadas on 3/2/25.
-//
+/*  by Xavier Cañadas and Luca Franceschi 2025
+    Here we define the base Stage class. It should not have any cpp file associated since it only defines signatures
+*/
 
 #pragma once
 
-#include "framework/input.h"
+#include "SDL2/SDL_events.h"
 
-class EntityUI;
 class Entity;
 class Camera;
 
@@ -17,7 +16,7 @@ typedef enum {
 class Stage
 {
 public:
-    virtual ~Stage() = default; // TODO: does this really matter since virtual ???
+    virtual ~Stage() = default;
 
     // methods
     virtual void init() {};
@@ -36,21 +35,3 @@ public:
     virtual void onEnter(Stage* prev_stage) {};
     virtual void onLeave(Stage* new_stage) {};
 };
-
-
-
-/*
-
-Tendriamos que hacer el loop del juego, que cuando empiece la partida, la bola este al principio del mapa
-y que solo avance para adelante, yo quitaria las funciones de aumentar y disminuir la velocidad, o ns si quieres
-que pueda parar lo dejamos.
-
-
-Para esta primera entrega podriamos hacer un mapa sin nada estetico, q solo sea bloques o colores basicos para
-implementar los obstaculos y todas las cosas. Dedicar lo menos posible al mapa en render ahora para poder implementarlo.
-
-Despues, cuando funcione todas las cosas, hacer el mapa final y dedicando tiempo.
-
-
-
- */

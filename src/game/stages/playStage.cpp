@@ -1,27 +1,14 @@
-//
-// Created by Xavi Cañadas on 22/2/25.
-//
-
 #include "playStage.h"
 
 #include "game/player/player.h"
 #include "game/world.h"
 #include "game/game.h"
 
-PlayStage::PlayStage()
-{
-    /*
-     entity_mesh = new EntityMesh(mesh, material);
-     SceneParser parser;
-     parser.parse("data/myscene.scene", root); // TODO: in blender do @player tag parser thing
-     */
-}
+#include "framework/camera.h"
 
 void PlayStage::init()
 {
-    World::getInstance()->init(World::TESTING);
 }
-
 
 void PlayStage::render()
 {
@@ -35,13 +22,13 @@ void PlayStage::update(float dt)
 
 void PlayStage::onEnter(Stage* prev_stage)
 {
-    World::getInstance()->init(World::MAP1);
-    World::getInstance()->player->init(Vector3(5, 10, 0));
-
+    World::getInstance()->init(); // TODO: CHANGE SIGNATURE SO THAT IT MEANS ENTER A MAP
+    // TODO: SET UI VISIBILITY
 }
 
 void PlayStage::onLeave(Stage* prev_stage)
 {
+    // TODO: SET UI VISIBILITY
 }
 
 void PlayStage::onKeyDown(SDL_KeyboardEvent event)

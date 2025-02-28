@@ -1,22 +1,18 @@
-//
-// Created by Xavi Cañadas on 6/2/25.
-//
-
 #include "world.h"
 #include "game.h"
 #include "scene_parser.h"
-#include "player/player.h"
 
 #include "framework/input.h"
 #include "framework/includes.h"
 #include "framework/camera.h"
 #include "framework/utils.h"
 #include "framework/entities/entity.h"
-#include "framework/entities/entityCollider.h"
 
 #include "graphics/mesh.h"
 #include "graphics/shader.h"
 #include "graphics/texture.h"
+
+#include "player/player.h"
 #include "player/halfPlayer.h"
 
 World* World::instance = nullptr;
@@ -24,8 +20,6 @@ World* World::instance = nullptr;
 const Vector3 World::front(1.f, 0.f, 0.f);
 const Vector3 World::right(0.f, 0.f, 1.f);
 const Vector3 World::up(0.f, 1.f, 0.f);
-
-
 
 World* World::getInstance()
 {
@@ -42,10 +36,7 @@ World::World()
 
     camera = new Camera();
     camera->lookAt(Vector3(0.f, 10.f, 10.f), Vector3(0.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f));
-    //position the camera and point to 0,0,0
     camera->setPerspective(72.f, window_width / window_height, 0.1f, 10000.f);
-
-    // TODO: Init IN-GAME UI
 
     // Init player
     Material player_material;
@@ -56,13 +47,21 @@ World::World()
     // Init half player
     half_player_left = new HalfPlayer(Mesh::Get("data/player/Don_Bolon.obj"), player_material, true, "player");
     half_player_right = new HalfPlayer(Mesh::Get("data/player/Don_Bolon.obj"), player_material, false, "player");
+    
+    // Parse scenes
+    std::vector<std::string> sceneNames = { "data/myscene.scene" };
+    SceneParser parser;
+    bool completed;
 
-
-    for (int m = 0; m != UNDEFINED_MAP; m++) {
-        e_MapID map = static_cast<e_MapID>(m);
-        root[map] = new Entity();
+    for (uint8 i = 0; i < sceneNames.size(); i++) {
+        root[i] = new Entity();
+        completed = parser.parse(sceneNames[i].c_str(), root[i]);
+        assert(completed);
     }
 
+    current_map = 0; // TODO: CHANGE WITH UI NOT HERE
+
+    // Load and init skybox
     {
         Texture* cube_texture = new Texture();
         /*
@@ -87,8 +86,6 @@ World::World()
 
         //Texture::Get("landscape"); una vez que se carga la texture, se puede acceder por todo el código con esto.
 
-        // continuació
-
         Material cubemap_material;
         cubemap_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs");
         cubemap_material.diffuse = cube_texture;
@@ -97,18 +94,11 @@ World::World()
     }
 }
 
-void World::init(e_MapID map)
+void World::init()
 {
-    current_map = map;
-
-    // Parse scene
-    SceneParser parser;
-    bool completed = parser.parse("data/myscene.scene", root[map]); // TODO: in blender do @player tag parser thing
-    assert(completed);
-
+    player->init(Vector3(5, 10, 0));
     half_player = false;
 }
-
 
 void World::render()
 {
@@ -117,7 +107,6 @@ void World::render()
 
     glDisable(GL_BLEND);
     glDisable(GL_CULL_FACE);
-
 
     glDisable(GL_DEPTH_TEST);
     skybox->render(camera);
@@ -137,12 +126,10 @@ void World::render()
         half_player_right->render(camera);
     }
 
-
-    // render life text. todo: es temporal
+    // TODO: CHANGE FOR UI
     std::string live_text = "lives: " + std::to_string(live) + "/3";
     drawText(700, 2, live_text, Vector3(1, 1, 1), 2);
 }
-
 
 void World::update(float dt)
 {
@@ -156,7 +143,6 @@ void World::update(float dt)
         half_player_left->update(dt);
         half_player_right->update(dt);
     }
-
 
     // update camera
     camera->update(dt);
@@ -176,7 +162,7 @@ void Camera::update(float dt)
     Camera * camera = Camera::current;
     World* world = World::getInstance();
 
-    float speed = dt * Game::instance->mouse_speed; //the speed is defined by the seconds_elapsed so it goes constant
+    float speed = Game::instance->mouse_speed * dt;
     float orbit_distance = 8.0f;
     float up_factor = 3.5;
 
@@ -184,28 +170,24 @@ void Camera::update(float dt)
     {
     case World::FREE:
     {
-        // camara libre
-        // Example
         Game::instance->angle += dt * 10.0f;
 
         // Mouse input to rotate the cam
         if (Input::isMousePressed(SDL_BUTTON_LEFT) || Game::instance->mouse_locked) {
-            //is left button pressed?
             camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f, -1.0f, 0.0f));
             camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector(Vector3(-1.0f, 0.0f, 0.0f)));
         }
 
         // Async input to move the camera around
-        if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) speed *= 10; //move faster with left shift
-        if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
-        if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f, -1.0f) * speed);
-        if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
-        if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f, 0.0f, 0.0f) * speed);
-        break;
-    }
-    case World::FIXED:
-    {
-        // TODO
+        if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) speed *= 10; // move faster with left shift
+        if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) 
+            camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
+        if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN))
+            camera->move(Vector3(0.0f, 0.0f, -1.0f) * speed);
+        if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT))
+            camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
+        if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT))
+            camera->move(Vector3(-1.0f, 0.0f, 0.0f) * speed);
         break;
     }
     case World::THIRD_PERSON:
@@ -223,8 +205,6 @@ void Camera::update(float dt)
 
         Vector3 eye = player_tr - World::front * orbit_distance + Vector3::UP * up_factor;
 
-
-
         camera->lookAt(eye, player_tr, Vector3::UP);
 
         break;
@@ -240,7 +220,6 @@ void World::addEntity(Entity* entity)
 {
     root[current_map]->addChild(entity);
 }
-
 
 void World::destroyEntity(Entity* entity)
 {
@@ -305,7 +284,9 @@ sCollisionData World::raycast(const Vector3& origin, const Vector3& direction, i
  * @param colisions array of the collisions found in position.
  * @param ground_colisions colisions with the ground
  */
-void World::test_scene_collisions(const Vector3& position, std::vector<sCollisionData>& colisions, std::vector<sCollisionData>& ground_colisions)
+void World::test_scene_collisions(const Vector3& position,
+    std::vector<sCollisionData>& colisions,
+    std::vector<sCollisionData>& ground_colisions)
 {
     for (auto entity : root[current_map]->children) {
         EntityCollider* entity_collider = dynamic_cast<EntityCollider*>(entity);

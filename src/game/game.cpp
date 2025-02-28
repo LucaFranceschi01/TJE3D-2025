@@ -5,10 +5,10 @@
 #include "graphics/fbo.h"
 #include "graphics/shader.h"
 
-#include "framework/utils.h"
 #include "framework/input.h"
-#include "framework/entities/entityMesh.h"
 #include "framework/audio.h"
+#include "framework/camera.h"
+#include "framework/entities/entityMesh.h"
 
 #include "game/scene_parser.h"
 #include "game/world.h"
@@ -18,16 +18,7 @@
 
 #include <cmath>
 
-//some globals
-Mesh* mesh = NULL;
-Texture* texture = NULL;
-Shader* shader = NULL;
-
-
 Game* Game::instance = NULL;
-
-Entity* root = nullptr;
-//EntityMesh* entity_mesh = nullptr;
 
 Game::Game(int window_width, int window_height, SDL_Window* window)
 {
@@ -43,16 +34,14 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     elapsed_time = 0.0f;
     mouse_locked = false;
 
-    // audio init
     Audio::Init();
 
-
-    // stages
+    // construct and init all stages and set the first one
     stages[MAIN_MENU_ST] = new MenuStage(MenuStage::MAIN);
     stages[MAP_SEL_ST] = new MenuStage(MenuStage::MAP_SEL);
     stages[PLAY_ST] = new PlayStage();
 
-    for (auto entry : stages) {
+    for (auto& entry : stages) {
         Stage* stage = entry.second;
         stage->init();
     }
@@ -60,8 +49,8 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     goToStage(MAIN_MENU_ST);
 
     // OpenGL flags
-    glEnable(GL_CULL_FACE); //render both sides of every triangle
-    glEnable(GL_DEPTH_TEST); //check the occlusions using the Z buffer
+    glEnable(GL_CULL_FACE); // do not render both sides of every triangle
+    glEnable(GL_DEPTH_TEST); // check the occlusions using the Z buffer
 
     // Hide the cursor
     SDL_ShowCursor(!mouse_locked); //hide or show the mouse
@@ -77,11 +66,8 @@ void Game::render(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Set flags
-    /*
-    glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
-    */
+    glEnable(GL_CULL_FACE); // do not render both sides of every triangle
+    glEnable(GL_DEPTH_TEST); // check the occlusions using the Z buffer
 
     if (currentStage != nullptr) {
         currentStage->render();
@@ -96,8 +82,9 @@ void Game::render(void)
 
 void Game::update(double dt)
 {
-    if (currentStage != nullptr)
+    if (currentStage != nullptr) {
         currentStage->update(static_cast<float>(dt));
+    }
 }
 
 void Game::goToStage(StageType stage)
@@ -105,14 +92,14 @@ void Game::goToStage(StageType stage)
     Stage* new_stage = stages[stage];
     assert(new_stage);
 
-    if (currentStage != nullptr)
+    if (currentStage != nullptr) {
         currentStage->onLeave(new_stage);
+    }
 
     new_stage->onEnter(currentStage);
 
     currentStage = new_stage;
 }
-
 
 //Keyboard event handler (sync input)
 void Game::onKeyDown(SDL_KeyboardEvent event)
@@ -124,14 +111,16 @@ void Game::onKeyDown(SDL_KeyboardEvent event)
             break;
     }
 
-    if (currentStage != nullptr)
+    if (currentStage != nullptr) {
         currentStage->onKeyDown(event);
+    }
 }
 
 void Game::onKeyUp(SDL_KeyboardEvent event)
 {
-    if (currentStage != nullptr)
+    if (currentStage != nullptr) {
         currentStage->onKeyUp(event);
+    }
 }
 
 void Game::onMouseButtonDown(SDL_MouseButtonEvent event)
@@ -202,5 +191,4 @@ void Game::setMouseLocked()
 	SDL_SetRelativeMouseMode((SDL_bool)must_lock);
 
 	mouse_locked = must_lock;
-
 }

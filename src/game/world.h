@@ -1,6 +1,7 @@
-//
-// Created by Xavi Cañadas on 6/2/25.
-//
+/*  by Xavier Cañadas and Luca Franceschi 2025
+    Here we define the World class which is a singleton with all the information related to a 3d scene
+    including player, maps, camera, etc.
+*/
 
 #pragma once
 
@@ -24,10 +25,6 @@ private:
 public:
     static World* getInstance();
 
-    enum e_MapID {
-        TESTING, MAP1, UNDEFINED_MAP
-    };
-
     enum e_camera_mode {
         FREE,
         FIXED,
@@ -45,7 +42,6 @@ public:
     EntityMesh* skybox = nullptr;
 
     Camera* camera = nullptr;
-    Camera* camera2D = nullptr;
 
     // players
     Player* player = nullptr;
@@ -54,8 +50,8 @@ public:
     bool half_player = false;
     int live = 3; // esto lo he puesto a aqui para no tenerlo duplicado en el half_player
 
-    e_MapID current_map;
-    std::map<e_MapID, Entity*> root;
+    uint8 current_map;
+    std::map<uint8, Entity*> root;
 
     float camera_yaw = 0.f;
     float camera_pitch = 0.f;
@@ -78,7 +74,7 @@ public:
     // methods
     void render();
     void update(float dt);
-    void init(e_MapID map);
+    void init();
 
     // scene
     std::set<Entity*> entities_to_destroy;
