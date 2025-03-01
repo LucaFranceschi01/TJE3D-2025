@@ -25,14 +25,16 @@ EntityUI::EntityUI(const Material& material, Vector2 position, Vector2 size,
 	mesh = new Mesh();
 	mesh->createQuad(position.x, position.y, size.x, size.y, true); // uvs are flipped in the horizontal axis
 
-	if ((buttonID == UNDEFINED || buttonID == MAP_THUMBNAIL) && name != "") {
-		this->is_pixel_art = false;
-		this->base = Texture::Get(name.c_str());
-	}
-	else {
-		this->is_pixel_art = true;
-		this->base = Texture::Get((std::string("data/textures/ui/") + name + std::string("_base.png")).c_str());
-		this->pressed = Texture::Get((std::string("data/textures/ui/") + name + std::string("_press.png")).c_str());
+	if (name != "") {
+		if ((buttonID == UNDEFINED || buttonID == MAP_THUMBNAIL)) {
+			this->is_pixel_art = false;
+			this->base = Texture::Get(name.c_str());
+		}
+		else {
+			this->is_pixel_art = true;
+			this->base = Texture::Get((std::string("data/textures/ui/") + name + std::string("_base.png")).c_str());
+			this->pressed = Texture::Get((std::string("data/textures/ui/") + name + std::string("_press.png")).c_str());
+		}
 	}
 
 	this->material.diffuse = this->base;

@@ -51,7 +51,7 @@ void Player::update(float dt)
     // Death cutscene
     if (world_instance->live <= 0 || position.y <= 0) {
         Audio::Play("data/sounds/sad_horn.wav");
-        Game::instance->goToStage(MAIN_MENU_ST);
+        Game::instance->goToStage(MAP_SEL_ST);
     }
 
     // If camera is in free mode, avoid moving the player
