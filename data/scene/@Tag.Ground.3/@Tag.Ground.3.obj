@@ -1,7 +1,7 @@
 # Blender 4.3.2
 # www.blender.org
 mtllib @Tag.Ground.3.mtl
-o GroundBase.008
+o GroundBase.009
 v -40.000000 1.000000 24.000000
 v -40.000000 1.000000 -24.000000
 v 40.000000 1.000000 24.000000

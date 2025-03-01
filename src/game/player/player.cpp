@@ -15,6 +15,12 @@ void Player::init(const Vector3& pos)
 {
     World::getInstance()->live = 3;
     model.setTranslation(pos);
+    yaw = 0.f;
+    pitch = 0.f;
+    velocity = Vector3(0.f);
+    jump_time = 0.0f;
+    front = Vector3(0.f);
+    right = Vector3(0.0f);
 }
 
 void Player::render(Camera* camera)

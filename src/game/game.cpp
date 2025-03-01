@@ -20,6 +20,8 @@
 
 Game* Game::instance = NULL;
 
+constexpr auto MAP_COUNT = 3;
+
 Game::Game(int window_width, int window_height, SDL_Window* window)
 {
     this->window_width = window_width;
@@ -191,4 +193,18 @@ void Game::setMouseLocked()
 	SDL_SetRelativeMouseMode((SDL_bool)must_lock);
 
 	mouse_locked = must_lock;
+}
+
+void Game::nextMap()
+{
+    if (currentMap < MAP_COUNT - 1) {
+        currentMap++;
+    }
+}
+
+void Game::previousMap()
+{
+    if (currentMap > 0) {
+        currentMap--;
+    }
 }

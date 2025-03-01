@@ -25,7 +25,7 @@ EntityUI::EntityUI(const Material& material, Vector2 position, Vector2 size,
 	mesh = new Mesh();
 	mesh->createQuad(position.x, position.y, size.x, size.y, true); // uvs are flipped in the horizontal axis
 
-	if (buttonID == UNDEFINED) {
+	if ((buttonID == UNDEFINED || buttonID == MAP_THUMBNAIL) && name != "") {
 		this->is_pixel_art = false;
 		this->base = Texture::Get(name.c_str());
 	}
@@ -91,12 +91,13 @@ void EntityUI::update(float dt)
 		(mouse_pos.y > position.y - size.y / 2.f) &&
 		(mouse_pos.y < position.y + size.y / 2.f);
 
-	if (above_btn && buttonID != e_UIButtonID::UNDEFINED) {
+	Game* instance = Game::instance;
+
+	if (above_btn && buttonID != e_UIButtonID::UNDEFINED && buttonID != e_UIButtonID::MAP_THUMBNAIL) {
 
 		this->material.diffuse = this->pressed;
 
 		if (Input::wasMousePressed(SDL_BUTTON_LEFT)) {
-			Game* instance = Game::instance;
 
 			switch (buttonID)
 			{
@@ -104,13 +105,18 @@ void EntityUI::update(float dt)
 				instance->goToStage(MAP_SEL_ST);
 				break;
 			case EntityUI::EXIT:
-				Game::instance->must_exit = true;
+				if (instance->currentStage->stage_type == MAIN_MENU_ST) {
+					instance->must_exit = true;
+				}
+				else if (instance->currentStage->stage_type == MAP_SEL_ST) {
+					instance->goToStage(MAIN_MENU_ST);
+				}
 				break;
 			case EntityUI::NEXT_MAP:
-				// TODO: goToStage(...) or move the UI elements to the side
+				instance->nextMap();
 				break;
 			case EntityUI::PREVIOUS_MAP:
-				// TODO: goToStage(...) or move the UI elements to the side
+				instance->previousMap();
 				break;
 			case EntityUI::START_MAP:
 				instance->goToStage(PLAY_ST);
@@ -119,8 +125,6 @@ void EntityUI::update(float dt)
 				break;
 			case EntityUI::RESUME:
 				break;
-			case EntityUI::UNDEFINED:
-				break;
 			default:
 				break;
 			}
@@ -128,6 +132,13 @@ void EntityUI::update(float dt)
 	}
 	else {
 		this->material.diffuse = this->base;
+	}
+
+	if (buttonID == MAP_THUMBNAIL) {
+		uint8 current_map = instance->currentMap;
+
+		//position.x = instance->window_width / 2.f + (mapID - current_map) * 512.f;
+		model.setTranslation((mapID - current_map) * 400, model.getTranslation().y, 0.f);
 	}
 
 	Entity::update(dt);

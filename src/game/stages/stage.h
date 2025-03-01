@@ -16,6 +16,8 @@ typedef enum {
 class Stage
 {
 public:
+    StageType stage_type = UNDEFINED_ST;
+
     virtual ~Stage() = default;
 
     // methods

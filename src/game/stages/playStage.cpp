@@ -8,6 +8,7 @@
 
 void PlayStage::init()
 {
+    stage_type = PLAY_ST;
 }
 
 void PlayStage::render()

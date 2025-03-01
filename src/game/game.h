@@ -29,6 +29,7 @@ public:
     bool mouse_locked; //tells if the mouse is locked (not seen)
     Stage* currentStage = nullptr;
     std::map<StageType, Stage*> stages;
+    uint8 currentMap = 0;
 
     float angle = 0;
     float mouse_speed = 50.0f;
@@ -52,4 +53,7 @@ public:
 	void onGamepadButtonDown(SDL_JoyButtonEvent event);
 	void onGamepadButtonUp(SDL_JoyButtonEvent event);
 	void onResize(int width, int height);
+
+    void nextMap();
+    void previousMap();
 };

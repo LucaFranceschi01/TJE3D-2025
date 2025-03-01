@@ -49,7 +49,7 @@ World::World()
     half_player_right = new HalfPlayer(Mesh::Get("data/player/Don_Bolon.obj"), player_material, false, "player");
     
     // Parse scenes
-    std::vector<std::string> sceneNames = { "data/myscene.scene" };
+    std::vector<std::string> sceneNames = { "data/myscene.scene", "data/myscene1.scene" };
     SceneParser parser;
     bool completed;
 
@@ -133,6 +133,7 @@ void World::render()
 
 void World::update(float dt)
 {
+    current_map = Game::instance->currentMap;
     // update all elements in the scene
     root[current_map]->update(dt);
 

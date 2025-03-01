@@ -27,10 +27,12 @@ public:
 		START_MAP,
 		PAUSE,
 		RESUME,
+		MAP_THUMBNAIL,
 		UNDEFINED
 	};
 
 	e_UIButtonID buttonID;
+	uint8 mapID = NULL;
 
 	Texture* base = nullptr;
 	Texture* pressed = nullptr;
