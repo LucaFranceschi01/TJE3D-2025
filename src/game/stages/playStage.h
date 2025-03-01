@@ -13,7 +13,7 @@ public:
     Camera* camera2D = nullptr;
 
     // ctor and dtor
-    PlayStage() = default;
+    PlayStage();
     ~PlayStage() = default;
 
     // methods
@@ -25,4 +25,6 @@ public:
 
     void onKeyDown(SDL_KeyboardEvent event) override;
     void onResize(int width, int height) override;
+
+    void switchPauseResume() override;
 };

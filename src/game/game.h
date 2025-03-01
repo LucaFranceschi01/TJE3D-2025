@@ -31,6 +31,8 @@ public:
     std::map<StageType, Stage*> stages;
     uint8 currentMap = 0;
 
+    bool paused = false;
+
     float angle = 0;
     float mouse_speed = 50.0f;
     bool debug_view = false;

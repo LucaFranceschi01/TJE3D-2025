@@ -36,4 +36,6 @@ public:
     virtual void onResize(int width, int height) {};
     virtual void onEnter(Stage* prev_stage) {};
     virtual void onLeave(Stage* new_stage) {};
+
+    virtual void switchPauseResume() {};
 };

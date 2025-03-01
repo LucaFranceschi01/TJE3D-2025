@@ -62,7 +62,7 @@ void MenuStage::init()
         UI_root->addChild(btn);
         
         Material mat_flat;
-        mat_flat.color = { 0.f, 0.f, 0.f, 0.2 };
+        mat_flat.color = { 0.f, 0.f, 0.f, 0.4 };
 
         btn = new EntityUI(mat_flat, Vector2(width / 2.f, height / 2.f),
             Vector2(width, height));

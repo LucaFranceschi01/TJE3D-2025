@@ -8,6 +8,7 @@
 #include "graphics/texture.h"
 
 #include "game/game.h"
+#include "game/stages/playStage.h"
 
 /**
 * If the buttonID is undefined (no interaction) the string name is taken literally.
@@ -124,8 +125,10 @@ void EntityUI::update(float dt)
 				instance->goToStage(PLAY_ST);
 				break;
 			case EntityUI::PAUSE:
+				instance->currentStage->switchPauseResume();
 				break;
 			case EntityUI::RESUME:
+				instance->currentStage->switchPauseResume();
 				break;
 			default:
 				break;
@@ -140,7 +143,7 @@ void EntityUI::update(float dt)
 		uint8 current_map = instance->currentMap;
 
 		//position.x = instance->window_width / 2.f + (mapID - current_map) * 512.f;
-		model.setTranslation((mapID - current_map) * 400, model.getTranslation().y, 0.f);
+		model.setTranslation((mapID - current_map) * 400 - current_map, model.getTranslation().y, 0.f);
 	}
 
 	Entity::update(dt);
