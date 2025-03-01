@@ -38,4 +38,5 @@ public:
     virtual void onLeave(Stage* new_stage) {};
 
     virtual void switchPauseResume() {};
+    virtual void removeLifeUI() {};
 };

@@ -24,11 +24,17 @@ PlayStage::PlayStage()
     Vector2 square_btn_size(32.f, 32.f);
 
     UI_root = new Entity();
-
+    EntityUI* btn;
     Material mat;
     mat.color = { 0.f, 0.f, 0.f, 0.4 };
 
-    EntityUI* btn = new EntityUI(mat, Vector2(width / 2.f, height / 2.f),
+    for (int i = 0; i < World::getInstance()->live; i++) {
+        btn = new EntityUI(mat, Vector2(width - 64.f * 3 + i * 64.f, 64.f),
+            Vector2(64.f, 64.f), "data/textures/ui/LifeSprites.png", EntityUI::LIVES);
+        UI_root->addChild(btn);
+    }
+
+    btn = new EntityUI(mat, Vector2(width / 2.f, height / 2.f),
         Vector2(width, height));
     btn->visible = false;
     UI_root->addChild(btn);
@@ -73,14 +79,20 @@ void PlayStage::update(float dt)
 void PlayStage::onEnter(Stage* prev_stage)
 {
     World::getInstance()->init(); // TODO: CHANGE SIGNATURE SO THAT IT MEANS ENTER A MAP
-    if (Game::instance->paused) {
-        switchPauseResume();
+
+    // reset life bar 
+    for (Entity* tmp : UI_root->children) {
+        EntityUI* ui_element = static_cast<EntityUI*>(tmp);
+        if (ui_element->buttonID == EntityUI::LIVES && !ui_element->visible) ui_element->visible = true;
     }
 }
 
 void PlayStage::onLeave(Stage* prev_stage)
 {
-    // TODO: SET UI VISIBILITY
+    // if game was paused unpause it (e.g. paused and exited a map, not resumed)
+    if (Game::instance->paused) {
+        switchPauseResume();
+    }
 }
 
 void PlayStage::onKeyDown(SDL_KeyboardEvent event)
@@ -88,16 +100,14 @@ void PlayStage::onKeyDown(SDL_KeyboardEvent event)
     World::getInstance()->onKeyDown(event);
 
     switch (event.keysym.sym) {
-        case SDLK_TAB:
-        {
+        case SDLK_TAB: // TODO: MOVE TO FUNCTION KEYS ALL THE DEBUG-RELATED FUNCTIONS
             Game::instance->setMouseLocked();
             break;
-        }
         case SDLK_RSHIFT:
-        {
             Game::instance->debug_view = !Game::instance->debug_view;
             break;
-        }
+        default:
+            break;
     }
 }
 
@@ -117,5 +127,19 @@ void PlayStage::switchPauseResume()
         if (ui_element->buttonID == EntityUI::RESUME) ui_element->visible = !ui_element->visible;
         if (ui_element->buttonID == EntityUI::UNDEFINED) ui_element->visible = !ui_element->visible;
         if (ui_element->buttonID == EntityUI::ENTER_MAP_SELECTOR) ui_element->visible = !ui_element->visible;
+    }
+}
+
+void PlayStage::removeLifeUI()
+{
+    EntityUI* life = nullptr;
+    for (Entity* tmp : UI_root->children) {
+        EntityUI* ui_element = static_cast<EntityUI*>(tmp);
+        if (ui_element->buttonID == EntityUI::LIVES && ui_element->visible) life = ui_element;
+    }
+    /*UI_root->removeChild(del);
+    delete del;*/
+    if (life) {
+        life->visible = false;
     }
 }

@@ -172,6 +172,8 @@ bool Player::testCollisions(const Vector3& position, float dt)
                 // quit one life
                 instance->live--;
 
+                Game::instance->currentStage->removeLifeUI();
+
                 // send the object to delete
                 instance->destroyEntity(collision_data.collider);
                 break;

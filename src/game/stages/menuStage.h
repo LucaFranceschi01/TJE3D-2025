@@ -26,4 +26,6 @@ public:
     void init() override;
     void render() override;
     void update(float dt) override;
+
+    void onKeyDown(SDL_KeyboardEvent event) override;
 };

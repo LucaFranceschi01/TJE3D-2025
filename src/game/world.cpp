@@ -125,10 +125,6 @@ void World::render()
         half_player_left->render(camera);
         half_player_right->render(camera);
     }
-
-    // TODO: CHANGE FOR UI
-    std::string live_text = "lives: " + std::to_string(live) + "/3";
-    drawText(700, 2, live_text, Vector3(1, 1, 1), 2);
 }
 
 void World::update(float dt)
@@ -160,8 +156,12 @@ void World::update(float dt)
 
 void Camera::update(float dt)
 {
-    Camera * camera = Camera::current;
     World* world = World::getInstance();
+    //Camera * camera = Camera::current;
+    // para llorar la cantidad de tiempo para encontrar este bug. risas.
+    // cuando se entraba al playstage usando enter en vez de los botones por alguna razón la camara
+    // que se pillaba aquí con el current era la 2d, la movía y entonces no se veía la UI
+    Camera* camera = world->camera;
 
     float speed = Game::instance->mouse_speed * dt;
     float orbit_distance = 8.0f;

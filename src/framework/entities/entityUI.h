@@ -28,6 +28,7 @@ public:
 		PAUSE,
 		RESUME,
 		MAP_THUMBNAIL,
+		LIVES,
 		UNDEFINED
 	};
 

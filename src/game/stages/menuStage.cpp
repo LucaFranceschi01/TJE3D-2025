@@ -1,11 +1,13 @@
 #include "menuStage.h"
 
 #include "game/world.h"
+#include "game/game.h"
 
 #include "graphics/shader.h"
 
 #include "framework/camera.h"
 #include "framework/entities/entityUI.h"
+#include "framework/input.h"
 
 MenuStage::MenuStage(e_MenuID menu)
 {
@@ -112,4 +114,25 @@ void MenuStage::render()
 void MenuStage::update(float dt)
 {
     UI_root->update(dt);
+}
+
+void MenuStage::onKeyDown(SDL_KeyboardEvent event)
+{
+    Game* instance = Game::instance;
+    switch (event.keysym.sym) {
+    case SDLK_RIGHT:
+        instance->nextMap();
+        break;
+    case SDLK_LEFT:
+        instance->previousMap();
+        break;
+    case SDLK_RETURN:
+        if (instance->currentStage->stage_type == MAIN_MENU_ST) {
+            instance->goToStage(MAP_SEL_ST);
+        }
+        else if (instance->currentStage->stage_type == MAP_SEL_ST) {
+            instance->goToStage(PLAY_ST);
+        }
+        break;
+    }
 }

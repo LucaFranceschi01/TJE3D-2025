@@ -10,6 +10,8 @@
 #include "game/game.h"
 #include "game/stages/playStage.h"
 
+#include "game/world.h"
+
 /**
 * If the buttonID is undefined (no interaction) the string name is taken literally.
 * If it is not, it will be used to load _base and _press textures.
@@ -29,6 +31,11 @@ EntityUI::EntityUI(const Material& material, Vector2 position, Vector2 size,
 	if (name != "") {
 		if ((buttonID == UNDEFINED || buttonID == MAP_THUMBNAIL)) {
 			this->is_pixel_art = false;
+			this->base = Texture::Get(name.c_str());
+		}
+		else if (buttonID == LIVES) {
+			this->is_pixel_art = false;
+			this->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/lives.fs");
 			this->base = Texture::Get(name.c_str());
 		}
 		else {
@@ -62,6 +69,7 @@ void EntityUI::render(Camera* camera2D)
 	material.shader->setUniform("u_color", material.color); // TODO: CHECK IF SHADER USES U_COLOR
 	material.shader->setUniform("u_viewprojection", camera2D->viewprojection_matrix);
 	material.shader->setUniform("u_camera_pos", camera2D->eye);
+	material.shader->setUniform("u_lives", World::getInstance()->live);
 
 	if (material.diffuse) material.shader->setUniform("u_texture", material.diffuse, 0);
 
@@ -96,7 +104,10 @@ void EntityUI::update(float dt)
 
 	Game* instance = Game::instance;
 
-	if (above_btn && buttonID != e_UIButtonID::UNDEFINED && buttonID != e_UIButtonID::MAP_THUMBNAIL) {
+	if (above_btn
+		&& buttonID != e_UIButtonID::UNDEFINED
+		&& buttonID != e_UIButtonID::MAP_THUMBNAIL
+		&& buttonID != e_UIButtonID::LIVES) {
 
 		this->material.diffuse = this->pressed;
 

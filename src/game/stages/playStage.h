@@ -27,4 +27,5 @@ public:
     void onResize(int width, int height) override;
 
     void switchPauseResume() override;
+    void removeLifeUI() override;
 };
