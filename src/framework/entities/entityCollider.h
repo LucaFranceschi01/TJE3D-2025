@@ -23,7 +23,7 @@ struct sCollisionData
 
 enum eColisionFilter : int
 {
-	ALL, OBSTACLE, GROUND, FLUID, NONE
+	ALL, OBSTACLE, GROUND, FLUID, PIN, NONE
 };
 
 class EntityCollider : public EntityMesh

@@ -34,6 +34,12 @@ PlayStage::PlayStage()
         UI_root->addChild(btn);
     }
 
+    for (int i = 0; i < 9; i++) {
+        btn = new EntityUI(mat, Vector2(32.f + i * 32.f, height - 32.f),
+            Vector2(32.f, 64.f), "data/textures/ui/Pin.png", EntityUI::PIN_COUNTER);
+        UI_root->addChild(btn);
+    }
+
     btn = new EntityUI(mat, Vector2(width / 2.f, height / 2.f),
         Vector2(width, height));
     btn->visible = false;
@@ -93,6 +99,8 @@ void PlayStage::onLeave(Stage* prev_stage)
     if (Game::instance->paused) {
         switchPauseResume();
     }
+
+    Game::instance->total_pins += pins_collected;
 }
 
 void PlayStage::onKeyDown(SDL_KeyboardEvent event)
@@ -142,4 +150,9 @@ void PlayStage::removeLifeUI()
     if (life) {
         life->visible = false;
     }
+}
+
+void PlayStage::collectPin()
+{
+    pins_collected += 1;
 }

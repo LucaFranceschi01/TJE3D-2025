@@ -30,6 +30,7 @@ public:
     Stage* currentStage = nullptr;
     std::map<StageType, Stage*> stages;
     uint8 currentMap = 0;
+    uint8 total_pins = 0;
 
     bool paused = false;
 

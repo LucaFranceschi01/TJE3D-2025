@@ -28,4 +28,5 @@ public:
 
     void switchPauseResume() override;
     void removeLifeUI() override;
+    void collectPin() override;
 };

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "SDL2/SDL_events.h"
+#include "framework/input.h"
 
 class Entity;
 class Camera;
@@ -17,6 +17,7 @@ class Stage
 {
 public:
     StageType stage_type = UNDEFINED_ST;
+    int pins_collected = 0;
 
     virtual ~Stage() = default;
 
@@ -39,4 +40,5 @@ public:
 
     virtual void switchPauseResume() {};
     virtual void removeLifeUI() {};
+    virtual void collectPin() {};
 };

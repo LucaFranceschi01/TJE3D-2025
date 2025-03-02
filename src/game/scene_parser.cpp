@@ -2,6 +2,7 @@
 
 #include "graphics/material.h"
 #include "graphics/mesh.h"
+#include "graphics/shader.h"
 
 #include "framework/utils.h"
 #include "framework/entities/entityCollider.h"
@@ -67,11 +68,12 @@ bool SceneParser::parse(const char* filename, Entity* root)
 
 			if (data.first.find("@Tag.Ground") != std::string::npos) {
 				new_entity->layer = GROUND;
-
 			} else if (data.first.find("@Tag.Fluid") != std::string::npos) {
 				new_entity->layer = FLUID;
+			} else if (data.first.find("@Tag.Pin") != std::string::npos) {
+				new_entity->layer = PIN;
+				new_entity->material.shader = Shader::Get("data/shaders/instanced.vs", "data/shaders/texture.fs");
 			}
-
 
 		} else {
 			//Mesh* mesh = Mesh::Get(mesh_name.c_str());

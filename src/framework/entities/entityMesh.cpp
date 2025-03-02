@@ -94,6 +94,7 @@ void EntityMesh::render(Camera* camera)
     }
     else {
         // ATTRIBUTES ARE PER INSTANCE, UNIFORMS ARE PER (mesh¿)
+        //material.shader->("a_color", material.color); // why cannot we do this ?
         mesh->renderInstanced(GL_TRIANGLES, must_render_models.data(), static_cast<int>(must_render_models.size()));
     }
 

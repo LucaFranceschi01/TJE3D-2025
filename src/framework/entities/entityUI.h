@@ -29,11 +29,13 @@ public:
 		RESUME,
 		MAP_THUMBNAIL,
 		LIVES,
+		PIN_COUNTER,
 		UNDEFINED
 	};
 
 	e_UIButtonID buttonID;
 	uint8 mapID = NULL;
+	uint8 pin_ID = NULL;
 
 	Texture* base = nullptr;
 	Texture* pressed = nullptr;

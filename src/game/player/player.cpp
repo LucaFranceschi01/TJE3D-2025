@@ -133,6 +133,8 @@ void Player::moveControl(Vector3& move_dir, const float dt)
 
 bool Player::testCollisions(const Vector3& position, float dt)
 {
+    // TODO: PUT EVERYTHING INTO GAME SO WE CAN DO ONLY GAME::INSTANCE INSTEAD OF ALSO WORLD
+    
     // Check collisions with the world entities
     std::vector<sCollisionData> collisions;
     std::vector<sCollisionData> ground_collisions;
@@ -178,10 +180,16 @@ bool Player::testCollisions(const Vector3& position, float dt)
                 instance->destroyEntity(collision_data.collider);
                 break;
             }
-
             case FLUID: {
                 // TODO: no detecta las colisiones con el objeto fluido
                 collision_fluid = true;
+                break;
+            }
+            case PIN: {
+                Game::instance->currentStage->collectPin();
+
+                // send the object to delete
+                instance->destroyEntity(collision_data.collider);
                 break;
             }
             default:

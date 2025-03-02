@@ -12,6 +12,8 @@
 
 #include "game/world.h"
 
+unsigned int pin_counter = 0;
+
 /**
 * If the buttonID is undefined (no interaction) the string name is taken literally.
 * If it is not, it will be used to load _base and _press textures.
@@ -37,6 +39,12 @@ EntityUI::EntityUI(const Material& material, Vector2 position, Vector2 size,
 			this->is_pixel_art = false;
 			this->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/lives.fs");
 			this->base = Texture::Get(name.c_str());
+		}
+		else if (buttonID == PIN_COUNTER) {
+			this->is_pixel_art = false;
+			this->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/pins.fs");
+			this->base = Texture::Get(name.c_str());
+			this->pin_ID = pin_counter++;
 		}
 		else {
 			this->is_pixel_art = true;
@@ -70,6 +78,8 @@ void EntityUI::render(Camera* camera2D)
 	material.shader->setUniform("u_viewprojection", camera2D->viewprojection_matrix);
 	material.shader->setUniform("u_camera_pos", camera2D->eye);
 	material.shader->setUniform("u_lives", World::getInstance()->live);
+	material.shader->setUniform("u_pins_collected", Game::instance->currentStage->pins_collected);
+	material.shader->setUniform("u_pin_ID", pin_ID);
 
 	if (material.diffuse) material.shader->setUniform("u_texture", material.diffuse, 0);
 
@@ -107,7 +117,8 @@ void EntityUI::update(float dt)
 	if (above_btn
 		&& buttonID != e_UIButtonID::UNDEFINED
 		&& buttonID != e_UIButtonID::MAP_THUMBNAIL
-		&& buttonID != e_UIButtonID::LIVES) {
+		&& buttonID != e_UIButtonID::LIVES
+		&& buttonID != e_UIButtonID::PIN_COUNTER) {
 
 		this->material.diffuse = this->pressed;
 
