@@ -61,8 +61,6 @@ void Player::update(float dt)
     front = World::front;
     right = World::right;
 
-
-
     // Test collisions
     bool is_colliding = testCollisions(position, dt);
 
@@ -73,7 +71,7 @@ void Player::update(float dt)
     float speed_mult = walk_speed;
 
     if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT))
-        speed_mult *= 1.5f;
+        speed_mult *= 0.3f;
 
     // TODO: decide
     //move_dir.normalize(); If we do not normalize, the halfplayer will be always be parallel.
@@ -116,11 +114,11 @@ void Player::moveControl(Vector3& move_dir, const float dt)
     World* world_instance = World::getInstance();
     if (world_instance->game_mode == World::RELEASE ||
         (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP))) {
-        move_dir += front * dt;
+        move_dir += front;
         pitch += rotational_speed * dt;
         }
     if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) {
-        move_dir -= front * dt;
+        move_dir -= front;
         pitch -= rotational_speed * dt;
         }
     if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
@@ -147,7 +145,7 @@ void Player::moveControl(Vector3& move_dir, const float dt)
                 World::right.normalize();
             }
         } else {
-            move_dir -= right * dt;
+            move_dir -= right;
             yaw += rotational_speed * dt;
         }
 
@@ -176,7 +174,7 @@ void Player::moveControl(Vector3& move_dir, const float dt)
                 World::right.normalize();
             }
         } else {
-            move_dir += right * dt;
+            move_dir += right;
             yaw -= rotational_speed * dt;
         }
     }
