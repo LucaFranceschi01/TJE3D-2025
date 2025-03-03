@@ -64,8 +64,8 @@ public:
     e_camera_mode camera_mode = THIRD_PERSON;
     e_game_mode game_mode = DEBUG;
 
-    static const Vector3 front;
-    static const Vector3 right;
+    static Vector3 front;
+    static Vector3 right;
     static const Vector3 up;
 
     // constructor

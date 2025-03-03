@@ -61,6 +61,8 @@ void Player::update(float dt)
     front = World::front;
     right = World::right;
 
+
+
     // Test collisions
     bool is_colliding = testCollisions(position, dt);
 
@@ -71,7 +73,7 @@ void Player::update(float dt)
     float speed_mult = walk_speed;
 
     if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT))
-        speed_mult *= 0.3f;
+        speed_mult *= 1.5f;
 
     // TODO: decide
     //move_dir.normalize(); If we do not normalize, the halfplayer will be always be parallel.
@@ -122,12 +124,61 @@ void Player::moveControl(Vector3& move_dir, const float dt)
         pitch -= rotational_speed * dt;
         }
     if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
-        move_dir -= right * dt;
-        yaw += rotational_speed * dt;
+        //
+
+        if (Input::isKeyPressed(SDL_SCANCODE_Z)) {
+            if (World::front.z < 0) {
+                World::front.x -=  dt;
+                World::front.z -= dt;
+
+                World::right.x += dt;
+                World::right.z -= dt;
+
+                World::front.normalize();
+                World::right.normalize();
+            } else {
+                World::front.x +=  dt;
+                World::front.z -= dt;
+
+                World::right.x += dt;
+                World::right.z += dt;
+
+                World::front.normalize();
+                World::right.normalize();
+            }
+        } else {
+            move_dir -= right * dt;
+            yaw += rotational_speed * dt;
+        }
+
     }
     if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
-        move_dir += right * dt;
-        yaw -= rotational_speed * dt;
+
+
+        if (Input::isKeyPressed(SDL_SCANCODE_Z)) {
+            if (World::front.z < 0) {
+                World::front.x +=  dt;
+                World::front.z += dt;
+
+                World::right.x -= dt;
+                World::right.z += dt;
+
+                World::front.normalize();
+                World::right.normalize();
+            } else {
+                World::front.x -=  dt;
+                World::front.z += dt;
+
+                World::right.x -= dt;
+                World::right.z -= dt;
+
+                World::front.normalize();
+                World::right.normalize();
+            }
+        } else {
+            move_dir += right * dt;
+            yaw -= rotational_speed * dt;
+        }
     }
 }
 

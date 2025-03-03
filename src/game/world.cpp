@@ -17,8 +17,8 @@
 
 World* World::instance = nullptr;
 
-const Vector3 World::front(1.f, 0.f, 0.f);
-const Vector3 World::right(0.f, 0.f, 1.f);
+Vector3 World::front(1.f, 0.f, 0.f);
+Vector3 World::right(0.f, 0.f, 1.f);
 const Vector3 World::up(0.f, 1.f, 0.f);
 
 World* World::getInstance()
@@ -98,6 +98,9 @@ void World::init()
 {
     player->init(Vector3(5, 10, 0));
     half_player = false;
+
+    front = Vector3(1.f, 0.f, 0.f);
+    right = Vector3(0.f, 0.f, 1.f);
 }
 
 void World::render()
