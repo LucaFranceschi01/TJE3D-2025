@@ -91,6 +91,8 @@ void PlayStage::onEnter(Stage* prev_stage)
         EntityUI* ui_element = static_cast<EntityUI*>(tmp);
         if (ui_element->buttonID == EntityUI::LIVES && !ui_element->visible) ui_element->visible = true;
     }
+
+    pins_collected = 0;
 }
 
 void PlayStage::onLeave(Stage* prev_stage)
