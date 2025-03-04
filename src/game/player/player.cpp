@@ -33,10 +33,13 @@ void Player::render(Camera* camera)
         drawText(550, 32, debug_str, Vector3(1, 1, 1), 2);
 
         debug_str = "velocity: " + velocity.to_string();
-        drawText(500, 48, debug_str, Vector3(1, 1, 1), 2);
+        drawText(500, 96, debug_str, Vector3(1, 1, 1), 2);
 
         debug_str = "move_dir: " + move_dir.to_string();
-        drawText(500, 64, debug_str, Vector3(1, 1, 1), 2);
+        drawText(500, 112, debug_str, Vector3(1, 1, 1), 2);
+
+        debug_str = "position: " + model.getTranslation().to_string();
+        drawText(500, 128, debug_str, Vector3(1, 1, 1), 2);
 
         renderDebug(camera);
     }
@@ -117,7 +120,9 @@ void Player::moveControl(Vector3& move_dir, const float dt)
         move_dir += front;
         pitch += rotational_speed * dt;
         }
-    if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) {
+    // if DEBUG is not here, the user in release can stop the player. move_dir + front - front = 0
+    if (world_instance->game_mode == World::DEBUG &&
+        (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN))) {
         move_dir -= front;
         pitch -= rotational_speed * dt;
         }
