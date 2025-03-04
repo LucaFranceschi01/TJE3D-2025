@@ -14,7 +14,7 @@ void main()
 {
 	vec2 uv = v_uv;
 	if (u_pin_ID >= u_pins_collected ) {
-		gl_FragColor = mix(texture2D(u_texture, uv ),vec4(0.f,0.f,0.f,0.f), 0.5);
+		gl_FragColor = mix(texture2D(u_texture, uv ),vec4(0,0,0,0), 0.5);
 	} else {
 		gl_FragColor = texture2D( u_texture, uv );
 	}
