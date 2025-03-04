@@ -23,7 +23,6 @@ EntityMesh::EntityMesh(Mesh* mesh, const Material& material, const std::string& 
     this->material = material;
     this->name = name;
 }
-
 void EntityMesh::render(Camera* camera)
 {
     if (!mesh) {
@@ -49,8 +48,14 @@ void EntityMesh::render(Camera* camera)
         must_render &= (camera->testBoxInFrustum(global_bb.center, global_bb.halfsize) != CLIP_OUTSIDE);
     }
     else {
+
         // iterate through all instanced entities
-        for (const Matrix44& model : models) {
+        for (const auto& pair : models) {
+
+            if (!pair.second) continue; // jump over the models that are not active
+
+            const Matrix44& model = pair.first;
+
             // same as getGlobalMatrix() but now "model" is not valid, we have to make this operation ourselves
             global_matrix = model * parent->getGlobalMatrix();
             distance = camera->eye.distance(global_matrix.getTranslation());
@@ -93,7 +98,7 @@ void EntityMesh::render(Camera* camera)
         getLOD(camera)->render(GL_TRIANGLES);
     }
     else {
-        // ATTRIBUTES ARE PER INSTANCE, UNIFORMS ARE PER (mesh¿)
+        // ATTRIBUTES ARE PER INSTANCE, UNIFORMS ARE PER (mesh)
         //material.shader->("a_color", material.color); // why cannot we do this ?
         mesh->renderInstanced(GL_TRIANGLES, must_render_models.data(), static_cast<int>(must_render_models.size()));
     }
@@ -106,7 +111,8 @@ void EntityMesh::render(Camera* camera)
         if (!isInstanced) {
             mesh->renderBounding(model);
         } else {
-            for (auto& m : models) {
+            for (auto& pair : models) {
+                Matrix44& m = pair.first;
                 mesh->renderBounding(m);
             }
         }
@@ -117,7 +123,8 @@ void EntityMesh::render(Camera* camera)
 
 void EntityMesh::addInstance(const Matrix44& model)
 {
-    models.push_back(model);
+
+    models.emplace_back(model, true); // warning of the compiler suggest using emplace_back instead of push_back
 }
 
 void EntityMesh::addMeshLOD(Mesh* mesh, float distance)

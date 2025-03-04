@@ -79,8 +79,9 @@ public:
     // scene
     std::set<Entity*> entities_to_destroy;
 
+
     void addEntity(Entity* entity);
-    void destroyEntity(Entity* entity);
+    void destroyEntity(Entity* entity, Vector3 collision_point);
 
     // colisions
     sCollisionData raycast(const Vector3& origin, const Vector3& direction, int layer = eColisionFilter::ALL, bool closest = true, float max_ray = 1000); // ns q es max_ray

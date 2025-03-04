@@ -109,7 +109,7 @@ void Game::onKeyDown(SDL_KeyboardEvent event)
     switch (event.keysym.sym) {
         case SDLK_ESCAPE: must_exit = true;
             break; //ESC key, kill the app
-        case SDLK_0: Shader::ReloadAll();
+        case SDLK_F1: Shader::ReloadAll();
             break;
     }
 

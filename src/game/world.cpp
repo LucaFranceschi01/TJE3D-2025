@@ -101,6 +101,16 @@ void World::init()
 
     front = Vector3(1.f, 0.f, 0.f);
     right = Vector3(0.f, 0.f, 1.f);
+
+    Entity* entity_root = root[current_map];
+
+    for (auto& child : entity_root->children) {
+        auto child_collider = dynamic_cast<EntityCollider*>(child);
+
+        if (child_collider == nullptr || !child_collider->isInstanced) continue;
+
+        child_collider->resetInstanced();
+    }
 }
 
 void World::render()
@@ -225,11 +235,20 @@ void World::addEntity(Entity* entity)
     root[current_map]->addChild(entity);
 }
 
-void World::destroyEntity(Entity* entity)
+void World::destroyEntity(Entity* entity, Vector3 collision_point)
 {
     // find to avoid inserting the same entity twice
     if (entities_to_destroy.find(entity) == entities_to_destroy.end()) {
-        entities_to_destroy.insert(entity);
+
+        EntityCollider* entity_collider = dynamic_cast<EntityCollider*>(entity);
+
+        if (!entity_collider->isInstanced) {
+            entities_to_destroy.insert(entity);
+
+        } else {
+            int model_min = entity_collider->smallestDistance(collision_point);
+            entity_collider->models[model_min].second = false;
+        }
     }
 }
 
@@ -262,8 +281,8 @@ sCollisionData World::raycast(const Vector3& origin, const Vector3& direction, i
                 return colision_data;
 
         } else {
-            for (const Matrix44& model : entity_collider->models) {
-
+            for (const auto& pair : entity_collider->models) {
+                const Matrix44& model = pair.first;
                 if (!entity_collider->mesh->testRayCollision(model, origin, direction, colision_point, colision_normal))
                     continue;
 
@@ -294,9 +313,6 @@ void World::test_scene_collisions(const Vector3& position,
 {
     for (auto entity : root[current_map]->children) {
         EntityCollider* entity_collider = dynamic_cast<EntityCollider*>(entity);
-
-        if (entity_collider == nullptr)
-            continue;
 
         entity_collider->getCollisions(position, colisions, ground_colisions);
     }

@@ -77,7 +77,7 @@ void Player::update(float dt)
     //move_dir.normalize(); If we do not normalize, the halfplayer will be always be parallel.
     // I dont know if its ok to no normalize
 
-    velocity += (move_dir * speed_mult);
+    velocity += 1000 * (move_dir * speed_mult) * dt;
 
     if (collision_fluid) {
         velocity.z *= 1.06;
@@ -145,13 +145,12 @@ void Player::moveControl(Vector3& move_dir, const float dt)
                 World::right.normalize();
             }
         } else {
-            move_dir -= right;
-            yaw += rotational_speed * dt;
+            move_dir -= right * 0.5f;
+            yaw += rotational_speed * dt * 0.5f;
         }
 
     }
     if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
-
 
         if (Input::isKeyPressed(SDL_SCANCODE_Z)) {
             if (World::front.z < 0) {
@@ -174,8 +173,8 @@ void Player::moveControl(Vector3& move_dir, const float dt)
                 World::right.normalize();
             }
         } else {
-            move_dir += right;
-            yaw -= rotational_speed * dt;
+            move_dir += right * 0.5f;
+            yaw -= rotational_speed * dt * 0.5f;
         }
     }
 }
@@ -226,11 +225,10 @@ bool Player::testCollisions(const Vector3& position, float dt)
                 Game::instance->currentStage->removeLifeUI();
 
                 // send the object to delete
-                instance->destroyEntity(collision_data.collider);
+                instance->destroyEntity(collision_data.collider, collision_data.col_point);
                 break;
             }
             case FLUID: {
-                // TODO: no detecta las colisiones con el objeto fluido
                 collision_fluid = true;
                 break;
             }
@@ -238,7 +236,7 @@ bool Player::testCollisions(const Vector3& position, float dt)
                 Game::instance->currentStage->collectPin();
 
                 // send the object to delete
-                instance->destroyEntity(collision_data.collider);
+                instance->destroyEntity(collision_data.collider, collision_data.col_point);
                 break;
             }
             default:
