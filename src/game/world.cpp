@@ -1,4 +1,7 @@
 #include "world.h"
+
+#include <valarray>
+
 #include "game.h"
 #include "scene_parser.h"
 
@@ -252,7 +255,7 @@ void World::destroyEntity(Entity* entity, Vector3 collision_point)
     }
 }
 
-sCollisionData World::raycast(const Vector3& origin, const Vector3& direction, int layer, bool closest, float max_ray)
+sCollisionData World::raycast(const Vector3& origin, const Vector3& direction, eColisionFilter layer, bool closest, float max_ray)
 {
     sCollisionData colision_data = {};
     // ns si hay algo encima del for
@@ -335,11 +338,32 @@ void World::onKeyDown(SDL_KeyboardEvent event)
         {
             if (!half_player) {
                 half_player = true;
-                half_player_left->init(player->model.getTranslation());
-                half_player_right->init(player->model.getTranslation());
+                Vector3 player_position = player->model.getTranslation();
+                // check for a wall
+                sCollisionData collision_data_left = raycast(player_position, -right, GROUND);
+                sCollisionData collision_data_right = raycast(player_position, right, GROUND);
+
+                float offset_left = 5, offset_right = 5;
+
+                if (collision_data_left.collided) {
+                    offset_left = std::abs(collision_data_left.distance) - 1.5f;
+                }
+
+                if (collision_data_right.collided) {
+                    offset_right = std::abs(collision_data_right.distance) - 1.5f;
+                }
+
+                Vector3 left_position = player_position;
+                Vector3 right_position = player_position;
+                left_position.z -= offset_left;
+                right_position.z += offset_right;
+
+                half_player_left->init(left_position);
+                half_player_right->init(right_position);
             } else {
                 half_player = false;
-                player->model.setTranslation(midPointHalfPlayers());
+                Vector3 mid_point = half_player_right->model.getTranslation().getMidPoint(half_player_left->model.getTranslation());
+                player->model.setTranslation(mid_point);
             }
             break;
         }
@@ -356,10 +380,9 @@ Vector3 World::midPointHalfPlayers()
     const Vector3& half_player_right_pos = half_player_right->model.getTranslation();
 
     float half_point_x = (half_player_left_pos.x - half_player_right_pos.x) / 2;
-    mid_point.x = half_point_x + half_player_right_pos.x;
+    mid_point.x = half_point_x + half_player_right_pos.x; // in release both are equal
 
     mid_point.y = half_player_left_pos.y;
-
 
     /*
     float half_point_z = (half_player_left_pos.z - half_player_right_pos.z) / 2;

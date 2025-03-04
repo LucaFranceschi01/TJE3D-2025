@@ -116,6 +116,7 @@ public:
 	void random(Vector3 range);
 
 	float distance(const Vector3& v) const;
+	Vector3 getMidPoint(const Vector3& v) const; /// returns the mid point between this and the passed
 
 	Vector3 cross( const Vector3& v ) const;
 	float dot( const Vector3& v ) const;
@@ -127,8 +128,10 @@ public:
 	void operator += (const Vector3& v) { x += v.x; y += v.y; z += v.z; }
 	void operator -= (const Vector3& v) { x -= v.x; y -= v.y; z -= v.z; }
 
-	/// we added this function to be able to print a vector more easily for test pursposes.
+	/// we added this function to be able to print a vector more easily for test purposes.
 	std::string to_string() const;
+
+
 };
 
 Vector3 normalize(Vector3 n);
