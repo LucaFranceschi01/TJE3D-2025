@@ -90,7 +90,11 @@ bool SceneParser::parse(const char* filename, Entity* root)
 		// Create instanced entity
 		if (render_data.models.size() > 1) {
 			new_entity->isInstanced = true;
-			new_entity->models = render_data.models; // Add all instances
+			//new_entity->models = render_data.models; // Add all instances
+			for (auto model : render_data.models) {
+				new_entity->models.emplace_back(model, true);
+
+			}
 		}
 		// Create normal entity
 		else {

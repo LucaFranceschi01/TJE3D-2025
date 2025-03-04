@@ -79,7 +79,7 @@ void Player::update(float dt)
     //move_dir.normalize(); If we do not normalize, the halfplayer will be always be parallel.
     // I dont know if its ok to no normalize
 
-    velocity += (move_dir * speed_mult);
+    velocity += 1000 * (move_dir * speed_mult) * dt;
 
     if (collision_fluid) {
         velocity.z *= 1.06;
@@ -116,15 +116,16 @@ void Player::moveControl(Vector3& move_dir, const float dt)
     World* world_instance = World::getInstance();
     if (world_instance->game_mode == World::RELEASE ||
         (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP))) {
-        move_dir += front * dt;
-        pitch += rotational_speed * dt;
+        move_dir += front;
+        pitch += rotational_speed;
         }
     if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) {
-        move_dir -= front * dt;
+        move_dir -= front;
         pitch -= rotational_speed * dt;
         }
     if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
         //
+
 
         if (Input::isKeyPressed(SDL_SCANCODE_Z)) {
             if (World::front.z < 0) {
@@ -147,14 +148,13 @@ void Player::moveControl(Vector3& move_dir, const float dt)
                 World::right.normalize();
             }
         } else {
-            move_dir -= right * dt;
+            move_dir -= right;
             yaw += rotational_speed * dt;
         }
 
     }
     if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
 
-
         if (Input::isKeyPressed(SDL_SCANCODE_Z)) {
             if (World::front.z < 0) {
                 World::front.x +=  dt;
@@ -176,7 +176,7 @@ void Player::moveControl(Vector3& move_dir, const float dt)
                 World::right.normalize();
             }
         } else {
-            move_dir += right * dt;
+            move_dir += right;
             yaw -= rotational_speed * dt;
         }
     }
@@ -228,11 +228,10 @@ bool Player::testCollisions(const Vector3& position, float dt)
                 Game::instance->currentStage->removeLifeUI();
 
                 // send the object to delete
-                instance->destroyEntity(collision_data.collider);
+                instance->destroyEntity(collision_data.collider, collision_data.col_point);
                 break;
             }
             case FLUID: {
-                // TODO: no detecta las colisiones con el objeto fluido
                 collision_fluid = true;
                 break;
             }
@@ -240,7 +239,7 @@ bool Player::testCollisions(const Vector3& position, float dt)
                 Game::instance->currentStage->collectPin();
 
                 // send the object to delete
-                instance->destroyEntity(collision_data.collider);
+                instance->destroyEntity(collision_data.collider, collision_data.col_point);
                 break;
             }
             default:

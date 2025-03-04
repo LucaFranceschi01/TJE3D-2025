@@ -1,4 +1,4 @@
-/*  by Xavier Cañadas and Luca Franceschi 2025
+/*  by Xavier Canadas and Luca Franceschi 2025
 	Here we define the EntityMesh class and the MeshLOD structure
 */
 
@@ -31,7 +31,7 @@ public:
 
 	// Attributes needed for instancing
 	bool isInstanced;
-	std::vector<Matrix44> models;
+	std::vector<std::pair<Matrix44,bool>> models;
 
 	// Attributes needed for LOD
 	std::vector<s_MeshLOD> meshLods;
