@@ -82,7 +82,7 @@ void Player::update(float dt)
     if (collision_fluid) {
         time_colision_fluid += dt;
         if (time_colision_fluid - time_fluid_i > 0.25) {
-            fluid_factor = rand() % 4 - 2;
+            fluid_factor = rand() % 5 - 2;
             time_fluid_i = time_colision_fluid;
         }
         move_dir.z = 1.0f * static_cast<float>(fluid_factor);
