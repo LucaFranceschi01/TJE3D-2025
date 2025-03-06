@@ -84,7 +84,7 @@ public:
     void destroyEntity(Entity* entity, Vector3 collision_point);
 
     // colisions
-    sCollisionData raycast(const Vector3& origin, const Vector3& direction, int layer = eColisionFilter::ALL, bool closest = true, float max_ray = 1000); // ns q es max_ray
+    sCollisionData raycast(const Vector3& origin, const Vector3& direction, eColisionFilter layer = ALL, bool closest = true, float max_ray = 1000); // ns q es max_ray
     void test_scene_collisions(const Vector3& position, std::vector<sCollisionData>& colisions, std::vector<sCollisionData>& ground_colisions);
 
     void onKeyDown(SDL_KeyboardEvent event);

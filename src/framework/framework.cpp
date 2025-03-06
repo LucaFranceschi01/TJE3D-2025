@@ -105,6 +105,17 @@ float Vector3::distance(const Vector3& v) const
 	return (float)(v - *this).length();
 }
 
+Vector3 Vector3::getMidPoint(const Vector3& v) const
+{
+	Vector3 midPoint = Vector3(0);
+	midPoint.x = (v.x - this->x) / 2 + this->x;
+	midPoint.y = (v.y - this->y) / 2 + this->y;
+	midPoint.z = (v.z - this->z) / 2 + this->z;
+
+	return midPoint;
+}
+
+
 Vector3 Vector3::cross( const Vector3& b ) const
 {
 	return Vector3(y*b.z - z*b.y, z*b.x - x*b.z, x*b.y - y*b.x);

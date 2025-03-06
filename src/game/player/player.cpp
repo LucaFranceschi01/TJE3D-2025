@@ -21,6 +21,11 @@ void Player::init(const Vector3& pos)
     jump_time = 0.0f;
     front = Vector3(0.f);
     right = Vector3(0.0f);
+    collision = false;
+    collision_fluid = false;
+    time_colision_fluid = 0;
+    time_fluid_i = 0;
+    fluid_factor = 0;
 }
 
 void Player::render(Camera* camera)
@@ -30,13 +35,19 @@ void Player::render(Camera* camera)
         drawText(500, 16, debug_str, Vector3(1, 1, 1), 2);
 
         debug_str = "front: " + front.to_string();
-        drawText(550, 32, debug_str, Vector3(1, 1, 1), 2);
+        drawText(550, 16 * 2, debug_str, Vector3(1, 1, 1), 2);
 
         debug_str = "velocity: " + velocity.to_string();
-        drawText(500, 48, debug_str, Vector3(1, 1, 1), 2);
+        drawText(500, 16 * 6, debug_str, Vector3(1, 1, 1), 2);
 
         debug_str = "move_dir: " + move_dir.to_string();
-        drawText(500, 64, debug_str, Vector3(1, 1, 1), 2);
+        drawText(500, 16 * 7, debug_str, Vector3(1, 1, 1), 2);
+
+        debug_str = "position: " + model.getTranslation().to_string();
+        drawText(500, 16 * 8, debug_str, Vector3(1, 1, 1), 2);
+
+        debug_str = "fluid factor: " + std::to_string(fluid_factor);
+        drawText(500, 16 * 9, debug_str, Vector3(1, 1, 1), 2);
 
         renderDebug(camera);
     }
@@ -68,6 +79,15 @@ void Player::update(float dt)
 
     moveControl(move_dir, dt);
 
+    if (collision_fluid) {
+        time_colision_fluid += dt;
+        if (time_colision_fluid - time_fluid_i > 0.25) {
+            fluid_factor = rand() % 5 - 2;
+            time_fluid_i = time_colision_fluid;
+        }
+        move_dir.z = 1.0f * static_cast<float>(fluid_factor);
+    }
+
     float speed_mult = walk_speed;
 
     if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT))
@@ -79,11 +99,7 @@ void Player::update(float dt)
 
     velocity += 1000 * (move_dir * speed_mult) * dt;
 
-    if (collision_fluid) {
-        velocity.z *= 1.06;
-    }
-
-    // Update player position
+    // Update player position. Colliding with wall.
     position += (is_colliding) ? velocity * dt : -velocity * 10.f * dt;
 
     // Get the rotation of the ball
@@ -117,7 +133,9 @@ void Player::moveControl(Vector3& move_dir, const float dt)
         move_dir += front;
         pitch += rotational_speed * dt;
         }
-    if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) {
+    // if DEBUG is not here, the user in release can stop the player. move_dir + front - front = 0
+    if (world_instance->game_mode == World::DEBUG &&
+        (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN))) {
         move_dir -= front;
         pitch -= rotational_speed * dt;
         }
@@ -126,7 +144,7 @@ void Player::moveControl(Vector3& move_dir, const float dt)
 
         if (Input::isKeyPressed(SDL_SCANCODE_Z)) {
             if (World::front.z < 0) {
-                World::front.x -=  dt;
+                World::front.x -= dt;
                 World::front.z -= dt;
 
                 World::right.x += dt;
@@ -145,7 +163,7 @@ void Player::moveControl(Vector3& move_dir, const float dt)
                 World::right.normalize();
             }
         } else {
-            move_dir -= right * 0.5f;
+            move_dir -= right;
             yaw += rotational_speed * dt * 0.5f;
         }
 
@@ -173,7 +191,7 @@ void Player::moveControl(Vector3& move_dir, const float dt)
                 World::right.normalize();
             }
         } else {
-            move_dir += right * 0.5f;
+            move_dir += right;
             yaw -= rotational_speed * dt * 0.5f;
         }
     }
@@ -267,6 +285,7 @@ bool Player::testCollisions(const Vector3& position, float dt)
     }
 
     collision = (!collisions.empty());
+
     return true;
 }
 
