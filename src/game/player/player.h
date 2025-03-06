@@ -25,6 +25,9 @@ protected:
 public:
     bool collision = false;
     bool collision_fluid = false;
+    float time_colision_fluid = 0;
+    float time_fluid_i = 0;
+    int fluid_factor = 0;
 
     Player() = default;
     Player(Mesh* mesh, const Material& material, const std::string& name) : EntityMesh(mesh, material, name) {};
