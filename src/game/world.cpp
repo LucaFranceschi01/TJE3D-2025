@@ -52,7 +52,7 @@ World::World()
     half_player_right = new HalfPlayer(Mesh::Get("data/player/Don_Bolon.obj"), player_material, false, "player");
     
     // Parse scenes
-    std::vector<std::string> sceneNames = { "data/myscene.scene", "data/myscene1.scene" };
+    std::vector<std::string> sceneNames = { "data/map1.scene", "data/map2.scene", "data/map3.scene" };
     SceneParser parser;
     bool completed;
 
