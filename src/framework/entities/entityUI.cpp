@@ -1,5 +1,6 @@
 #include "entityUI.h"
 
+#include "framework/audio.h"
 #include "framework/camera.h"
 #include "framework/input.h"
 
@@ -123,7 +124,7 @@ void EntityUI::update(float dt)
 		this->material.diffuse = this->pressed;
 
 		if (Input::wasMousePressed(SDL_BUTTON_LEFT)) {
-
+			//Audio::Play("data/sounds/click.mp3");
 			switch (buttonID)
 			{
 			case EntityUI::ENTER_MAP_SELECTOR:

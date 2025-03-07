@@ -6,6 +6,12 @@
 
 #include "framework/entities/entityMesh.h"
 
+enum eBooster: int
+{
+    INMORTAL = 0, SPIKES = 1, EXTRA_LIVE = 2, NONE_BOOSTER = 3
+};
+
+
 class Player : public EntityMesh
 {
 protected:
@@ -29,14 +35,19 @@ public:
     float time_fluid_i = 0;
     int fluid_factor = 0;
 
+    eBooster booster = NONE_BOOSTER;
+    float time_booster = 0;
+
+
     Player() = default;
     Player(Mesh* mesh, const Material& material, const std::string& name) : EntityMesh(mesh, material, name) {};
 
     ~Player() = default;
 
+    virtual void init(const Vector3& pos);
+
     void render(Camera* camera) override;
     void update(float dt) override;
-    virtual void init(const Vector3& pos);
     virtual void moveControl(Vector3& move_dir, float dt);
 
     bool testCollisions(const Vector3& position, float dt);

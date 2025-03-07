@@ -73,6 +73,9 @@ bool SceneParser::parse(const char* filename, Entity* root)
 			} else if (data.first.find("@Tag.Pin") != std::string::npos) {
 				new_entity->layer = PIN;
 				new_entity->material.shader = Shader::Get("data/shaders/instanced.vs", "data/shaders/texture.fs");
+			} else if (data.first.find("@Tag.Booster") != std::string::npos) {
+				new_entity->layer = BOOSTER;
+				new_entity->material.shader = Shader::Get("data/shaders/instanced.vs", "data/shaders/texture.fs");
 			}
 
 		} else {

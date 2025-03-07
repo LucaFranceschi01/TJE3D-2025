@@ -26,6 +26,7 @@ void Player::init(const Vector3& pos)
     time_colision_fluid = 0;
     time_fluid_i = 0;
     fluid_factor = 0;
+    booster = NONE_BOOSTER;
 }
 
 void Player::render(Camera* camera)
@@ -48,6 +49,12 @@ void Player::render(Camera* camera)
 
         debug_str = "fluid factor: " + std::to_string(fluid_factor);
         drawText(500, 16 * 9, debug_str, Vector3(1, 1, 1), 2);
+
+        debug_str = "booster type: " + std::to_string(booster);
+        drawText(500, 16 * 10, debug_str, Vector3(1, 1, 1), 2);
+
+        debug_str = "booster time: " + std::to_string(time_booster);
+        drawText(500, 16 * 11, debug_str, Vector3(1, 1, 1), 2);
 
         renderDebug(camera);
     }
@@ -94,7 +101,7 @@ void Player::update(float dt)
         speed_mult *= 0.3f;
 
     // TODO: decide
-    //move_dir.normalize(); If we do not normalize, the halfplayer will be always be parallel.
+    //move_dir.normalize(); If we do not normalize, the half player will be always be parallel.
     // I dont know if its ok to no normalize
 
     velocity += 1000 * (move_dir * speed_mult) * dt;
@@ -120,6 +127,15 @@ void Player::update(float dt)
     }
     if (move_dir.x == 0.f) {
         dampen(&pitch);
+    }
+
+    // booster update
+    if (time_booster > 0) {
+        time_booster -= dt;
+        if (time_booster <= 0) {
+            time_booster = 0;
+            booster = NONE_BOOSTER;
+        }
     }
 
     EntityMesh::update(dt);
@@ -238,16 +254,19 @@ bool Player::testCollisions(const Vector3& position, float dt)
             }
             case OBSTACLE: {
                 // quit one life
-                instance->live--;
-
-                Game::instance->currentStage->removeLifeUI();
+                if (booster != INMORTAL) {
+                    instance->live--;
+                    Game::instance->currentStage->removeLifeUI();
+                }
 
                 // send the object to delete
                 instance->destroyEntity(collision_data.collider, collision_data.col_point);
                 break;
             }
             case FLUID: {
-                collision_fluid = true;
+                if (booster != SPIKES) {
+                    collision_fluid = true;
+                }
                 break;
             }
             case PIN: {
@@ -257,13 +276,25 @@ bool Player::testCollisions(const Vector3& position, float dt)
                 instance->destroyEntity(collision_data.collider, collision_data.col_point);
                 break;
             }
+            case BOOSTER: {
+                int range_booster = (World::getInstance()->live < 3) ? 3 : 2; // no not allow more than three lives
+
+                booster = static_cast<eBooster>(rand() % range_booster); // booster 0, 1 or 2
+                time_booster = 5;
+
+                instance->destroyEntity(collision_data.collider, collision_data.col_point);
+
+                if (booster == EXTRA_LIVE) {
+                    World::getInstance()->live++;
+                    time_booster = 0;
+                    booster = NONE_BOOSTER;
+                }
+                break;
+            }
             default:
                 break;
         }
-
     }
-
-    float gravity = 100.0f;
 
     // this part is to make the jump fluid
     if (jump_time > 0) {
@@ -275,7 +306,7 @@ bool Player::testCollisions(const Vector3& position, float dt)
     if (!is_grounded) {
         front[1] = 0.f;
         if (jump_time <= 0) {
-            velocity.y += -gravity * dt;
+            velocity.y += -100.0f * dt;
             jump_time = 0;
         }
     }
@@ -286,13 +317,15 @@ bool Player::testCollisions(const Vector3& position, float dt)
 
     collision = (!collisions.empty());
 
+    if (!collision_fluid) {
+        fluid_factor = 0;
+    }
+
     return true;
 }
 
 void Player::renderDebug(Camera* camera)
 {
-    float sphere_radius = 1.f;
-
     Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
     Mesh* mesh = Mesh::Get("data/meshes/sphere.obj");
     Matrix44 m = model;
@@ -300,6 +333,7 @@ void Player::renderDebug(Camera* camera)
     shader->enable();
 
     {
+        float sphere_radius = 1.f;
         Vector4 color;
 
         if (collision_fluid) {
@@ -310,7 +344,6 @@ void Player::renderDebug(Camera* camera)
         } else {
             color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
         }
-
 
         m.scale(sphere_radius, sphere_radius, sphere_radius);
         shader->setUniform("u_color", color);
