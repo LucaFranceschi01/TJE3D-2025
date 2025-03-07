@@ -1,7 +1,7 @@
 # Blender 4.3.2
 # www.blender.org
 mtllib @Tag.Pin.mtl
-o Pin
+o Pin.010
 v 0.397659 0.009681 0.342300
 v 0.559689 0.009681 0.498850
 v 0.908831 2.165710 0.879969
