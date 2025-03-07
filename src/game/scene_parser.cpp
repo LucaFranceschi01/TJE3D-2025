@@ -108,6 +108,9 @@ bool SceneParser::parse(const char* filename, Entity* root)
 		root->addChild(new_entity);
 	}
 
+	// clear mesh_to_load vector to parse another file
+	meshes_to_load.clear();
+
 	std::cout << "Scene [OK]" << " Meshes added: " << mesh_count << std::endl;
 	return true;
 }
