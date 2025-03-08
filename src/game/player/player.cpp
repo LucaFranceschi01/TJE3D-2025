@@ -86,15 +86,6 @@ void Player::update(float dt)
 
     moveControl(move_dir, dt);
 
-    if (collision_fluid) {
-        time_colision_fluid += dt;
-        if (time_colision_fluid - time_fluid_i > 0.25) {
-            fluid_factor = rand() % 5 - 2;
-            time_fluid_i = time_colision_fluid;
-        }
-        move_dir.z = 1.0f * static_cast<float>(fluid_factor);
-    }
-
     float speed_mult = walk_speed;
 
     if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT))
@@ -105,6 +96,15 @@ void Player::update(float dt)
     // I dont know if its ok to no normalize
 
     velocity += 1000 * (move_dir * speed_mult) * dt;
+
+    if (collision_fluid) {
+        time_colision_fluid += dt;
+        if (time_colision_fluid - time_fluid_i > 0.25) {
+            fluid_factor = rand() % 5 - 2;
+            time_fluid_i = time_colision_fluid;
+        }
+        velocity.z += 1000.0f * static_cast<float>(fluid_factor) * dt;
+    }
 
     // Update player position. Colliding with wall.
     position += (is_colliding) ? velocity * dt : -velocity * 10.f * dt;
