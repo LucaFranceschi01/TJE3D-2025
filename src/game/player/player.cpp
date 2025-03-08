@@ -239,6 +239,7 @@ bool Player::testCollisions(const Vector3& position, float dt)
 
     bool is_grounded = false;
     collision_fluid = false;
+    Game* game_instance = Game::instance;
 
     // environment collisions
     for (const sCollisionData& collision_data : collisions) {
@@ -268,7 +269,7 @@ bool Player::testCollisions(const Vector3& position, float dt)
                 // quit one life
                 if (booster != INMORTAL) {
                     instance->live--;
-                    Game::instance->currentStage->removeLifeUI();
+                    game_instance->currentStage->removeLifeUI();
                 }
 
                 // send the object to delete
@@ -282,14 +283,14 @@ bool Player::testCollisions(const Vector3& position, float dt)
                 break;
             }
             case PIN: {
-                Game::instance->currentStage->collectPin();
+                game_instance->currentStage->collectPin();
 
                 // send the object to delete
                 instance->destroyEntity(collision_data.collider, collision_data.col_point);
                 break;
             }
             case BOOSTER: {
-                int range_booster = (World::getInstance()->live < 3) ? 3 : 2; // no not allow more than three lives
+                int range_booster = (instance->live < 3) ? 3 : 2; // no not allow more than three lives
 
                 booster = static_cast<eBooster>(rand() % range_booster); // booster 0, 1 or 2
                 time_booster = 5;
@@ -297,11 +298,16 @@ bool Player::testCollisions(const Vector3& position, float dt)
                 instance->destroyEntity(collision_data.collider, collision_data.col_point);
 
                 if (booster == EXTRA_LIVE) {
-                    World::getInstance()->live++;
+                    instance->live++;
                     time_booster = 0;
                     booster = NONE_BOOSTER;
                 }
                 break;
+            }
+            case FINISHLINE:
+            {
+                game_instance->goToStage(MAP_SEL_ST); // TODO: CREATE WIN STAGE
+                game_instance->nextMap();
             }
             default:
                 break;

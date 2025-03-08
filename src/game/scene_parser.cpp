@@ -76,6 +76,9 @@ bool SceneParser::parse(const char* filename, Entity* root)
 			} else if (data.first.find("@Tag.Booster") != std::string::npos) {
 				new_entity->layer = BOOSTER;
 				new_entity->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+			} else if (data.first.find("@Tag.FinishLine") != std::string::npos) {
+				new_entity->layer = FINISHLINE;
+				new_entity->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 			}
 
 		} else {

@@ -9,6 +9,8 @@
 #include "framework/entities/entityUI.h"
 #include "framework/input.h"
 
+#include <algorithm>
+
 MenuStage::MenuStage(e_MenuID menu)
 {
     World* instance = World::getInstance();
@@ -57,7 +59,8 @@ void MenuStage::init()
     {
         stage_type = MAP_SEL_ST; 
         UI_root = UI_root_tmp;
-        std::vector<std::string> mapNames = { "map1.png", "map2.png" , "map3.png" };
+        
+        mapNames = { "M1_Tilted_Tenpins", "M2_Twisted_Lanes" , "M3_Tenpin_Crusher" };
 
         EntityUI* btn = new EntityUI(mat, Vector2(width / 2.f, height / 2.f),
             Vector2(width, height), "data/textures/ui/background.png");
@@ -73,7 +76,7 @@ void MenuStage::init()
         uint8 mapID = 0;
         for (std::string name : mapNames) {
             btn = new EntityUI(mat, Vector2(width / 2.f + mapID, height / 2.f),
-                Vector2(256.f, 256.f), std::string("data/textures/ui/") + name, EntityUI::MAP_THUMBNAIL);
+                Vector2(256.f, 256.f), std::string("data/textures/ui/") + name + std::string(".png"), EntityUI::MAP_THUMBNAIL);
             btn->mapID = mapID;
             UI_root->addChild(btn);
             mapID++;
@@ -109,6 +112,33 @@ void MenuStage::init()
 void MenuStage::render()
 {
     UI_root->render(camera2D);
+
+    switch (menu) {
+    case MenuStage::MAP_SEL:
+    {
+        Game* instance = Game::instance;
+        std::string name = mapNames[instance->currentMap];
+        std::replace(name.begin(), name.end(), '_', ' ');
+        std::vector<float> text_length = { 92.f, 91.f, 96.f }; // hardcoded by looking at lengths of text below to center them
+        float scaling = 5.f;
+        drawText(instance->window_width / 2.f - text_length[instance->currentMap] * scaling / 2.f,
+            instance->window_height * 1.f / 5.f, name, Vector3(1.f), scaling);
+
+
+        scaling = 4.f;
+        float len = 28.f + 15.f + 5.f * 2;
+        if (instance->total_pins == 0) {
+            len += 5.f;
+        }
+        else {
+            len += ceil(log10(instance->total_pins) + 0.000000001f) * 5.f;
+        }
+        drawText(instance->window_width / 2.f - len * scaling / 2.f, instance->window_height * 10.f / 11.f,
+            std::string("Pins: ") + std::to_string(instance->total_pins) + std::string(" / ") + std::to_string(30),
+            Vector3(1.f), scaling);
+        break;
+    }
+    }
 }
 
 void MenuStage::update(float dt)

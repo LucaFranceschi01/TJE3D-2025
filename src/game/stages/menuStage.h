@@ -18,6 +18,8 @@ public:
     Entity* UI_root = nullptr;
     Camera* camera2D = nullptr;
 
+    std::vector<std::string> mapNames;
+
     // constructor
     MenuStage(e_MenuID menu);
     ~MenuStage() = default;
