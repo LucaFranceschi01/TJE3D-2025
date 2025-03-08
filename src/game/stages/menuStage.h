@@ -10,7 +10,7 @@ class MenuStage : public Stage
 {
 public:
     enum e_MenuID {
-        MAIN, MAP_SEL, PAUSE, UNDEFINED
+        MAIN, MAP_SEL, PAUSE, DEATH, WIN, UNDEFINED
     };
 
     e_MenuID menu;

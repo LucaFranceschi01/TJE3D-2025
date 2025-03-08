@@ -8,6 +8,8 @@
 
 #include "game/stages/stage.h"
 
+constexpr auto MAP_COUNT = 3;;
+
 class Game
 {
 public:

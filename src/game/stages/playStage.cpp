@@ -116,6 +116,14 @@ void PlayStage::onKeyDown(SDL_KeyboardEvent event)
         case SDLK_RSHIFT:
             Game::instance->debug_view = !Game::instance->debug_view;
             break;
+        case SDLK_q:
+            if (!Game::instance->paused) switchPauseResume();
+            else Game::instance->goToStage(MAP_SEL_ST);
+            break;
+        case SDLK_RETURN:
+        case SDLK_r:
+            if (Game::instance->paused) switchPauseResume();
+            break;
         default:
             break;
     }

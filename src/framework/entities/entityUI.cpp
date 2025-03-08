@@ -139,8 +139,19 @@ void EntityUI::update(float dt)
 				}
 				break;
 			case EntityUI::NEXT_MAP:
+			{
+				uint8 tmp_map_counter = instance->currentMap;
 				instance->nextMap();
+				if (instance->currentStage->stage_type == StageType::WIN_ST) {
+					if (tmp_map_counter != instance->currentMap) {
+						instance->goToStage(PLAY_ST);
+					}
+					else {
+						instance->goToStage(MAP_SEL_ST); // TODO: CREDITS STAGE
+					}
+				}
 				break;
+			}
 			case EntityUI::PREVIOUS_MAP:
 				instance->previousMap();
 				break;

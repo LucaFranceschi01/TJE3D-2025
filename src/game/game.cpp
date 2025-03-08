@@ -20,8 +20,6 @@
 
 Game* Game::instance = NULL;
 
-constexpr auto MAP_COUNT = 3;
-
 Game::Game(int window_width, int window_height, SDL_Window* window)
 {
     this->window_width = window_width;
@@ -42,6 +40,8 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     stages[MAIN_MENU_ST] = new MenuStage(MenuStage::MAIN);
     stages[MAP_SEL_ST] = new MenuStage(MenuStage::MAP_SEL);
     stages[PLAY_ST] = new PlayStage();
+    stages[DEATH_ST] = new MenuStage(MenuStage::DEATH);
+    stages[WIN_ST] = new MenuStage(MenuStage::WIN);
 
     for (auto& entry : stages) {
         Stage* stage = entry.second;

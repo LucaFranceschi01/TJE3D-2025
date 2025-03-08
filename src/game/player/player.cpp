@@ -69,7 +69,7 @@ void Player::update(float dt)
     // Death cutscene
     if (world_instance->live <= 0 || position.y <= 0) {
         Audio::Play("data/sounds/sad_horn.wav");
-        Game::instance->goToStage(MAP_SEL_ST);
+        Game::instance->goToStage(DEATH_ST);
     }
 
     // If camera is in free mode, avoid moving the player
@@ -306,8 +306,8 @@ bool Player::testCollisions(const Vector3& position, float dt)
             }
             case FINISHLINE:
             {
-                game_instance->goToStage(MAP_SEL_ST); // TODO: CREATE WIN STAGE
-                game_instance->nextMap();
+                game_instance->goToStage(WIN_ST); // TODO: CREATE WIN STAGE
+                break;
             }
             default:
                 break;
