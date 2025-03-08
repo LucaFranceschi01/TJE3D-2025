@@ -1,7 +1,7 @@
 # Blender 4.3.2
 # www.blender.org
 mtllib @Tag.Fluid.Wine.mtl
-o FluidWine.005
+o FluidWine
 v -22.410221 0.104115 -19.612625
 v -14.788572 0.259005 -12.000756
 v -11.356775 0.259005 -15.430292

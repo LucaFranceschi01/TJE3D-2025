@@ -1,7 +1,7 @@
 # Blender 4.3.2
 # www.blender.org
 mtllib @Tag.Ground.4.mtl
-o GroundSlopeRight.001
+o GroundSlopeRight
 v -40.000000 -1.000000 24.000000
 v -40.000000 1.000000 24.000000
 v -40.000000 -1.000000 -24.000000
