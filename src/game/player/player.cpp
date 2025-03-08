@@ -95,15 +95,21 @@ void Player::update(float dt)
     //move_dir.normalize(); If we do not normalize, the half player will be always be parallel.
     // I dont know if its ok to no normalize
 
-    velocity += 1000 * (move_dir * speed_mult) * dt;
+    //velocity += 1000 * (move_dir * speed_mult) * dt;
 
     if (collision_fluid) {
+        
         time_colision_fluid += dt;
         if (time_colision_fluid - time_fluid_i > 0.25) {
             fluid_factor = rand() % 5 - 2;
             time_fluid_i = time_colision_fluid;
         }
-        velocity.z += 1000.0f * static_cast<float>(fluid_factor) * dt;
+        velocity.z += 25.0f * static_cast<float>(fluid_factor) * dt;
+
+        velocity += 0.12 * 1000.f * (move_dir * speed_mult) * dt;
+    }
+    else {
+        velocity += 1000 * (move_dir * speed_mult) * dt;
     }
 
     // Update player position. Colliding with wall.
@@ -119,14 +125,20 @@ void Player::update(float dt)
     model.rotate(pitch, World::right);
 
     // Decrease velocities and rotations when not moving
-    velocity.x *= 0.9f;
-    velocity.z *= 0.9f;
+    if (!collision_fluid) {
+        velocity.x *= 0.9f;
+        velocity.z *= 0.9f;
 
-    if (move_dir.z == 0.f) {
-        dampen(&yaw);
+        if (move_dir.z == 0.f) {
+            dampen(&yaw);
+        }
+        if (move_dir.x == 0.f) {
+            dampen(&pitch);
+        }
     }
-    if (move_dir.x == 0.f) {
-        dampen(&pitch);
+    else {
+        velocity.x = clamp(velocity.x, -45.f, 45.f);
+        velocity.z = clamp(velocity.z, -23.f, 23.f);
     }
 
     // booster update
