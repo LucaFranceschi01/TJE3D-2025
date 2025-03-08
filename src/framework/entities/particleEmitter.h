@@ -1,11 +1,17 @@
+/*  Class provided by https://github.com/jxarco
+*/
+
 #pragma once
 
 #include "entity.h"
 
+#include "framework/includes.h"
+#include "framework/framework.h"
+
 class Texture;
 class Camera;
 
-struct s_Particle {
+struct sParticle {
 	int id = -1;
 	Vector3 position;
 	Vector3 velocity;
@@ -14,12 +20,11 @@ struct s_Particle {
 	bool active = false;
 };
 
-class ParticleEmitter : Entity {
+class ParticleEmitter : public Entity {
 
 	int max_particles = 300;
 	int active_particles = 0;
-	// Particle container
-	std::vector<s_Particle> particles;
+	std::vector<sParticle> particles;
 
 	// Properties of the emitter
 	int last_id = 0;
@@ -28,28 +33,28 @@ class ParticleEmitter : Entity {
 
 	Vector3 emit_position = {};
 	Vector3 emit_velocity = {};
-	float random_factor = 0.f;
+	float random_factor = 0.0f;
 
 	// Properties of the particles
-	float max_ttl = 5.f;
+	float max_ttl = 3.f;
+	std::vector<Vector4> colors = { Vector4(1.0f, 1.0f, 1.0f, 1.0f) };
 	std::vector<float> sizes = { 0.5f };
-	//std::vector<float> alphas;
-	std::vector<Vector4> colors = { Vector4(1.f) };
 	Texture* texture = nullptr;
-
 	int texture_grid_size = 1;
 
 	bool additive_blending = false;
-	bool animated_texture = false;
+	bool animated_texture = false;	// animation tiles
 	bool sort_distance = true;
 	bool emission_enabled = true;
 
 	template<typename T>
 	T sample(float time, int n, T* data) {
+		// Convert range 0..1 to 0..n-1
 		float time_in_table = time * (n - 1);
+		// if time_in_table = 1.2.      entry = 1., amount = 0.2
 		float entry;
 		float amount = modf(time_in_table, &entry);
-		return data[static_cast<int>(entry)] * (1 - amount) + data[static_cast<int>(entry)+1] * amount;
+		return data[(int)entry] * (1 - amount) + data[(int)entry + 1] * amount;
 	}
 
 	void emit();
@@ -59,7 +64,7 @@ public:
 	ParticleEmitter();
 
 	void render(Camera* camera) override;
-	void update(float dt);
+	void update(float delta_time);
 
 	void setTexture(const char* filename);
 	void setTexture(Texture* new_texture) { texture = new_texture; }
@@ -68,9 +73,9 @@ public:
 	void setEmitRate(float new_emit_rate) { emit_rate = new_emit_rate; }
 	void setMaxTimeAlive(float new_ttl) { max_ttl = new_ttl; }
 	void setEmissionEnabled(bool enabled) { emission_enabled = enabled; }
-	void setAdditiveBlending(bool enabled) { additive_blending = enabled; }
-	void setAnimatedTexture(bool enabled) { animated_texture = enabled; }
-	void setTextureGridSize(int new_tgs) { texture_grid_size = new_tgs; }
+	void setAdditiveBlendingEnabled(bool enabled) { additive_blending = enabled; }
+	void setAnimatedTexture(bool animated) { animated_texture = animated; }
+	void setTextureGridSize(int new_texture_grid_size) { texture_grid_size = new_texture_grid_size; }
 	void setMaxParticles(int new_max_particles) { max_particles = new_max_particles; }
 	void setRandomFactor(float new_random_factor) { random_factor = new_random_factor; }
 	void setColorsCurve(const std::vector<Vector4>& new_colors) { colors = new_colors; }
