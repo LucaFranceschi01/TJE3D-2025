@@ -41,6 +41,7 @@ class ParticleEmitter : public Entity {
 	std::vector<float> sizes = { 0.5f };
 	Texture* texture = nullptr;
 	int texture_grid_size = 1;
+	bool is_pixel_art = true;
 
 	bool additive_blending = false;
 	bool animated_texture = false;	// animation tiles
@@ -62,6 +63,7 @@ class ParticleEmitter : public Entity {
 public:
 
 	ParticleEmitter();
+	~ParticleEmitter() = default;
 
 	void render(Camera* camera) override;
 	void update(float delta_time);

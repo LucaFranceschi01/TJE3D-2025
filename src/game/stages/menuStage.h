@@ -6,6 +6,8 @@
 
 #include "stage.h"
 
+class ParticleEmitter;
+
 class MenuStage : public Stage
 {
 public:
@@ -16,7 +18,10 @@ public:
     e_MenuID menu;
 
     Entity* UI_root = nullptr;
+    Entity* background = nullptr;
     Camera* camera2D = nullptr;
+
+    ParticleEmitter* confetti = nullptr;
 
     std::vector<std::string> mapNames;
 
@@ -30,4 +35,6 @@ public:
     void update(float dt) override;
 
     void onKeyDown(SDL_KeyboardEvent event) override;
+    void onEnter(Stage* prev_stage) override;
+    void onLeave(Stage* new_stage) override;
 };

@@ -38,9 +38,12 @@ void ParticleEmitter::render(Camera* camera)
 	// {0, 0}	, {0.5, 0}
 	// {0, 0.5}	, {0.5, 0.5}
 	std::vector<Vector2> uv_offsets;
-	for (int j = 1; j <= texture_grid_size; ++j)
+	/*for (int j = 1; j <= texture_grid_size; ++j)
 		for (int i = 0; i < texture_grid_size; ++i)
-			uv_offsets.push_back(Vector2(i / (float)texture_grid_size, 1.f - j / (float)texture_grid_size));
+			uv_offsets.push_back(Vector2(i / (float)texture_grid_size, 1.f - j / (float)texture_grid_size));*/
+	for (int i = 0; i < texture_grid_size; i++) {
+		uv_offsets.push_back(Vector2(i / static_cast<float>(texture_grid_size), 0.f));
+	}
 
 	for (sParticle& p : particles)
 	{
@@ -57,7 +60,8 @@ void ParticleEmitter::render(Camera* camera)
 		Vector3 right = camera->getLocalVector(Vector3(1, 0, 0));
 		Vector3 top = camera->getLocalVector(Vector3::UP);
 
-		int grid_frames = (texture_grid_size * texture_grid_size) - 1;
+		//int grid_frames = (texture_grid_size * texture_grid_size) - 1;
+		int grid_frames = texture_grid_size;
 		int frame_index = animated_texture ? nt * grid_frames : p.id % grid_frames;
 		float d_uvs = 1.f / texture_grid_size;
 		Vector2 uv_offset = uv_offsets[frame_index];
@@ -100,7 +104,7 @@ void ParticleEmitter::render(Camera* camera)
 
 	glDepthMask(false);
 
-	Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/particle.fs");
+	Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
 	// Enable shader
 	shader->enable();
@@ -113,6 +117,17 @@ void ParticleEmitter::render(Camera* camera)
 	shader->setUniform("u_tiling", 1.f);
 	shader->setUniform("u_model", model);
 	if (texture) shader->setUniform("u_texture", texture, 0);
+	
+	if (is_pixel_art) {
+		// props to ChatGPT for these two lines of code
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+	else {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+
 
 	quad.render(GL_TRIANGLES);
 
@@ -121,6 +136,9 @@ void ParticleEmitter::render(Camera* camera)
 	glDepthMask(true);
 	glEnable(GL_CULL_FACE);
 	glDisable(GL_BLEND);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 void ParticleEmitter::update(float delta_time)
@@ -136,8 +154,9 @@ void ParticleEmitter::update(float delta_time)
 		if (!p.active)
 			continue;
 
-		Vector3 random_velocity = Vector3(random(random_factor, -random_factor * 0.5f), random(random_factor, -random_factor * 0.5f), random(random_factor, -random_factor * 0.5f));
+		Vector3 random_velocity = Vector3(random(random_factor, -random_factor * 0.48), 0.f, 0.f); // IS THIS RANDOM SLIGHTLY BIASED ???
 		p.position += (p.velocity + random_velocity) * delta_time;
+		//p.position.z = -0.5f;
 		p.ttl += delta_time;
 
 		// Kill particle if run out of time
@@ -169,7 +188,7 @@ void ParticleEmitter::emit()
 		p.id = last_id++;
 		p.ttl = 0.f;
 		p.active = true;
-		Vector3 random_pos = Vector3(random(random_factor, -random_factor * 0.5f), random(random_factor, -random_factor * 0.5f), random(random_factor, -random_factor * 0.5f));
+		Vector3 random_pos = Vector3(random(random_factor, -random_factor * 0.48f), 0.f, 0.f);
 		p.position = emit_position + random_pos;
 		p.velocity = emit_velocity;
 		active_particles++;

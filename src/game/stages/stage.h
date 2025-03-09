@@ -10,7 +10,7 @@ class Entity;
 class Camera;
 
 typedef enum {
-    MAIN_MENU_ST, MAP_SEL_ST, PLAY_ST, DEATH_ST, WIN_ST, UNDEFINED_ST
+    MAIN_MENU_ST, MAP_SEL_ST, PLAY_ST, DEATH_ST, WIN_ST, TOURNAMENT_FINISH_ST, UNDEFINED_ST
 } StageType;
 
 class Stage

@@ -9,6 +9,8 @@
 #include "framework/entities/entityUI.h"
 #include "framework/input.h"
 
+#include "framework/entities/particleEmitter.h"
+
 #include <algorithm>
 
 MenuStage::MenuStage(e_MenuID menu)
@@ -30,6 +32,7 @@ void MenuStage::init()
     Vector2 btn_size(128.f, 64.f);
 
     UI_root = new Entity();
+    background = new Entity();
 
     EntityUI* ui_elem;
     Material mat;
@@ -39,7 +42,7 @@ void MenuStage::init()
 
     ui_elem = new EntityUI(mat, Vector2(width / 2.f, height / 2.f),
         Vector2(width, height), "data/textures/ui/background.png");
-    UI_root->addChild(ui_elem);
+    background->addChild(ui_elem);
 
     switch (menu)
     {
@@ -65,7 +68,7 @@ void MenuStage::init()
 
         ui_elem = new EntityUI(mat_flat, Vector2(width / 2.f, height / 2.f),
             Vector2(width, height));
-        UI_root->addChild(ui_elem);
+        background->addChild(ui_elem);
 
         uint8 mapID = 0;
         for (std::string name : mapNames) {
@@ -102,7 +105,7 @@ void MenuStage::init()
 
         ui_elem = new EntityUI(mat_flat, Vector2(width / 2.f, height / 2.f),
             Vector2(width, height));
-        UI_root->addChild(ui_elem);
+        background->addChild(ui_elem);
 
         ui_elem = new EntityUI(mat, Vector2(width / 3.f, 500.f),
             btn_size, "yes", EntityUI::START_MAP);
@@ -119,7 +122,7 @@ void MenuStage::init()
 
         ui_elem = new EntityUI(mat_flat, Vector2(width / 2.f, height / 2.f),
             Vector2(width, height));
-        UI_root->addChild(ui_elem);
+        background->addChild(ui_elem);
 
         ui_elem = new EntityUI(mat, Vector2(width / 3.f, 500.f),
             btn_size, "yes", EntityUI::NEXT_MAP);
@@ -128,6 +131,23 @@ void MenuStage::init()
         ui_elem = new EntityUI(mat, Vector2(width * 2.f / 3.f, 500.f),
             btn_size, "no", EntityUI::ENTER_MAP_SELECTOR);
         UI_root->addChild(ui_elem);
+        
+        confetti = new ParticleEmitter();
+        confetti->setTexture("data/textures/particles/confetti.png");
+        confetti->setTextureGridSize(5);
+        confetti->setEmitRate(0.04f);
+        confetti->setEmitVelocity(Vector3(0.f, 150.f, 0.f));
+        confetti->setEmitPosition(Vector3(instance->window_width * 4.f / 7.f, 0.f, -0.5f));
+        confetti->setMaxTimeAlive(8.f);
+        confetti->setRandomFactor(instance->window_width);
+        confetti->setSizesCurve({
+            5.f,
+            15.f
+            });
+        confetti->setColorsCurve({ Vector4(1.f, 1.f, 1.f, 1.f) });
+        confetti->setAnimatedTexture(false);
+        confetti->setEmissionEnabled(false);
+
         break;
     }
     case MenuStage::UNDEFINED:
@@ -139,6 +159,10 @@ void MenuStage::init()
 
 void MenuStage::render()
 {
+    background->render(camera2D);
+
+    if (confetti) confetti->render(camera2D);
+
     UI_root->render(camera2D);
 
     Game* instance = Game::instance;
@@ -187,7 +211,6 @@ void MenuStage::render()
         drawText(instance->window_width / 2.f - len * scaling / 2.f, instance->window_height * 1.f / 3.f,
             std::string("You win"), Vector3(1.f), scaling);
 
-
         scaling = 5.f;
         if (instance->currentMap != MAP_COUNT - 1) {
             len = 89.f;
@@ -207,6 +230,8 @@ void MenuStage::render()
 void MenuStage::update(float dt)
 {
     UI_root->update(dt);
+
+    if (confetti) confetti->update(dt);
 }
 
 void MenuStage::onKeyDown(SDL_KeyboardEvent event)
@@ -240,4 +265,14 @@ void MenuStage::onKeyDown(SDL_KeyboardEvent event)
         else if (menu == DEATH || menu == WIN) instance->goToStage(MAP_SEL_ST);
         break;
     }
+}
+
+void MenuStage::onEnter(Stage* prev_stage)
+{
+    if (confetti) confetti->setEmissionEnabled(true);
+}
+
+void MenuStage::onLeave(Stage* new_stage)
+{
+    if (confetti) confetti->setEmissionEnabled(false);
 }
