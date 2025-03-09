@@ -151,10 +151,10 @@ void Player::update(float dt)
         velocity.x *= 0.9f;
         velocity.z *= 0.9f;
 
-        if (move_dir.z == 0.f) {
+        if (abs(move_dir.z) < 0.1f) {
             dampen(&yaw);
         }
-        if (move_dir.x == 0.f) {
+        if (abs(move_dir.x) < 0.1f) {
             dampen(&pitch);
         }
     }
@@ -181,8 +181,6 @@ void Player::update(float dt)
         }
     }
 
-
-
     EntityMesh::update(dt);
 }
 
@@ -208,19 +206,15 @@ void Player::moveControl(Vector3& move_dir, const float dt)
 
                 World::right.x += dt;
                 World::right.z -= dt;
-
-                World::front.normalize();
-                World::right.normalize();
             } else {
                 World::front.x +=  dt;
                 World::front.z -= dt;
 
                 World::right.x += dt;
                 World::right.z += dt;
-
-                World::front.normalize();
-                World::right.normalize();
             }
+            World::front.normalize();
+            World::right.normalize();
         } else {
             move_dir -= right * 0.5f;
             yaw += rotational_speed * dt * 0.5f;
@@ -235,25 +229,68 @@ void Player::moveControl(Vector3& move_dir, const float dt)
 
                 World::right.x -= dt;
                 World::right.z += dt;
-
-                World::front.normalize();
-                World::right.normalize();
             } else {
                 World::front.x -=  dt;
                 World::front.z += dt;
 
                 World::right.x -= dt;
                 World::right.z -= dt;
-
-                World::front.normalize();
-                World::right.normalize();
             }
+            World::front.normalize();
+            World::right.normalize();
         } else {
             move_dir += right * 0.5f;
             yaw -= rotational_speed * dt * 0.5f;
         }
     }
 
+    if (Input::gamepads[0].connected) {
+        Vector3 left_joystick(Input::gamepads[0].axis[LEFT_ANALOG_Y], 0.f, Input::gamepads[0].axis[LEFT_ANALOG_X]);
+        Vector3 right_joystick(Input::gamepads[0].axis[RIGHT_ANALOG_Y], 0.f, Input::gamepads[0].axis[RIGHT_ANALOG_X]);
+
+        Vector3* joystick;
+
+        if (left_joystick.length() > 0.15f) {
+            joystick = &left_joystick;
+        }
+        else {
+            joystick = &right_joystick;
+        }
+
+        if (world_instance->game_mode == World::RELEASE) {
+            joystick->x = 0.f;
+        }
+        
+        if (abs(joystick->z) > 0.1f) {
+            move_dir += right * *joystick * 0.5f;
+        }
+
+        if (abs(joystick->x) > 0.1f) {
+            move_dir -= front * *joystick;
+        }
+        
+        pitch -= rotational_speed * dt * joystick->x;
+        yaw -= rotational_speed * dt * joystick->z * 0.5f;
+
+        if (Input::isButtonPressed(4) || Input::isButtonPressed(5)) {
+            if (World::front.z < 0) {
+                World::front.x += dt * joystick->z;
+                World::front.z += dt * joystick->z;
+
+                World::right.x -= dt * joystick->z;
+                World::right.z += dt * joystick->z;
+            }
+            else {
+                World::front.x -= dt * joystick->z;
+                World::front.z += dt * joystick->z;
+
+                World::right.x -= dt * joystick->z;
+                World::right.z -= dt * joystick->z;
+            }
+            World::front.normalize();
+            World::right.normalize();
+        }
+    }
 }
 
 bool Player::testCollisions(const Vector3& position, float dt)
@@ -360,7 +397,7 @@ bool Player::testCollisions(const Vector3& position, float dt)
         }
     }
     // Handle jumping with better feel
-    else if (Input::wasKeyPressed(SDL_SCANCODE_SPACE)) {
+    else if (Input::wasKeyPressed(SDL_SCANCODE_SPACE) || Input::wasButtonPressed(0)) {
         jump_time = 0.25f;
     }
 

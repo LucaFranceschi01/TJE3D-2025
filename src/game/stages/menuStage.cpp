@@ -168,7 +168,7 @@ void MenuStage::init()
         std::vector<std::vector<std::string>> button_names = {
             {"", "ub"}, {"lb", "db", "rb"},
             {"", "w"}, {"a", "s", "d"},
-            {"e", "gp_x"}, {"z", "gp_y"}, {"q", "gp_b"}, {"r", "gp_menu"}, {"enter", "gp_a"},
+            {"e", "gp_x"}, {"z", "gp_lb", "gp_rb"}, {"q", "gp_b"}, {"r", "gp_menu"}, {"enter", "gp_a"},
             {"gp_view"}
         };
 

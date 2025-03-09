@@ -43,4 +43,35 @@ void HalfPlayer::moveControl(Vector3& move_dir, const float dt)
         move_dir += right;
         yaw -= rotational_speed * dt;
     }
+
+    if (Input::gamepads[0].connected) {
+        Vector3 left_joystick(Input::gamepads[0].axis[LEFT_ANALOG_Y], 0.f, Input::gamepads[0].axis[LEFT_ANALOG_X]);
+        Vector3 right_joystick(Input::gamepads[0].axis[RIGHT_ANALOG_Y], 0.f, Input::gamepads[0].axis[RIGHT_ANALOG_X]);
+
+        if (world_instance->game_mode == World::RELEASE) {
+            left_joystick.x = 0.f;
+            right_joystick.x = 0.f;
+        }
+
+        if (is_left) {
+            if (abs(left_joystick.z) > 0.1f) {
+                move_dir += right * left_joystick * 0.5f;
+            }
+            if (abs(left_joystick.x) > 0.1f) {
+                move_dir -= front * left_joystick;
+            }
+            pitch -= rotational_speed * dt * left_joystick.x;
+            yaw -= rotational_speed * dt * left_joystick.z * 0.5f;
+        }
+        else {
+            if (abs(right_joystick.z) > 0.1f) {
+                move_dir += right * right_joystick * 0.5f;
+            }
+            if (abs(right_joystick.x) > 0.1f) {
+                move_dir -= front * right_joystick;
+            }
+            pitch -= rotational_speed * dt * right_joystick.x;
+            yaw -= rotational_speed * dt * right_joystick.z * 0.5f;
+        }
+    }
 }
