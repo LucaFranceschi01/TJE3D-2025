@@ -34,7 +34,7 @@ PlayStage::PlayStage()
         UI_root->addChild(btn);
     }
 
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 10; i++) {
         btn = new EntityUI(mat, Vector2(32.f + i * 32.f, height - 32.f),
             Vector2(32.f, 64.f), "data/textures/ui/Pin.png", EntityUI::PIN_COUNTER);
         UI_root->addChild(btn);
