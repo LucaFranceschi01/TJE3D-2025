@@ -1,4 +1,4 @@
-/*  by Xavier Cañadas and Luca Franceschi 2025
+/*  by Xavier Canadas and Luca Franceschi 2025
     Here we define the base Entity class
 */
 

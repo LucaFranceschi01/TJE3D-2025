@@ -249,29 +249,26 @@ void MenuStage::render()
             }
             break;
         }
-        default: {
+        case INTRO_ST:
+        {
+            float offset2;
+            for (int i = 0; i < button_descriptions.size(); i++) {
+                if (button_descriptions[i] == "") continue;
+
+                if (i < 4) {
+                    offset2 = btn_size_small.y;
+                }
+                else {
+                    offset2 = offset / 2.f;
+                }
+                drawText(instance->window_width * 2.f / 7.f, instance->window_height / 6.f + i * (btn_size_small.y + offset) - offset2,
+                    button_descriptions[i], Vector3(1.f), 2.f);
+            }
             break;
         }
-    case INTRO_ST:
-    {
-        float offset2;
-        for (int i = 0; i < button_descriptions.size(); i++) {
-            if (button_descriptions[i] == "") continue;
-
-            if (i < 4) {
-                offset2 = btn_size_small.y;
-            }
-            else {
-                offset2 = offset / 2.f;
-            }
-            drawText(instance->window_width * 2.f / 7.f, instance->window_height / 6.f + i * (btn_size_small.y + offset) - offset2,
-                button_descriptions[i], Vector3(1.f), 2.f);
+        default:
+            break;
         }
-        break;
-    }
-    default:
-        break;
-    }
 }
 
 void MenuStage::update(float dt)

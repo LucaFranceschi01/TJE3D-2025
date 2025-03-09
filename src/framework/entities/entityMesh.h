@@ -44,5 +44,4 @@ public:
 	void addMeshLOD(Mesh* mesh, float distance);
 	Mesh* getLOD(Camera* camera);
 
-	virtual void onKeyDown(SDL_KeyboardEvent event) {};
 };

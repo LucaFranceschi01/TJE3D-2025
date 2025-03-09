@@ -34,7 +34,7 @@ private:
 
 public:
 
-	eColisionFilter layer = ALL;
+	eColisionFilter collision_type = ALL;
 	bool is_static = true; // TODO: hace falta?
 	bool collision = false;
 	bool is_visible = true;

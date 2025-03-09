@@ -265,7 +265,7 @@ sCollisionData World::raycast(const Vector3& origin, const Vector3& direction, e
 
         EntityCollider* entity_collider = dynamic_cast<EntityCollider*>(entity);
 
-        if (entity_collider == nullptr || !(entity_collider->layer & layer))
+        if (entity_collider == nullptr || !(entity_collider->collision_type & layer))
             continue;
 
         Vector3 colision_point, colision_normal;

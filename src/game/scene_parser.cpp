@@ -67,24 +67,24 @@ bool SceneParser::parse(const char* filename, Entity* root)
 		if (tag != std::string::npos) {
 
 			if (data.first.find("@Tag.Ground") != std::string::npos) {
-				new_entity->layer = GROUND;
+				new_entity->collision_type = GROUND;
 			} else if (data.first.find("@Tag.Fluid") != std::string::npos) {
-				new_entity->layer = FLUID;
+				new_entity->collision_type = FLUID;
 			} else if (data.first.find("@Tag.Pin") != std::string::npos) {
-				new_entity->layer = PIN;
+				new_entity->collision_type = PIN;
 				new_entity->material.shader = Shader::Get("data/shaders/instanced.vs", "data/shaders/texture.fs");
 			} else if (data.first.find("@Tag.Booster") != std::string::npos) {
-				new_entity->layer = BOOSTER;
+				new_entity->collision_type = BOOSTER;
 				new_entity->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 			} else if (data.first.find("@Tag.FinishLine") != std::string::npos) {
-				new_entity->layer = FINISHLINE;
+				new_entity->collision_type = FINISHLINE;
 				new_entity->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 			}
 
 		} else {
 			//Mesh* mesh = Mesh::Get(mesh_name.c_str());
 			//new_entity = new EntityCollider(mesh, mat);
-			new_entity->layer = OBSTACLE;
+			new_entity->collision_type = OBSTACLE;
 		}
 
 		if (!new_entity) {

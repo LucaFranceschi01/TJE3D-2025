@@ -276,7 +276,7 @@ bool Player::testCollisions(const Vector3& position, float dt)
 
     // environment collisions
     for (const sCollisionData& collision_data : collisions) {
-        switch (collision_data.collider->layer) {
+        switch (collision_data.collider->collision_type) {
             case GROUND:
             {
                 normal_orig = collision_data.col_normal;

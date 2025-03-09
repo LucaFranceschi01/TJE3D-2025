@@ -39,11 +39,6 @@ void EntityCollider::render(Camera* camera)
         must_render &= (camera->testBoxInFrustum(global_bb.center, global_bb.halfsize) != CLIP_OUTSIDE);
     }
     else {
-        if (layer == PIN) {
-            int a = 0;
-        }
-
-
 
         // iterate through all instanced entities
         for (const auto& pair : models) {
@@ -182,7 +177,7 @@ void EntityCollider::resetEntity()
 
     is_visible = true;
 
-    if (!isInstanced) return;
+    if (!isInstanced || collision_type == PIN) return;
 
     for (auto& pair : models) {
         pair.second = true;
