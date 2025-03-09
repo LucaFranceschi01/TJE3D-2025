@@ -38,10 +38,12 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 
     // construct and init all stages and set the first one
     stages[MAIN_MENU_ST] = new MenuStage(MAIN_MENU_ST);
+    stages[INTRO_ST] = new MenuStage(INTRO_ST);
     stages[MAP_SEL_ST] = new MenuStage(MAP_SEL_ST);
     stages[PLAY_ST] = new PlayStage();
     stages[DEATH_ST] = new MenuStage(DEATH_ST);
     stages[WIN_ST] = new MenuStage(WIN_ST);
+    stages[OUTRO_ST] = new MenuStage(OUTRO_ST);
 
     for (auto& entry : stages) {
         Stage* stage = entry.second;

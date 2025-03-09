@@ -61,3 +61,10 @@ float Entity::distance(Entity* e) const
 {
 	return model.getTranslation().distance(e->model.getTranslation());
 }
+
+void Entity::onKeyDown(SDL_KeyboardEvent event)
+{
+	for (int i = 0; i < children.size(); ++i) {
+		children[i]->onKeyDown(event);
+	}
+}

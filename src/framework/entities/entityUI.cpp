@@ -100,7 +100,7 @@ void EntityUI::render(Camera* camera2D)
 
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
-
+	
 	Entity::render(camera2D);
 }
 
@@ -122,6 +122,7 @@ void EntityUI::update(float dt)
 		&& buttonID != e_UIButtonID::PIN_COUNTER) {
 
 		this->material.diffuse = this->pressed;
+		this->is_button_pressed = false;
 
 		if (Input::wasMousePressed(SDL_BUTTON_LEFT)) {
 			//Audio::Play("data/sounds/click.mp3");
@@ -130,12 +131,18 @@ void EntityUI::update(float dt)
 			case EntityUI::ENTER_MAP_SELECTOR:
 				instance->goToStage(MAP_SEL_ST);
 				break;
+			case EntityUI::ENTER_INTRO:
+				instance->goToStage(INTRO_ST);
+				break;
 			case EntityUI::EXIT:
 				if (instance->currentStage->stage_type == MAIN_MENU_ST) {
 					instance->must_exit = true;
 				}
-				else if (instance->currentStage->stage_type == MAP_SEL_ST) {
+				else if (instance->currentStage->stage_type == INTRO_ST) {
 					instance->goToStage(MAIN_MENU_ST);
+				}
+				else if (instance->currentStage->stage_type == MAP_SEL_ST) {
+					instance->goToStage(INTRO_ST);
 				}
 				break;
 			case EntityUI::NEXT_MAP:
@@ -173,6 +180,10 @@ void EntityUI::update(float dt)
 		this->material.diffuse = this->base;
 	}
 
+	if (this->is_button_pressed) {
+		this->material.diffuse = this->pressed;
+	}
+
 	if (buttonID == MAP_THUMBNAIL) {
 		uint8 current_map = instance->currentMap;
 
@@ -181,4 +192,35 @@ void EntityUI::update(float dt)
 	}
 
 	Entity::update(dt);
+}
+
+std::map<int, std::string> event_mapping{
+	{SDLK_q, "q"},
+	{SDLK_w, "w"},
+	{SDLK_e, "e"},
+	{SDLK_r, "r"},
+	{SDLK_a, "a"},
+	{SDLK_s, "s"},
+	{SDLK_d, "d"},
+	{SDLK_z, "z"},
+	{SDLK_RETURN, "enter"},
+	{SDLK_UP, "ub"},
+	{SDLK_LEFT, "lb"},
+	{SDLK_DOWN, "db"},
+	{SDLK_RIGHT, "rb"}
+};
+
+void EntityUI::onKeyDown(SDL_KeyboardEvent event)
+{
+	//event_mapping[event.keysym.sym]
+	auto result = event_mapping.find(event.keysym.sym);
+
+	if (result == event_mapping.end()) return;
+
+	this->is_button_pressed = false;
+	if (name == result->second) {
+		this->is_button_pressed = true;
+	}
+
+	Entity::onKeyDown(event);
 }

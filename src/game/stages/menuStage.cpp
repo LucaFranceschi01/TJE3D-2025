@@ -13,6 +13,21 @@
 
 #include <algorithm>
 
+std::vector<std::string> button_descriptions = {
+            "", "Move the player",
+            "", "Move the player when split",
+            "Split and join Don Bolon",
+            "Change running direction",
+            "Tipically means EXIT, BACK or PAUSE",
+            "Resume playthrough",
+            "Tipycally means GO or PLAY"
+};
+
+Vector2 btn_size(128.f, 64.f);
+Vector2 btn_size_small(32.f, 32.f);
+float offset = 10.f;
+
+
 MenuStage::MenuStage(StageType menu)
 {
     World* instance = World::getInstance();
@@ -29,7 +44,6 @@ void MenuStage::init()
     World* instance = World::getInstance();
     float width = instance->window_width;
     float height = instance->window_height;
-    Vector2 btn_size(128.f, 64.f);
 
     UI_root = new Entity();
     background = new Entity();
@@ -40,19 +54,28 @@ void MenuStage::init()
     mat_flat.color = { 0.f, 0.f, 0.f, 0.4 };
     mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
+    // all menus have the same background
     ui_elem = new EntityUI(mat, Vector2(width / 2.f, height / 2.f),
         Vector2(width, height), "data/textures/ui/background.png");
     background->addChild(ui_elem);
 
+    // all menus but the main menu have the background slightly greyed out
+    if (stage_type != MAIN_MENU_ST) {
+        ui_elem = new EntityUI(mat_flat, Vector2(width / 2.f, height / 2.f),
+            Vector2(width, height));
+        background->addChild(ui_elem);
+    }
+
+    // initialize UI elements and particle systems in each stage
     switch (stage_type)
     {
     case MAIN_MENU_ST:
     {   
-        ui_elem = new EntityUI(mat, Vector2(width / 3.f, 500.f),
-            btn_size, "play", EntityUI::ENTER_MAP_SELECTOR);
+        ui_elem = new EntityUI(mat, Vector2(width / 3.f, height * 5.f / 6.f),
+            btn_size, "play", EntityUI::ENTER_INTRO);
         UI_root->addChild(ui_elem);
 
-        ui_elem = new EntityUI(mat, Vector2(width * 2.f / 3.f, 500.f),
+        ui_elem = new EntityUI(mat, Vector2(width * 2.f / 3.f, height * 5.f / 6.f),
             btn_size, "exit", EntityUI::EXIT);
         UI_root->addChild(ui_elem);
 
@@ -61,10 +84,6 @@ void MenuStage::init()
     case MAP_SEL_ST:
     {   
         mapNames = { "M1_Tilted_Tenpins", "M2_Twisted_Lanes" , "M3_Tenpin_Crusher" };
-
-        ui_elem = new EntityUI(mat_flat, Vector2(width / 2.f, height / 2.f),
-            Vector2(width, height));
-        background->addChild(ui_elem);
 
         uint8 mapID = 0;
         for (std::string name : mapNames) {
@@ -83,42 +102,34 @@ void MenuStage::init()
             btn_size, "right", EntityUI::NEXT_MAP);
         UI_root->addChild(ui_elem);
 
-        ui_elem = new EntityUI(mat, Vector2(width / 3.f, 500.f),
+        ui_elem = new EntityUI(mat, Vector2(width / 3.f, height * 5.f / 6.f),
             btn_size, "start", EntityUI::START_MAP);
         UI_root->addChild(ui_elem);
 
-        ui_elem = new EntityUI(mat, Vector2(width * 2.f / 3.f, 500.f),
-            btn_size, "back", EntityUI::EXIT);
+        ui_elem = new EntityUI(mat, Vector2(width * 2.f / 3.f, height * 5.f / 6.f),
+            btn_size, "back", EntityUI::ENTER_INTRO);
         UI_root->addChild(ui_elem);
 
         break;
     }
     case DEATH_ST:
     {
-        ui_elem = new EntityUI(mat_flat, Vector2(width / 2.f, height / 2.f),
-            Vector2(width, height));
-        background->addChild(ui_elem);
-
-        ui_elem = new EntityUI(mat, Vector2(width / 3.f, 500.f),
+        ui_elem = new EntityUI(mat, Vector2(width / 3.f, height * 5.f / 6.f),
             btn_size, "yes", EntityUI::START_MAP);
         UI_root->addChild(ui_elem);
 
-        ui_elem = new EntityUI(mat, Vector2(width * 2.f / 3.f, 500.f),
+        ui_elem = new EntityUI(mat, Vector2(width * 2.f / 3.f, height * 5.f / 6.f),
             btn_size, "no", EntityUI::ENTER_MAP_SELECTOR);
         UI_root->addChild(ui_elem);
         break;
     }
     case WIN_ST:
     {
-        ui_elem = new EntityUI(mat_flat, Vector2(width / 2.f, height / 2.f),
-            Vector2(width, height));
-        background->addChild(ui_elem);
-
-        ui_elem = new EntityUI(mat, Vector2(width / 3.f, 500.f),
+        ui_elem = new EntityUI(mat, Vector2(width / 3.f, height * 5.f / 6.f),
             btn_size, "yes", EntityUI::NEXT_MAP);
         UI_root->addChild(ui_elem);
 
-        ui_elem = new EntityUI(mat, Vector2(width * 2.f / 3.f, 500.f),
+        ui_elem = new EntityUI(mat, Vector2(width * 2.f / 3.f, height * 5.f / 6.f),
             btn_size, "no", EntityUI::ENTER_MAP_SELECTOR);
         UI_root->addChild(ui_elem);
         
@@ -137,6 +148,33 @@ void MenuStage::init()
         confetti->setColorsCurve({ Vector4(1.f, 1.f, 1.f, 1.f) });
         confetti->setAnimatedTexture(false);
         confetti->setEmissionEnabled(false);
+        break;
+    }
+    case INTRO_ST:
+    {
+        ui_elem = new EntityUI(mat, Vector2(width / 3.f, 500.f),
+            btn_size, "play", EntityUI::ENTER_MAP_SELECTOR);
+        UI_root->addChild(ui_elem);
+
+        ui_elem = new EntityUI(mat, Vector2(width * 2.f / 3.f, 500.f),
+            btn_size, "exit", EntityUI::EXIT);
+        UI_root->addChild(ui_elem);
+
+        std::vector<std::vector<std::string>> button_names = {
+            {"", "ub"}, {"lb", "db", "rb"},
+            {"", "w"}, {"a", "s", "d"},
+            {"e"}, {"z"}, {"q"}, {"r"}, {"enter"},
+        };
+
+        for (int i = 0; i < button_names.size(); i++) {
+            for (int j = 0; j < button_names[i].size(); j++) {
+                std::string& name = button_names[i][j];
+                if (name == "") continue;
+                ui_elem = new EntityUI(mat, Vector2(width / 7.f + j * (btn_size_small.x+offset), height / 6.f + i * (btn_size_small.y+offset)),
+                    btn_size_small, name, EntityUI::TUTORIAL_BTN);
+                UI_root->addChild(ui_elem);
+            }
+        }
         break;
     }
     default:
@@ -211,6 +249,25 @@ void MenuStage::render()
         }
         break;
     }
+    case INTRO_ST:
+    {
+        float offset2;
+        for (int i = 0; i < button_descriptions.size(); i++) {
+            if (button_descriptions[i] == "") continue;
+
+            if (i < 4) {
+                offset2 = btn_size_small.y;
+            }
+            else {
+                offset2 = offset / 2.f;
+            }
+            drawText(instance->window_width * 2.f / 7.f, instance->window_height / 6.f + i * (btn_size_small.y + offset) - offset2,
+                button_descriptions[i], Vector3(1.f), 2.f);
+        }
+        break;
+    }
+    default:
+        break;
     }
 }
 
@@ -223,7 +280,10 @@ void MenuStage::update(float dt)
 
 void MenuStage::onKeyDown(SDL_KeyboardEvent event)
 {
+    UI_root->onKeyDown(event);
+    
     Game* instance = Game::instance;
+
     switch (event.keysym.sym) {
     case SDLK_RIGHT:
         if (stage_type == MAP_SEL_ST) instance->nextMap();
@@ -232,7 +292,8 @@ void MenuStage::onKeyDown(SDL_KeyboardEvent event)
         if (stage_type == MAP_SEL_ST) instance->previousMap();
         break;
     case SDLK_RETURN:
-        if (stage_type == MAIN_MENU_ST) instance->goToStage(MAP_SEL_ST);
+        if (stage_type == MAIN_MENU_ST) instance->goToStage(INTRO_ST);
+        else if (stage_type == INTRO_ST) instance->goToStage(MAP_SEL_ST);
         else if (stage_type == MAP_SEL_ST) instance->goToStage(PLAY_ST);
         else if (stage_type == DEATH_ST) instance->goToStage(PLAY_ST);
         else if (stage_type == WIN_ST) {
@@ -248,7 +309,8 @@ void MenuStage::onKeyDown(SDL_KeyboardEvent event)
         break;
     case SDLK_q:
         if (stage_type == MAIN_MENU_ST) instance->must_exit = true;
-        else if (stage_type == MAP_SEL_ST) instance->goToStage(MAIN_MENU_ST);
+        else if (stage_type == INTRO_ST) instance->goToStage(MAIN_MENU_ST);
+        else if (stage_type == MAP_SEL_ST) instance->goToStage(INTRO_ST);
         else if (stage_type == DEATH_ST || stage_type == WIN_ST) instance->goToStage(MAP_SEL_ST);
         break;
     }

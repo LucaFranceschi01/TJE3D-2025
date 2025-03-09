@@ -5,6 +5,7 @@
 #pragma once
 
 #include "framework/framework.h" // includes string, vector, Matrix44
+#include "framework/input.h"
 
 // Forward declarations
 class Camera;
@@ -33,4 +34,6 @@ public:
     // Some useful methods
     Matrix44 getGlobalMatrix() const;
     float distance(Entity* e) const;
+
+    virtual void onKeyDown(SDL_KeyboardEvent event);
 };

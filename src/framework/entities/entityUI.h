@@ -30,6 +30,10 @@ public:
 		MAP_THUMBNAIL,
 		LIVES,
 		PIN_COUNTER,
+		TUTORIAL_BTN,
+		ENTER_INTRO,
+		ENTER_OUTRO,
+		ENTER_MAIN_MENU,
 		UNDEFINED
 	};
 
@@ -39,6 +43,8 @@ public:
 
 	Texture* base = nullptr;
 	Texture* pressed = nullptr;
+
+	bool is_button_pressed = false;
 
 	// ctors
 	EntityUI() = default;
@@ -51,4 +57,6 @@ public:
 	// Override virtual methods
 	void render(Camera* camera2D) override;
 	void update(float dt) override;
+
+	void onKeyDown(SDL_KeyboardEvent event) override;
 };
