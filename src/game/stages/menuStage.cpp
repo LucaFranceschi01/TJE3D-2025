@@ -194,61 +194,64 @@ void MenuStage::render()
     float scaling, len;
 
     switch (stage_type) {
-    case MAP_SEL_ST:
-    {
-        std::string name = mapNames[instance->currentMap];
-        std::replace(name.begin(), name.end(), '_', ' ');
-        std::vector<float> text_length = { 92.f, 91.f, 96.f }; // hardcoded by looking at lengths of text below to center them
-        scaling = 5.f;
-        drawText(instance->window_width / 2.f - text_length[instance->currentMap] * scaling / 2.f,
-            instance->window_height * 1.f / 5.f, name, Vector3(1.f), scaling);
+        case MAP_SEL_ST:
+        {
+            std::string name = mapNames[instance->currentMap];
+            std::replace(name.begin(), name.end(), '_', ' ');
+            std::vector<float> text_length = { 92.f, 91.f, 96.f }; // hardcoded by looking at lengths of text below to center them
+            scaling = 5.f;
+            drawText(instance->window_width / 2.f - text_length[instance->currentMap] * scaling / 2.f,
+                instance->window_height * 1.f / 5.f, name, Vector3(1.f), scaling);
 
-        scaling = 4.f;
-        len = 28.f + 15.f + 5.f * 2;
-        if (instance->total_pins == 0) {
-            len += 5.f;
+            scaling = 4.f;
+            len = 28.f + 15.f + 5.f * 2;
+            if (instance->total_pins == 0) {
+                len += 5.f;
+            }
+            else {
+                len += ceil(log10(instance->total_pins) + 0.000000001f) * 5.f;
+            }
+            drawText(instance->window_width / 2.f - len * scaling / 2.f, instance->window_height * 10.f / 11.f,
+                std::string("Pins: ") + std::to_string(instance->total_pins) + std::string(" / ") + std::to_string(30),
+                Vector3(1.f), scaling);
+            break;
         }
-        else {
-            len += ceil(log10(instance->total_pins) + 0.000000001f) * 5.f;
-        }
-        drawText(instance->window_width / 2.f - len * scaling / 2.f, instance->window_height * 10.f / 11.f,
-            std::string("Pins: ") + std::to_string(instance->total_pins) + std::string(" / ") + std::to_string(30),
-            Vector3(1.f), scaling);
-        break;
-    }
-    case DEATH_ST:
-    {
-        scaling = 10.f;
-        len = 44.f;
-        drawText(instance->window_width / 2.f - len * scaling / 2.f, instance->window_height * 1.f / 3.f,
-            std::string("You lose"), Vector3(1.f), scaling);
+        case DEATH_ST:
+        {
+            scaling = 10.f;
+            len = 44.f;
+            drawText(instance->window_width / 2.f - len * scaling / 2.f, instance->window_height * 1.f / 3.f,
+                std::string("You lose"), Vector3(1.f), scaling);
 
-        scaling = 5.f;
-        len = 66.f;
-        drawText(instance->window_width / 2.f - len * scaling / 2.f, instance->window_height * 2.f / 3.f,
-            std::string("Repeat map?"), Vector3(1.f), scaling);
-        break;
-    }
-    case WIN_ST:
-    {
-        scaling = 10.f;
-        len = 40.f;
-        drawText(instance->window_width / 2.f - len * scaling / 2.f, instance->window_height * 1.f / 3.f,
-            std::string("You win"), Vector3(1.f), scaling);
-
-        scaling = 5.f;
-        if (instance->currentMap != MAP_COUNT - 1) {
-            len = 89.f;
+            scaling = 5.f;
+            len = 66.f;
             drawText(instance->window_width / 2.f - len * scaling / 2.f, instance->window_height * 2.f / 3.f,
-                std::string("Go to next map?"), Vector3(1.f), scaling);
+                std::string("Repeat map?"), Vector3(1.f), scaling);
+            break;
         }
-        else {
-            len = 128.f;
-            drawText(instance->window_width / 2.f - len * scaling / 2.f, instance->window_height * 2.f / 3.f,
-                std::string("See tournament results?"), Vector3(1.f), scaling);
+        case WIN_ST:
+        {
+            scaling = 10.f;
+            len = 40.f;
+            drawText(instance->window_width / 2.f - len * scaling / 2.f, instance->window_height * 1.f / 3.f,
+                std::string("You win"), Vector3(1.f), scaling);
+
+            scaling = 5.f;
+            if (instance->currentMap != MAP_COUNT - 1) {
+                len = 89.f;
+                drawText(instance->window_width / 2.f - len * scaling / 2.f, instance->window_height * 2.f / 3.f,
+                    std::string("Go to next map?"), Vector3(1.f), scaling);
+            }
+            else {
+                len = 128.f;
+                drawText(instance->window_width / 2.f - len * scaling / 2.f, instance->window_height * 2.f / 3.f,
+                    std::string("See tournament results?"), Vector3(1.f), scaling);
+            }
+            break;
         }
-        break;
-    }
+        default: {
+            break;
+        }
     case INTRO_ST:
     {
         float offset2;

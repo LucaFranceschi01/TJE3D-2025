@@ -66,7 +66,7 @@ public:
 	~ParticleEmitter() = default;
 
 	void render(Camera* camera) override;
-	void update(float delta_time);
+	void update(float delta_time) override;
 
 	void setTexture(const char* filename);
 	void setTexture(Texture* new_texture) { texture = new_texture; }

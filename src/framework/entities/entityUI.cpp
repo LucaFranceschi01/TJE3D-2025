@@ -32,6 +32,49 @@ EntityUI::EntityUI(const Material& material, Vector2 position, Vector2 size,
 	mesh->createQuad(position.x, position.y, size.x, size.y, true); // uvs are flipped in the horizontal axis
 
 	if (name != "") {
+
+		switch (buttonID) {
+			case UNDEFINED:
+			case MAP_THUMBNAIL: {
+				this->is_pixel_art = false;
+				this->base = Texture::Get(name.c_str());
+				break;
+			}
+			case LIVES: {
+				this->is_pixel_art = false;
+				this->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/lives.fs");
+				this->base = Texture::Get(name.c_str());
+				break;
+			}
+			case PIN_COUNTER: {
+				this->is_pixel_art = false;
+				this->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/pins.fs");
+				this->base = Texture::Get(name.c_str());
+				this->pin_ID = pin_counter++;
+				break;
+			}
+			case BOOSTER: {
+				this->is_pixel_art = false;
+				this->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/boosters.fs");
+				this->base = Texture::Get(name.c_str());
+				this->booster_selected = NONE_BOOSTER;
+				break;
+			}
+			case FRAME: {
+				this->is_pixel_art = false;
+				this->base = Texture::Get(name.c_str());
+				this->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/frame.fs");
+				break;
+			}
+			default: {
+				// frame here
+				this->is_pixel_art = true;
+				this->base = Texture::Get((std::string("data/textures/ui/") + name + std::string("_base.png")).c_str());
+				this->pressed = Texture::Get((std::string("data/textures/ui/") + name + std::string("_press.png")).c_str());
+			}
+		}
+
+		/*
 		if ((buttonID == UNDEFINED || buttonID == MAP_THUMBNAIL)) {
 			this->is_pixel_art = false;
 			this->base = Texture::Get(name.c_str());
@@ -52,6 +95,7 @@ EntityUI::EntityUI(const Material& material, Vector2 position, Vector2 size,
 			this->base = Texture::Get((std::string("data/textures/ui/") + name + std::string("_base.png")).c_str());
 			this->pressed = Texture::Get((std::string("data/textures/ui/") + name + std::string("_press.png")).c_str());
 		}
+		*/
 	}
 
 	this->material.diffuse = this->base;
@@ -81,6 +125,10 @@ void EntityUI::render(Camera* camera2D)
 	material.shader->setUniform("u_lives", World::getInstance()->live);
 	material.shader->setUniform("u_pins_collected", Game::instance->currentStage->pins_collected);
 	material.shader->setUniform("u_pin_ID", pin_ID);
+	material.shader->setUniform("u_booster_selected", static_cast<float>(World::getInstance()->player->booster));
+	material.shader->setUniform("u_choosing_booster", World::getInstance()->player->choosing_booster);
+	material.shader->setUniform("u_choosing_booster_time", World::getInstance()->player->time_choosing_booster);
+	material.shader->setUniform("u_time", Game::instance->time); // I don't know if I'm going to use it
 
 	if (material.diffuse) material.shader->setUniform("u_texture", material.diffuse, 0);
 

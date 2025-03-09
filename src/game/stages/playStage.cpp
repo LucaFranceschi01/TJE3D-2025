@@ -26,7 +26,7 @@ PlayStage::PlayStage()
     UI_root = new Entity();
     EntityUI* btn;
     Material mat;
-    mat.color = { 0.f, 0.f, 0.f, 0.4 };
+    mat.color = { 0.f, 0.f, 0.f, 0.0f };
 
     for (int i = 0; i < World::getInstance()->live; i++) {
         btn = new EntityUI(mat, Vector2(width - 64.f * 3 + i * 64.f, 64.f),
@@ -60,6 +60,18 @@ PlayStage::PlayStage()
         wide_btn_size, "back2", EntityUI::ENTER_MAP_SELECTOR);
     btn->visible = false;
     UI_root->addChild(btn);
+
+    btn = new EntityUI(mat, Vector2(width - 64.f * 3 + 2 * 64.f, 2 * 64.f),
+        Vector2(64.f, 64.f), "data/textures/ui/frame.png", EntityUI::FRAME);
+    btn->visible = true;
+    UI_root->addChild(btn);
+
+    btn = new EntityUI(mat, Vector2(width - 64.f * 3 + 2 * 64.f, 2 * 64.f - 2),
+        Vector2(50.f, 50.f), "data/textures/ui/boosters.png", EntityUI::BOOSTER);
+    btn->visible = true;
+    UI_root->addChild(btn);
+
+    current_booster = NONE_BOOSTER;
 }
 
 void PlayStage::init()
@@ -140,11 +152,24 @@ void PlayStage::switchPauseResume()
     Game::instance->paused = !Game::instance->paused;
     for (Entity* element : UI_root->children) {
         EntityUI* ui_element = static_cast<EntityUI*>(element);
-        // TODO: poner bonito al acabar
-        if (ui_element->buttonID == EntityUI::PAUSE) ui_element->visible = !ui_element->visible;
-        if (ui_element->buttonID == EntityUI::RESUME) ui_element->visible = !ui_element->visible;
-        if (ui_element->buttonID == EntityUI::UNDEFINED) ui_element->visible = !ui_element->visible;
-        if (ui_element->buttonID == EntityUI::ENTER_MAP_SELECTOR) ui_element->visible = !ui_element->visible;
+
+        switch (ui_element->buttonID) {
+            case EntityUI::PAUSE:
+            case EntityUI::RESUME:
+            case EntityUI::UNDEFINED:
+            case EntityUI::ENTER_MAP_SELECTOR: {
+                ui_element->visible = !ui_element->visible;
+                break;
+            }
+            case EntityUI::FRAME:
+            case EntityUI::BOOSTER: {
+                ui_element->visible = !ui_element->visible;
+                // maybe do more things
+            }
+            default:
+                break;
+        }
+
     }
 }
 

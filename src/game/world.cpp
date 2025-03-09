@@ -110,9 +110,9 @@ void World::init()
     for (auto& child : entity_root->children) {
         auto child_collider = dynamic_cast<EntityCollider*>(child);
 
-        if (child_collider == nullptr || !child_collider->isInstanced) continue;
+        if (child_collider == nullptr) continue;
 
-        child_collider->resetInstanced();
+        child_collider->resetEntity();
     }
 }
 
@@ -212,12 +212,12 @@ void Camera::update(float dt)
         Vector3 player_tr = Vector3(0.0f);
         if (!world->half_player) {
             player_tr = world->player->model.getTranslation();
-            orbit_distance = 10;
-            up_factor = 3.5;
+            orbit_distance = 20;
+            up_factor = 5;
         } else {
             player_tr = world->midPointHalfPlayers();
-            orbit_distance = 20;
-            up_factor = 10;
+            orbit_distance = 100;
+            up_factor = 50;
         }
 
         Vector3 eye = player_tr - World::front * orbit_distance + Vector3::UP * up_factor;
@@ -246,7 +246,8 @@ void World::destroyEntity(Entity* entity, Vector3 collision_point)
         EntityCollider* entity_collider = dynamic_cast<EntityCollider*>(entity);
 
         if (!entity_collider->isInstanced) {
-            entities_to_destroy.insert(entity);
+            //entities_to_destroy.insert(entity);
+            entity_collider->is_visible = false;
 
         } else {
             int model_min = entity_collider->smallestDistance(collision_point);
@@ -367,6 +368,16 @@ void World::onKeyDown(SDL_KeyboardEvent event)
             }
             break;
         }
+    case SDLK_F2: {
+            Entity* entity_root = root[current_map];
+            for (auto& child : entity_root->children) {
+                auto child_collider = dynamic_cast<EntityCollider*>(child);
+
+                if (child_collider == nullptr) continue;
+
+                child_collider->resetEntity();
+            }
+        }
     }
 }
 
@@ -384,11 +395,11 @@ Vector3 World::midPointHalfPlayers()
 
     mid_point.y = half_player_left_pos.y;
 
-    /*
+
     float half_point_z = (half_player_left_pos.z - half_player_right_pos.z) / 2;
     mid_point.z = half_point_z + half_player_right_pos.z;
-    */
-    mid_point.z = 0.0f;
+
+    //mid_point.z = 0.0f;
 
     return mid_point;
 }

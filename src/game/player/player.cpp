@@ -7,9 +7,26 @@
 #include "framework/audio.h"
 #include "framework/camera.h"
 #include "framework/input.h"
+#include "framework/entities/entityUI.h"
+#include "game/stages/playStage.h"
 
 #include "graphics/mesh.h"
 #include "graphics/shader.h"
+
+
+Player::Player(Mesh* mesh, const Material& material, const std::string& name) : EntityMesh(mesh, material, name)
+{
+    Game* game_instance = Game::instance;
+    PlayStage* play_stage = dynamic_cast<PlayStage*>(game_instance->stages[PLAY_ST]);
+    if (play_stage == nullptr) return;
+
+    float width = game_instance->window_width;
+
+    Material mat;
+    mat.color = { 0.f, 0.f, 0.f, 0.0f };
+
+}
+
 
 void Player::init(const Vector3& pos)
 {
@@ -27,6 +44,10 @@ void Player::init(const Vector3& pos)
     time_fluid_i = 0;
     fluid_factor = 0;
     booster = NONE_BOOSTER;
+
+    PlayStage* play_stage = dynamic_cast<PlayStage*>(Game::instance->stages[PLAY_ST]);
+    if (play_stage == nullptr) return;
+
 }
 
 void Player::render(Camera* camera)
@@ -58,6 +79,7 @@ void Player::render(Camera* camera)
 
         renderDebug(camera);
     }
+
     EntityMesh::render(camera);
 }
 
@@ -142,13 +164,24 @@ void Player::update(float dt)
     }
 
     // booster update
-    if (time_booster > 0) {
-        time_booster -= dt;
-        if (time_booster <= 0) {
-            time_booster = 0;
-            booster = NONE_BOOSTER;
+
+    if (time_choosing_booster > 0) {
+        time_choosing_booster -= dt;
+        if (time_choosing_booster <= 0) {
+            choosing_booster = false;
+            time_choosing_booster = 0;
+        }
+    } else {
+        if (time_booster > 0) {
+            time_booster -= dt;
+            if (time_booster <= 0) {
+                time_booster = 0;
+                booster = NONE_BOOSTER;
+            }
         }
     }
+
+
 
     EntityMesh::update(dt);
 }
@@ -293,15 +326,15 @@ bool Player::testCollisions(const Vector3& position, float dt)
                 int range_booster = (instance->live < 3) ? 3 : 2; // no not allow more than three lives
 
                 booster = static_cast<eBooster>(rand() % range_booster); // booster 0, 1 or 2
-                time_booster = 5;
+                time_booster = 10;
 
                 instance->destroyEntity(collision_data.collider, collision_data.col_point);
 
                 if (booster == EXTRA_LIVE) {
                     instance->live++;
-                    time_booster = 0;
-                    booster = NONE_BOOSTER;
                 }
+                choosing_booster = true;
+                time_choosing_booster = 3;
                 break;
             }
             case FINISHLINE:

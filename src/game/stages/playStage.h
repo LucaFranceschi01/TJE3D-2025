@@ -6,11 +6,14 @@
 
 #include "stage.h"
 
+enum eBooster : int;
+
 class PlayStage : public Stage
 {
 public:
     Entity* UI_root = nullptr;
     Camera* camera2D = nullptr;
+    eBooster current_booster;
 
     // ctor and dtor
     PlayStage();

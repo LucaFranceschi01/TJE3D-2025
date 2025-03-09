@@ -6,6 +6,8 @@
 
 #include "framework/entities/entityMesh.h"
 
+class EntityUI;
+
 enum eBooster: int
 {
     INMORTAL = 0, SPIKES = 1, EXTRA_LIVE = 2, NONE_BOOSTER = 3
@@ -37,10 +39,13 @@ public:
 
     eBooster booster = NONE_BOOSTER;
     float time_booster = 0;
-
+    EntityUI* booster_ui = nullptr;
+    EntityUI* frame_booster_ui = nullptr;
+    bool choosing_booster = false;
+    float time_choosing_booster = 0;
 
     Player() = default;
-    Player(Mesh* mesh, const Material& material, const std::string& name) : EntityMesh(mesh, material, name) {};
+    Player(Mesh* mesh, const Material& material, const std::string& name);
 
     ~Player() = default;
 

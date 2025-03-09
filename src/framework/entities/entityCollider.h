@@ -37,6 +37,7 @@ public:
 	eColisionFilter layer = ALL;
 	bool is_static = true; // TODO: hace falta?
 	bool collision = false;
+	bool is_visible = true;
 
 	EntityCollider() = default;
 	EntityCollider(Mesh* mesh, const Material& material, const std::string& name = "") : EntityMesh(mesh, material, name) {};
@@ -50,5 +51,5 @@ public:
 		std::vector<sCollisionData>& ground_colisions);
 
 	int smallestDistance(Vector3 point);
-	void resetInstanced();
+	void resetEntity();
 };

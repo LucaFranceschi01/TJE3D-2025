@@ -5,6 +5,7 @@
 #pragma once
 
 #include "entityMesh.h"
+#include "game/player/player.h"
 
 // Forward declarations
 class Material;
@@ -34,12 +35,15 @@ public:
 		ENTER_INTRO,
 		ENTER_OUTRO,
 		ENTER_MAIN_MENU,
+		BOOSTER,
+		FRAME,
 		UNDEFINED
 	};
 
 	e_UIButtonID buttonID;
 	uint8 mapID = NULL;
 	uint8 pin_ID = NULL;
+	eBooster booster_selected = NONE_BOOSTER; // I don't know if I'm going to use it
 
 	Texture* base = nullptr;
 	Texture* pressed = nullptr;
