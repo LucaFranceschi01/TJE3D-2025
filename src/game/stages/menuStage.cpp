@@ -110,6 +110,10 @@ void MenuStage::init()
             btn_size, "back", EntityUI::ENTER_INTRO);
         UI_root->addChild(ui_elem);
 
+        ui_elem = new EntityUI(mat, Vector2(width - 64.f, 64.f),
+            Vector2(32.f, 32.f), "leaderboard", EntityUI::ENTER_LEADERBOARD);
+        UI_root->addChild(ui_elem);
+
         break;
     }
     case DEATH_ST:
@@ -139,7 +143,7 @@ void MenuStage::init()
         confetti->setEmitRate(0.04f);
         confetti->setEmitVelocity(Vector3(0.f, 150.f, 0.f));
         confetti->setEmitPosition(Vector3(instance->window_width * 4.f / 7.f, 0.f, -0.5f));
-        confetti->setMaxTimeAlive(8.f);
+        confetti->setMaxTimeAlive(5.f);
         confetti->setRandomFactor(instance->window_width);
         confetti->setSizesCurve({
             5.f,
@@ -175,6 +179,38 @@ void MenuStage::init()
                 UI_root->addChild(ui_elem);
             }
         }
+        break;
+    }
+    case OUTRO_ST:
+    {
+        ui_elem = new EntityUI(mat, Vector2(width / 3.f, height * 5.f / 6.f),
+            btn_size, "yes", EntityUI::EXIT);
+        UI_root->addChild(ui_elem);
+
+        ui_elem = new EntityUI(mat, Vector2(width * 2.f / 3.f, height * 5.f / 6.f),
+            btn_size, "no", EntityUI::ENTER_MAP_SELECTOR);
+        UI_root->addChild(ui_elem);
+
+        ui_elem = new EntityUI(mat, Vector2(64.f, 64.f),
+            Vector2(32.f, 32.f), "home", EntityUI::ENTER_MAP_SELECTOR);
+        UI_root->addChild(ui_elem);
+
+        confetti = new ParticleEmitter();
+        confetti->setTexture("data/textures/particles/confetti.png");
+        confetti->setTextureGridSize(5);
+        confetti->setEmitRate(0.04f);
+        confetti->setEmitVelocity(Vector3(0.f, 150.f, 0.f));
+        confetti->setEmitPosition(Vector3(instance->window_width * 4.f / 7.f, 0.f, -0.5f));
+        confetti->setMaxTimeAlive(5.f);
+        confetti->setRandomFactor(instance->window_width);
+        confetti->setSizesCurve({
+            5.f,
+            15.f
+            });
+        confetti->setColorsCurve({ Vector4(1.f, 1.f, 1.f, 1.f) });
+        confetti->setAnimatedTexture(false);
+        confetti->setEmissionEnabled(false);
+
         break;
     }
     default:
@@ -266,6 +302,55 @@ void MenuStage::render()
             }
             break;
         }
+        case OUTRO_ST:
+        {
+            scaling = 10.f;
+            len = 64.f;
+            float base_height = instance->window_height * 1.f / 7.f;
+            drawText(instance->window_width / 2.f - len * scaling / 2.f, base_height,
+                std::string("Leaderboard"), Vector3(1.f), scaling);
+
+            // kingpin and foul line are antagonists
+            std::vector<std::pair<std::string, int>> leaderboard = {
+                {"Kingpin", 25},
+                {"Foul Line", 17},
+                {"El Don Bolon", instance->total_pins}
+            };
+
+            std::sort(leaderboard.begin(), leaderboard.end(),
+                [](const std::pair<std::string, int>& p1, const std::pair<std::string, int>& p2){
+                    return p1.second > p2.second;
+                });
+
+            float offset = 100.f;
+            scaling = 5.f;
+            drawText(instance->window_width / 5.f, base_height + offset,
+                std::string("Contestant"), Vector3(1.f), scaling);
+            drawText(instance->window_width * 3.f / 5.f, base_height + offset,
+                std::string("Score"), Vector3(1.f), scaling);
+
+            offset = 50.f;
+            scaling = 3.f;
+            int current_position = 3;
+            for (int i = 0; i < leaderboard.size(); i++) {
+                drawText(instance->window_width / 5.f, base_height + 100.f*2 + offset*i,
+                    std::to_string(i + 1) + std::string(". ") + leaderboard[i].first, Vector3(1.f), scaling);
+                drawText(instance->window_width * 3.f / 5.f, base_height + 100.f * 2 + offset * i,
+                    std::to_string(leaderboard[i].second), Vector3(1.f), scaling);
+                if (leaderboard[i].first == "El Don Bolon") current_position = i + 1;
+            }
+            
+            len = 110.f;
+            drawText(instance->window_width / 2.f - len * scaling / 2.f, base_height + 100.f*2 + 50.f*3,
+                std::string("Do you wish to exit?"), Vector3(1.f), scaling);
+
+            // done fast, probably better suited in update
+            confetti->setEmitRate(0.01f * (current_position + 1));
+            confetti->setRandomFactor(instance->window_width + current_position * 50.f);
+            confetti->setEmitVelocity(Vector3(0.f, 150.f+ current_position * 10.f, 0.f));
+
+            break;
+        }
         default:
             break;
         }
@@ -303,15 +388,27 @@ void MenuStage::onKeyDown(SDL_KeyboardEvent event)
                 instance->goToStage(PLAY_ST);
             }
             else {
-                instance->goToStage(MAP_SEL_ST); // TODO: CREDITS STAGE
+                instance->goToStage(OUTRO_ST);
             }
         }
+        else if (stage_type == OUTRO_ST) instance->goToStage(MAIN_MENU_ST);
         break;
     case SDLK_q:
         if (stage_type == MAIN_MENU_ST) instance->must_exit = true;
         else if (stage_type == INTRO_ST) instance->goToStage(MAIN_MENU_ST);
         else if (stage_type == MAP_SEL_ST) instance->goToStage(INTRO_ST);
         else if (stage_type == DEATH_ST || stage_type == WIN_ST) instance->goToStage(MAP_SEL_ST);
+        else if (stage_type == OUTRO_ST) instance->goToStage(MAP_SEL_ST);
+        break;
+    // to debug
+    case SDLK_p:
+        instance->goToStage(OUTRO_ST);
+        break;
+    case SDLK_PLUS:
+        instance->total_pins++;
+        break;
+    case SDLK_MINUS:
+        instance->total_pins--;
         break;
     }
 }

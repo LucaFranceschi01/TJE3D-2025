@@ -22,7 +22,7 @@ struct sParticle {
 
 class ParticleEmitter : public Entity {
 
-	int max_particles = 300;
+	int max_particles = 600;
 	int active_particles = 0;
 	std::vector<sParticle> particles;
 

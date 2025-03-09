@@ -193,6 +193,9 @@ void EntityUI::update(float dt)
 				else if (instance->currentStage->stage_type == MAP_SEL_ST) {
 					instance->goToStage(INTRO_ST);
 				}
+				else if (instance->currentStage->stage_type == OUTRO_ST) {
+					instance->goToStage(MAIN_MENU_ST);
+				}
 				break;
 			case EntityUI::NEXT_MAP:
 			{
@@ -203,7 +206,7 @@ void EntityUI::update(float dt)
 						instance->goToStage(PLAY_ST);
 					}
 					else {
-						instance->goToStage(MAP_SEL_ST); // TODO: CREDITS STAGE
+						instance->goToStage(OUTRO_ST);
 					}
 				}
 				break;
@@ -219,6 +222,9 @@ void EntityUI::update(float dt)
 				break;
 			case EntityUI::RESUME:
 				instance->currentStage->switchPauseResume();
+				break;
+			case EntityUI::ENTER_LEADERBOARD:
+				instance->goToStage(OUTRO_ST);
 				break;
 			default:
 				break;
