@@ -127,7 +127,8 @@ void EntityUI::render(Camera* camera2D)
 	material.shader->setUniform("u_pin_ID", pin_ID);
 	material.shader->setUniform("u_booster_selected", static_cast<float>(World::getInstance()->player->booster));
 	material.shader->setUniform("u_choosing_booster", World::getInstance()->player->choosing_booster);
-	material.shader->setUniform("u_choosing_booster_time", World::getInstance()->player->time_choosing_booster);
+	material.shader->setUniform("u_time_choosing_booster", World::getInstance()->player->time_choosing_booster);
+	material.shader->setUniform("u_time_booster", World::getInstance()->player->time_booster);
 	material.shader->setUniform("u_time", Game::instance->time); // I don't know if I'm going to use it
 
 	if (material.diffuse) material.shader->setUniform("u_texture", material.diffuse, 0);
