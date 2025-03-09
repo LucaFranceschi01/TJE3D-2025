@@ -11,12 +11,6 @@ class ParticleEmitter;
 class MenuStage : public Stage
 {
 public:
-    enum e_MenuID {
-        MAIN, MAP_SEL, PAUSE, DEATH, WIN, UNDEFINED
-    };
-
-    e_MenuID menu;
-
     Entity* UI_root = nullptr;
     Entity* background = nullptr;
     Camera* camera2D = nullptr;
@@ -26,7 +20,7 @@ public:
     std::vector<std::string> mapNames;
 
     // constructor
-    MenuStage(e_MenuID menu);
+    MenuStage(StageType menu);
     ~MenuStage() = default;
 
     // methods

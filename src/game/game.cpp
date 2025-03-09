@@ -37,11 +37,11 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     Audio::Init();
 
     // construct and init all stages and set the first one
-    stages[MAIN_MENU_ST] = new MenuStage(MenuStage::MAIN);
-    stages[MAP_SEL_ST] = new MenuStage(MenuStage::MAP_SEL);
+    stages[MAIN_MENU_ST] = new MenuStage(MAIN_MENU_ST);
+    stages[MAP_SEL_ST] = new MenuStage(MAP_SEL_ST);
     stages[PLAY_ST] = new PlayStage();
-    stages[DEATH_ST] = new MenuStage(MenuStage::DEATH);
-    stages[WIN_ST] = new MenuStage(MenuStage::WIN);
+    stages[DEATH_ST] = new MenuStage(DEATH_ST);
+    stages[WIN_ST] = new MenuStage(WIN_ST);
 
     for (auto& entry : stages) {
         Stage* stage = entry.second;

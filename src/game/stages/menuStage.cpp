@@ -13,7 +13,7 @@
 
 #include <algorithm>
 
-MenuStage::MenuStage(e_MenuID menu)
+MenuStage::MenuStage(StageType menu)
 {
     World* instance = World::getInstance();
 
@@ -21,7 +21,7 @@ MenuStage::MenuStage(e_MenuID menu)
     camera2D->view_matrix = Matrix44(); // Set View to identity, maybe not needed
     camera2D->setOrthographic(0.f, instance->window_width, instance->window_height, 0.f, -1.f, 1.f);
 
-    this->menu = menu;
+    stage_type = menu;
 }
 
 void MenuStage::init()
@@ -44,12 +44,10 @@ void MenuStage::init()
         Vector2(width, height), "data/textures/ui/background.png");
     background->addChild(ui_elem);
 
-    switch (menu)
+    switch (stage_type)
     {
-    case MenuStage::MAIN:
+    case MAIN_MENU_ST:
     {   
-        stage_type = MAIN_MENU_ST;
-
         ui_elem = new EntityUI(mat, Vector2(width / 3.f, 500.f),
             btn_size, "play", EntityUI::ENTER_MAP_SELECTOR);
         UI_root->addChild(ui_elem);
@@ -60,10 +58,8 @@ void MenuStage::init()
 
         break;
     }
-    case MenuStage::MAP_SEL:
-    {
-        stage_type = MAP_SEL_ST; 
-        
+    case MAP_SEL_ST:
+    {   
         mapNames = { "M1_Tilted_Tenpins", "M2_Twisted_Lanes" , "M3_Tenpin_Crusher" };
 
         ui_elem = new EntityUI(mat_flat, Vector2(width / 2.f, height / 2.f),
@@ -97,12 +93,8 @@ void MenuStage::init()
 
         break;
     }
-    case MenuStage::PAUSE:
-        break;
-    case MenuStage::DEATH:
+    case DEATH_ST:
     {
-        stage_type = DEATH_ST;
-
         ui_elem = new EntityUI(mat_flat, Vector2(width / 2.f, height / 2.f),
             Vector2(width, height));
         background->addChild(ui_elem);
@@ -116,10 +108,8 @@ void MenuStage::init()
         UI_root->addChild(ui_elem);
         break;
     }
-    case MenuStage::WIN:
+    case WIN_ST:
     {
-        stage_type = WIN_ST;
-
         ui_elem = new EntityUI(mat_flat, Vector2(width / 2.f, height / 2.f),
             Vector2(width, height));
         background->addChild(ui_elem);
@@ -147,11 +137,8 @@ void MenuStage::init()
         confetti->setColorsCurve({ Vector4(1.f, 1.f, 1.f, 1.f) });
         confetti->setAnimatedTexture(false);
         confetti->setEmissionEnabled(false);
-
         break;
     }
-    case MenuStage::UNDEFINED:
-        break;
     default:
         break;
     }
@@ -168,8 +155,8 @@ void MenuStage::render()
     Game* instance = Game::instance;
     float scaling, len;
 
-    switch (menu) {
-    case MenuStage::MAP_SEL:
+    switch (stage_type) {
+    case MAP_SEL_ST:
     {
         std::string name = mapNames[instance->currentMap];
         std::replace(name.begin(), name.end(), '_', ' ');
@@ -191,7 +178,7 @@ void MenuStage::render()
             Vector3(1.f), scaling);
         break;
     }
-    case MenuStage::DEATH:
+    case DEATH_ST:
     {
         scaling = 10.f;
         len = 44.f;
@@ -204,7 +191,7 @@ void MenuStage::render()
             std::string("Repeat map?"), Vector3(1.f), scaling);
         break;
     }
-    case MenuStage::WIN:
+    case WIN_ST:
     {
         scaling = 10.f;
         len = 40.f;
@@ -239,16 +226,16 @@ void MenuStage::onKeyDown(SDL_KeyboardEvent event)
     Game* instance = Game::instance;
     switch (event.keysym.sym) {
     case SDLK_RIGHT:
-        if (menu == MAP_SEL) instance->nextMap();
+        if (stage_type == MAP_SEL_ST) instance->nextMap();
         break;
     case SDLK_LEFT:
-        if (menu == MAP_SEL) instance->previousMap();
+        if (stage_type == MAP_SEL_ST) instance->previousMap();
         break;
     case SDLK_RETURN:
-        if (menu == MAIN) instance->goToStage(MAP_SEL_ST);
-        else if (menu == MAP_SEL) instance->goToStage(PLAY_ST);
-        else if (menu == DEATH) instance->goToStage(PLAY_ST);
-        else if (menu == WIN) {
+        if (stage_type == MAIN_MENU_ST) instance->goToStage(MAP_SEL_ST);
+        else if (stage_type == MAP_SEL_ST) instance->goToStage(PLAY_ST);
+        else if (stage_type == DEATH_ST) instance->goToStage(PLAY_ST);
+        else if (stage_type == WIN_ST) {
             uint8 tmp_map_counter = instance->currentMap;
             instance->nextMap();
             if (tmp_map_counter != instance->currentMap) {
@@ -260,9 +247,9 @@ void MenuStage::onKeyDown(SDL_KeyboardEvent event)
         }
         break;
     case SDLK_q:
-        if (menu == MAIN) instance->must_exit = true;
-        else if (menu == MAP_SEL) instance->goToStage(MAIN_MENU_ST);
-        else if (menu == DEATH || menu == WIN) instance->goToStage(MAP_SEL_ST);
+        if (stage_type == MAIN_MENU_ST) instance->must_exit = true;
+        else if (stage_type == MAP_SEL_ST) instance->goToStage(MAIN_MENU_ST);
+        else if (stage_type == DEATH_ST || stage_type == WIN_ST) instance->goToStage(MAP_SEL_ST);
         break;
     }
 }
