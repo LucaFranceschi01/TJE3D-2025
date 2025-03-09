@@ -165,6 +165,7 @@ void PlayStage::switchPauseResume()
             case EntityUI::BOOSTER: {
                 ui_element->visible = !ui_element->visible;
                 // maybe do more things
+                break;
             }
             default:
                 break;
