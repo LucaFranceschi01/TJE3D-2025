@@ -323,5 +323,8 @@ void MenuStage::onEnter(Stage* prev_stage)
 
 void MenuStage::onLeave(Stage* new_stage)
 {
-    if (confetti) confetti->setEmissionEnabled(false);
+    if (confetti) {
+        confetti->setEmissionEnabled(false);
+        confetti->clearParticles();
+    }
 }
