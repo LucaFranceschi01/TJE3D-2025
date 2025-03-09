@@ -189,5 +189,7 @@ void PlayStage::removeLifeUI()
 
 void PlayStage::collectPin()
 {
-    pins_collected += 1;
+    pins_collected++;
+    Game::instance->map_pins[Game::instance->currentMap]++;
+
 }

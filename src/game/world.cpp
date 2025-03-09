@@ -62,6 +62,11 @@ World::World()
         assert(completed);
     }
 
+    // init points 3 maps
+    for (int i = 0; i < 3; ++i) {
+        Game::instance->map_pins[i] = 0;
+    }
+
     current_map = 0; // TODO: CHANGE WITH UI NOT HERE
 
     // Load and init skybox

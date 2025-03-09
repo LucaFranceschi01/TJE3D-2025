@@ -33,6 +33,7 @@ public:
     std::map<StageType, Stage*> stages;
     uint8 currentMap = 0;
     uint8 total_pins = 0;
+	std::map<uint8, int> map_pins; // map, total pins map
 
     bool paused = false;
 

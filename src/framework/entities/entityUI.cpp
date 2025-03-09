@@ -123,7 +123,7 @@ void EntityUI::render(Camera* camera2D)
 	material.shader->setUniform("u_viewprojection", camera2D->viewprojection_matrix);
 	material.shader->setUniform("u_camera_pos", camera2D->eye);
 	material.shader->setUniform("u_lives", World::getInstance()->live);
-	material.shader->setUniform("u_pins_collected", Game::instance->currentStage->pins_collected);
+	material.shader->setUniform("u_pins_collected", Game::instance->map_pins[Game::instance->currentMap]);
 	material.shader->setUniform("u_pin_ID", pin_ID);
 	material.shader->setUniform("u_booster_selected", static_cast<float>(World::getInstance()->player->booster));
 	material.shader->setUniform("u_choosing_booster", World::getInstance()->player->choosing_booster);
