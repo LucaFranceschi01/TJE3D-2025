@@ -171,7 +171,6 @@ void EntityUI::update(float dt)
 		&& buttonID != e_UIButtonID::PIN_COUNTER) {
 
 		this->material.diffuse = this->pressed;
-		this->is_button_pressed = false;
 
 		if (Input::wasMousePressed(SDL_BUTTON_LEFT)) {
 			//Audio::Play("data/sounds/click.mp3");
@@ -249,7 +248,7 @@ void EntityUI::update(float dt)
 	Entity::update(dt);
 }
 
-std::map<int, std::string> event_mapping{
+std::map<int, std::string> event_mapping_btn{
 	{SDLK_q, "q"},
 	{SDLK_w, "w"},
 	{SDLK_e, "e"},
@@ -262,15 +261,26 @@ std::map<int, std::string> event_mapping{
 	{SDLK_UP, "ub"},
 	{SDLK_LEFT, "lb"},
 	{SDLK_DOWN, "db"},
-	{SDLK_RIGHT, "rb"}
+	{SDLK_RIGHT, "rb"},
+};
+
+std::map<int, std::string> event_mapping_gp{
+	{0, "gp_a"},
+	{1, "gp_b"},
+	{2, "gp_x"},
+	{3, "gp_y"},
+	{4, "gp_lb"},
+	{5, "gp_rb"},
+	{6, "gp_view"},
+	{7, "gp_menu"},
 };
 
 void EntityUI::onKeyDown(SDL_KeyboardEvent event)
 {
 	//event_mapping[event.keysym.sym]
-	auto result = event_mapping.find(event.keysym.sym);
+	auto result = event_mapping_btn.find(event.keysym.sym);
 
-	if (result == event_mapping.end()) return;
+	if (result == event_mapping_btn.end()) return;
 
 	this->is_button_pressed = false;
 	if (name == result->second) {
@@ -278,4 +288,26 @@ void EntityUI::onKeyDown(SDL_KeyboardEvent event)
 	}
 
 	Entity::onKeyDown(event);
+}
+
+void EntityUI::onKeyUp(SDL_KeyboardEvent event)
+{
+	this->is_button_pressed = false;
+}
+
+void EntityUI::onGamepadButtonDown(SDL_JoyButtonEvent event)
+{
+	auto result = event_mapping_gp.find(event.button);
+
+	if (result == event_mapping_gp.end()) return;
+
+	this->is_button_pressed = false;
+	if (name == result->second) {
+		this->is_button_pressed = true;
+	}
+}
+
+void EntityUI::onGamepadButtonUp(SDL_JoyButtonEvent event)
+{
+	this->is_button_pressed = false;
 }

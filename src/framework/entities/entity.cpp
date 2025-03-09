@@ -68,3 +68,24 @@ void Entity::onKeyDown(SDL_KeyboardEvent event)
 		children[i]->onKeyDown(event);
 	}
 }
+
+void Entity::onKeyUp(SDL_KeyboardEvent event)
+{
+	for (int i = 0; i < children.size(); ++i) {
+		children[i]->onKeyUp(event);
+	}
+}
+
+void Entity::onGamepadButtonDown(SDL_JoyButtonEvent event)
+{
+	for (int i = 0; i < children.size(); ++i) {
+		children[i]->onGamepadButtonDown(event);
+	}
+}
+
+void Entity::onGamepadButtonUp(SDL_JoyButtonEvent event)
+{
+	for (int i = 0; i < children.size(); ++i) {
+		children[i]->onGamepadButtonUp(event);
+	}
+}

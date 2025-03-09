@@ -18,9 +18,10 @@ std::vector<std::string> button_descriptions = {
             "", "Move the player when split",
             "Split and join Don Bolon",
             "Change running direction",
-            "Tipically means EXIT, BACK or PAUSE",
-            "Resume playthrough",
-            "Tipycally means GO or PLAY"
+            "Tipically means EXIT, BACK",
+            "Pause / Resume playthrough",
+            "Tipycally means GO or PLAY",
+            "View leaderboard"
 };
 
 Vector2 btn_size(128.f, 64.f);
@@ -167,7 +168,8 @@ void MenuStage::init()
         std::vector<std::vector<std::string>> button_names = {
             {"", "ub"}, {"lb", "db", "rb"},
             {"", "w"}, {"a", "s", "d"},
-            {"e"}, {"z"}, {"q"}, {"r"}, {"enter"},
+            {"e", "gp_x"}, {"z", "gp_y"}, {"q", "gp_b"}, {"r", "gp_menu"}, {"enter", "gp_a"},
+            {"gp_view"}
         };
 
         for (int i = 0; i < button_names.size(); i++) {
@@ -400,17 +402,69 @@ void MenuStage::onKeyDown(SDL_KeyboardEvent event)
         else if (stage_type == DEATH_ST || stage_type == WIN_ST) instance->goToStage(MAP_SEL_ST);
         else if (stage_type == OUTRO_ST) instance->goToStage(MAP_SEL_ST);
         break;
-    // to debug
-    case SDLK_p:
-        instance->goToStage(OUTRO_ST);
+    }
+}
+
+void MenuStage::onKeyUp(SDL_KeyboardEvent event)
+{
+    UI_root->onKeyUp(event);
+}
+
+void MenuStage::onGamepadButtonDown(SDL_JoyButtonEvent event)
+{
+    UI_root->onGamepadButtonDown(event);
+
+    Game* instance = Game::instance;
+
+    switch (event.button)
+    {
+    case 0: // A
+        if (stage_type == MAIN_MENU_ST) instance->goToStage(INTRO_ST);
+        else if (stage_type == INTRO_ST) instance->goToStage(MAP_SEL_ST);
+        else if (stage_type == MAP_SEL_ST) instance->goToStage(PLAY_ST);
+        else if (stage_type == DEATH_ST) instance->goToStage(PLAY_ST);
+        else if (stage_type == WIN_ST) {
+            uint8 tmp_map_counter = instance->currentMap;
+            instance->nextMap();
+            if (tmp_map_counter != instance->currentMap) {
+                instance->goToStage(PLAY_ST);
+            }
+            else {
+                instance->goToStage(OUTRO_ST);
+            }
+        }
+        else if (stage_type == OUTRO_ST) instance->goToStage(MAIN_MENU_ST);
         break;
-    case SDLK_PLUS:
-        instance->total_pins++;
+    case 1: // B
+        if (stage_type == MAIN_MENU_ST) instance->must_exit = true;
+        else if (stage_type == INTRO_ST) instance->goToStage(MAIN_MENU_ST);
+        else if (stage_type == MAP_SEL_ST) instance->goToStage(INTRO_ST);
+        else if (stage_type == DEATH_ST || stage_type == WIN_ST) instance->goToStage(MAP_SEL_ST);
+        else if (stage_type == OUTRO_ST) instance->goToStage(MAP_SEL_ST);
         break;
-    case SDLK_MINUS:
-        instance->total_pins--;
+    case 2: // X
+        break;
+    case 3: // Y
+        break;
+    case 4: // LB
+        if (stage_type == MAP_SEL_ST) instance->previousMap();
+        break;
+    case 5: // RB
+        if (stage_type == MAP_SEL_ST) instance->nextMap();
+        break;
+    case 6: // VIEW
+        if (stage_type == MAP_SEL_ST) instance->goToStage(OUTRO_ST);
+        break;
+    case 7: // MENU
+        break;
+    default:
         break;
     }
+}
+
+void MenuStage::onGamepadButtonUp(SDL_JoyButtonEvent event)
+{
+    UI_root->onGamepadButtonUp(event);
 }
 
 void MenuStage::onEnter(Stage* prev_stage)

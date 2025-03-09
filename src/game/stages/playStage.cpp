@@ -121,23 +121,47 @@ void PlayStage::onKeyDown(SDL_KeyboardEvent event)
 {
     World::getInstance()->onKeyDown(event);
 
+    Game* instance = Game::instance;
+
     switch (event.keysym.sym) {
         case SDLK_TAB: // TODO: MOVE TO FUNCTION KEYS ALL THE DEBUG-RELATED FUNCTIONS
-            Game::instance->setMouseLocked();
+            instance->setMouseLocked();
             break;
         case SDLK_RSHIFT:
-            Game::instance->debug_view = !Game::instance->debug_view;
+            instance->debug_view = !instance->debug_view;
             break;
         case SDLK_q:
-            if (!Game::instance->paused) switchPauseResume();
-            else Game::instance->goToStage(MAP_SEL_ST);
+            if (instance->paused) instance->goToStage(MAP_SEL_ST);
             break;
         case SDLK_RETURN:
+            if (instance->paused) switchPauseResume();
+            break;
         case SDLK_r:
-            if (Game::instance->paused) switchPauseResume();
+            switchPauseResume();
             break;
         default:
             break;
+    }
+}
+
+void PlayStage::onGamepadButtonDown(SDL_JoyButtonEvent event)
+{
+    World::getInstance()->onGamepadButtonDown(event);
+
+    Game* instance = Game::instance;
+
+    switch (event.button) {
+    case 1:
+        if (instance->paused) instance->goToStage(MAP_SEL_ST);
+        break;
+    case 0:
+        if (instance->paused) switchPauseResume();
+        break;
+    case 7:
+        switchPauseResume();
+        break;
+    default:
+        break;
     }
 }
 

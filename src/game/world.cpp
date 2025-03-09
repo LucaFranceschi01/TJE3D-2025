@@ -386,6 +386,46 @@ void World::onKeyDown(SDL_KeyboardEvent event)
     }
 }
 
+void World::onGamepadButtonDown(SDL_JoyButtonEvent event)
+{
+    switch (event.button) {
+    case 2: // X
+    {
+        if (!half_player) {
+            half_player = true;
+            Vector3 player_position = player->model.getTranslation();
+            // check for a wall
+            sCollisionData collision_data_left = raycast(player_position, -right, GROUND);
+            sCollisionData collision_data_right = raycast(player_position, right, GROUND);
+
+            float offset_left = 5, offset_right = 5;
+
+            if (collision_data_left.collided) {
+                offset_left = std::abs(collision_data_left.distance) - 1.5f;
+            }
+
+            if (collision_data_right.collided) {
+                offset_right = std::abs(collision_data_right.distance) - 1.5f;
+            }
+
+            Vector3 left_position = player_position;
+            Vector3 right_position = player_position;
+            left_position.z -= offset_left;
+            right_position.z += offset_right;
+
+            half_player_left->init(left_position);
+            half_player_right->init(right_position);
+        }
+        else {
+            half_player = false;
+            Vector3 mid_point = half_player_right->model.getTranslation().getMidPoint(half_player_left->model.getTranslation());
+            player->model.setTranslation(mid_point);
+        }
+        break;
+    }
+    }
+}
+
 Vector3 World::midPointHalfPlayers()
 {
     Vector3 mid_point = Vector3(0.0f);

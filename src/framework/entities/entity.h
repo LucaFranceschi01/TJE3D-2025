@@ -36,4 +36,7 @@ public:
     float distance(Entity* e) const;
 
     virtual void onKeyDown(SDL_KeyboardEvent event);
+    virtual void onKeyUp(SDL_KeyboardEvent event);
+    virtual void onGamepadButtonDown(SDL_JoyButtonEvent event);
+    virtual void onGamepadButtonUp(SDL_JoyButtonEvent event);
 };

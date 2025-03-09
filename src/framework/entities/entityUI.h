@@ -64,4 +64,7 @@ public:
 	void update(float dt) override;
 
 	void onKeyDown(SDL_KeyboardEvent event) override;
+	void onKeyUp(SDL_KeyboardEvent event) override;
+	void onGamepadButtonDown(SDL_JoyButtonEvent event) override;
+	void onGamepadButtonUp(SDL_JoyButtonEvent event) override;
 };

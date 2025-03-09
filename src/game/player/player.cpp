@@ -193,16 +193,14 @@ void Player::moveControl(Vector3& move_dir, const float dt)
         (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP))) {
         move_dir += front;
         pitch += rotational_speed * dt;
-        }
+    }
     // if DEBUG is not here, the user in release can stop the player. move_dir + front - front = 0
     if (world_instance->game_mode == World::DEBUG &&
         (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN))) {
         move_dir -= front;
         pitch -= rotational_speed * dt;
-        }
+    }
     if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
-        //
-
         if (Input::isKeyPressed(SDL_SCANCODE_Z)) {
             if (World::front.z < 0) {
                 World::front.x -= dt;
@@ -230,7 +228,6 @@ void Player::moveControl(Vector3& move_dir, const float dt)
 
     }
     if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
-
         if (Input::isKeyPressed(SDL_SCANCODE_Z)) {
             if (World::front.z < 0) {
                 World::front.x +=  dt;
@@ -256,6 +253,7 @@ void Player::moveControl(Vector3& move_dir, const float dt)
             yaw -= rotational_speed * dt * 0.5f;
         }
     }
+
 }
 
 bool Player::testCollisions(const Vector3& position, float dt)

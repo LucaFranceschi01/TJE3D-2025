@@ -88,6 +88,7 @@ public:
     void test_scene_collisions(const Vector3& position, std::vector<sCollisionData>& colisions, std::vector<sCollisionData>& ground_colisions);
 
     void onKeyDown(SDL_KeyboardEvent event);
+    void onGamepadButtonDown(SDL_JoyButtonEvent event);
 
     Vector3 midPointHalfPlayers();
 };
