@@ -262,11 +262,11 @@ void Player::moveControl(Vector3& move_dir, const float dt)
         }
         
         if (abs(joystick->z) > 0.1f) {
-            move_dir += right * *joystick * 0.5f;
+            move_dir += right * joystick->z * 0.5f;
         }
 
         if (abs(joystick->x) > 0.1f) {
-            move_dir -= front * *joystick;
+            move_dir -= front * joystick->x;
         }
         
         pitch -= rotational_speed * dt * joystick->x;
