@@ -41,17 +41,17 @@ vec4 applyLight() {
     // Ambient component
     vec3 ambient = u_Ka * Kd.rgb * u_light_color * 0.4;
 
-    float steps = 3.0;
+    float steps = 4.0;
 
     // Diffuse component
     float NdotL = max(0.0, dot(N,L));
-    //NdotL = floor(NdotL * steps) / steps;
+    NdotL = floor(NdotL * steps) / steps;
     vec3 diffuse = Kd.rgb * u_light_color * NdotL;
 
     // Specular component
     vec3 R = reflect(-L, N);
     float RdotV = pow(max(0.0, dot(R,V)), 20);
-    //RdotV = floor(RdotV * steps) / steps;
+    RdotV = floor(RdotV * steps) / steps;
     vec3 specular = u_Ks * u_light_color * RdotV;
 
     // Total Light

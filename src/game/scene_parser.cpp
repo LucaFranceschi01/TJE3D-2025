@@ -3,6 +3,7 @@
 #include "graphics/material.h"
 #include "graphics/mesh.h"
 #include "graphics/shader.h"
+#include "graphics/texture.h"
 
 #include "framework/utils.h"
 #include "framework/entities/entityCollider.h"
@@ -68,6 +69,7 @@ bool SceneParser::parse(const char* filename, Entity* root)
 
 			if (data.first.find("@Tag.Ground") != std::string::npos) {
 				new_entity->collision_type = GROUND;
+				//new_entity->material.normal = Texture::Get((std::string(mesh_name.substr(0, mesh_name.size() - 18)) + std::string("/WoodenFloor_normals.png")).c_str());
 			} else if (data.first.find("@Tag.Fluid") != std::string::npos) {
 				new_entity->collision_type = FLUID;
 			} else if (data.first.find("@Tag.Pin") != std::string::npos) {

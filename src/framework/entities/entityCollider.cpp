@@ -85,8 +85,8 @@ void EntityCollider::render(Camera* camera)
     shader->setUniform("u_Ka", Vector3(0.5f));
     shader->setUniform("u_Kd", Vector3(0.5f));
     shader->setUniform("u_Ks", Vector3(0.5f));
-    shader->setUniform("u_light_color", Vector3(0.9f, 0.9f, 1.0f));
-    shader->setUniform("u_light_position", World::getInstance()->player->getGlobalMatrix().getTranslation() + Vector3(0.f, 500.f, 0.f));
+    shader->setUniform("u_light_color", Vector3(0.7f, 0.7f, 0.8f));
+    shader->setUniform("u_light_position", World::getInstance()->player->getGlobalMatrix().getTranslation() + Vector3(0.f, 500.f, 200.f));
     shader->setUniform("u_fog_factor", 1.f);
     shader->setUniform("u_time", Game::instance->time);
 
@@ -99,7 +99,7 @@ void EntityCollider::render(Camera* camera)
         shader->setTexture("u_texture", material.diffuse, 0); // the slot is hardcoded
     }
 
-    if (material.normal) {
+    if (material.normal) { // we did not manage to make normals work...s
         maps.y = 1.0f;
         shader->setUniform("u_normal_texture", material.normal, 1);
     }
