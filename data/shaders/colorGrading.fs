@@ -17,10 +17,10 @@ void main() {
     float factor = 2.0;
     vec2 pixels = u_resolution / factor;
 
-    uv.x = floor(uv.x * pixels) / pixels;
-    uv.y = floor(uv.y * pixels) / pixels;
+    uv.x = floor(uv.x * pixels.x) / pixels.x;
+    uv.y = floor(uv.y * pixels.y) / pixels.y;
 
-    vec3 color = texture(u_texture, uv).rgb;
+    vec3 color = texture2D(u_texture, uv).rgb;
 
     // Apply lift, gamma, and gain
     color = lift + color * (1.0 - lift);
