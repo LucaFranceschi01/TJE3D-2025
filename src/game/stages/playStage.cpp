@@ -1,5 +1,6 @@
 #include "playStage.h"
 
+#include "framework/audio.h"
 #include "game/player/player.h"
 #include "game/world.h"
 #include "game/game.h"
@@ -119,6 +120,8 @@ void PlayStage::onEnter(Stage* prev_stage)
     }
 
     pins_collected = 0;
+
+    Game::instance->background_sound = Audio::Play("data/sounds/background.mp3", 0.5, BASS_SAMPLE_LOOP);
 }
 
 void PlayStage::onLeave(Stage* prev_stage)
@@ -129,6 +132,8 @@ void PlayStage::onLeave(Stage* prev_stage)
     }
 
     Game::instance->total_pins += pins_collected;
+
+    Audio::Stop(Game::instance->background_sound);
 }
 
 void PlayStage::onKeyDown(SDL_KeyboardEvent event)
@@ -225,6 +230,18 @@ void PlayStage::removeLifeUI()
         life->visible = false;
     }
 }
+
+void PlayStage::addLiveUI()
+{
+    for (Entity* tmp : UI_root->children) {
+        EntityUI* ui_element = static_cast<EntityUI*>(tmp);
+        if (ui_element->buttonID == EntityUI::LIVES && !ui_element->visible) {
+            ui_element->visible = true;
+            return;
+        }
+    }
+}
+
 
 void PlayStage::collectPin()
 {

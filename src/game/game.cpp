@@ -52,6 +52,8 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 
     goToStage(MAIN_MENU_ST);
 
+
+
     // OpenGL flags
     glEnable(GL_CULL_FACE); // do not render both sides of every triangle
     glEnable(GL_DEPTH_TEST); // check the occlusions using the Z buffer

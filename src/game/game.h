@@ -5,6 +5,7 @@
 #pragma once
 
 #include "framework/utils.h"
+#include "framework/extra/bass.h"
 
 #include "game/stages/stage.h"
 
@@ -34,6 +35,9 @@ public:
     uint8 currentMap = 0;
     uint8 total_pins = 0;
 	std::map<uint8, int> map_pins; // map, total pins map
+
+	HCHANNEL menu_sound;
+	HCHANNEL background_sound;
 
     bool paused = false;
 

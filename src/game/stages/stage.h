@@ -40,5 +40,6 @@ public:
 
     virtual void switchPauseResume() {};
     virtual void removeLifeUI() {};
+    virtual void addLiveUI() {};
     virtual void collectPin() {};
 };

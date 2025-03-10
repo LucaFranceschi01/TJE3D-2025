@@ -45,8 +45,7 @@ void Player::init(const Vector3& pos)
     fluid_factor = 0;
     booster = NONE_BOOSTER;
 
-    PlayStage* play_stage = dynamic_cast<PlayStage*>(Game::instance->stages[PLAY_ST]);
-    if (play_stage == nullptr) return;
+    death_sound_time = 2.5f;
 
 }
 
@@ -90,8 +89,17 @@ void Player::update(float dt)
 
     // Death cutscene
     if (world_instance->live <= 0 || position.y <= 0) {
-        Audio::Play("data/sounds/sad_horn.wav");
-        Game::instance->goToStage(DEATH_ST);
+        if (death_sound_time == 2.5f) {
+            Audio::Play("data/sounds/sad_horn.wav");
+            Audio::Stop(Game::instance->background_sound);
+            death_sound_time -= dt;
+        } else {
+            death_sound_time -= dt;
+        }
+        if (death_sound_time <= 0) {
+            Game::instance->goToStage(DEATH_ST);
+        }
+        return;
     }
 
     // If camera is in free mode, avoid moving the player
@@ -167,9 +175,15 @@ void Player::update(float dt)
 
     if (time_choosing_booster > 0) {
         time_choosing_booster -= dt;
+
         if (time_choosing_booster <= 0) {
             choosing_booster = false;
             time_choosing_booster = 0;
+
+            if (booster == EXTRA_LIVE) {
+                world_instance->live++;
+                Game::instance->currentStage->addLiveUI();
+            }
         }
     } else {
         if (time_booster > 0) {
@@ -300,10 +314,10 @@ bool Player::testCollisions(const Vector3& position, float dt)
     // Check collisions with the world entities
     std::vector<sCollisionData> collisions;
     std::vector<sCollisionData> ground_collisions;
-    World* instance = World::getInstance();
+    World* world_instance = World::getInstance();
 
     // calls test_scene_collision to check if the new position collides with something.
-    instance->test_scene_collisions(position + velocity * dt, collisions, ground_collisions);
+    world_instance->test_scene_collisions(position + velocity * dt, collisions, ground_collisions);
 
     bool is_grounded = false;
     collision_fluid = false;
@@ -336,12 +350,12 @@ bool Player::testCollisions(const Vector3& position, float dt)
             case OBSTACLE: {
                 // quit one life
                 if (booster != INMORTAL) {
-                    instance->live--;
+                    world_instance->live--;
                     game_instance->currentStage->removeLifeUI();
                 }
 
                 // send the object to delete
-                instance->destroyEntity(collision_data.collider, collision_data.col_point);
+                world_instance->destroyEntity(collision_data.collider, collision_data.col_point);
                 break;
             }
             case FLUID: {
@@ -354,20 +368,19 @@ bool Player::testCollisions(const Vector3& position, float dt)
                 game_instance->currentStage->collectPin();
 
                 // send the object to delete
-                instance->destroyEntity(collision_data.collider, collision_data.col_point);
+                world_instance->destroyEntity(collision_data.collider, collision_data.col_point);
                 break;
             }
             case BOOSTER: {
-                int range_booster = (instance->live < 3) ? 3 : 2; // no not allow more than three lives
+                int range_booster = (world_instance->live < 3) ? 3 : 2; // no not allow more than three lives
 
                 booster = static_cast<eBooster>(rand() % range_booster); // booster 0, 1 or 2
                 time_booster = 10;
 
-                instance->destroyEntity(collision_data.collider, collision_data.col_point);
+                world_instance->destroyEntity(collision_data.collider, collision_data.col_point);
 
-                if (booster == EXTRA_LIVE) {
-                    instance->live++;
-                }
+                booster = EXTRA_LIVE;
+
                 choosing_booster = true;
                 time_choosing_booster = 3;
                 break;

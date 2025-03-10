@@ -5,6 +5,7 @@
 #pragma once
 
 #include "stage.h"
+#include "framework/extra/bass.h"
 
 class ParticleEmitter;
 
@@ -18,6 +19,9 @@ public:
     ParticleEmitter* confetti = nullptr;
 
     std::vector<std::string> mapNames;
+
+
+    HCHANNEL screen_sound;
 
     // constructor
     MenuStage(StageType menu);

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "stage.h"
+#include "framework/extra/bass.h"
 
 class RenderToTexture;
 
@@ -16,6 +17,8 @@ public:
     Entity* UI_root = nullptr;
     Camera* camera2D = nullptr;
     eBooster current_booster;
+
+
 
     RenderToTexture* postprocessing = nullptr;
 
@@ -36,5 +39,6 @@ public:
 
     void switchPauseResume() override;
     void removeLifeUI() override;
+    void addLiveUI() override;
     void collectPin() override;
 };

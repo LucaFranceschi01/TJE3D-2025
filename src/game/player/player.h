@@ -19,7 +19,7 @@ class Player : public EntityMesh
 protected:
     float yaw = 0.f;
     float pitch = 0.f;
-    float walk_speed = 2.f;
+    float walk_speed = 10.f;
     float rotational_speed = 30.f;
     Vector3 velocity = Vector3(0.f);
 
@@ -29,6 +29,8 @@ protected:
     Vector3 right = Vector3(0.0f);
     Vector3 normal_orig;
     Vector3 move_dir;
+
+    float death_sound_time = 2.5f;
 
 public:
     bool collision = false;
