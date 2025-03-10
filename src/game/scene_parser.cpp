@@ -72,12 +72,12 @@ bool SceneParser::parse(const char* filename, Entity* root)
 				new_entity->collision_type = FLUID;
 			} else if (data.first.find("@Tag.Pin") != std::string::npos) {
 				new_entity->collision_type = PIN;
-				new_entity->material.shader = Shader::Get("data/shaders/instanced.vs", "data/shaders/texture.fs");
+				//new_entity->material.shader = Shader::Get("data/shaders/instanced.vs", "data/shaders/texture.fs");
 			} else if (data.first.find("@Tag.Booster") != std::string::npos) {
 				new_entity->collision_type = BOOSTER;
 			} else if (data.first.find("@Tag.FinishLine") != std::string::npos) {
 				new_entity->collision_type = FINISHLINE;
-				new_entity->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+				//new_entity->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 			}
 
 		} else {
@@ -100,12 +100,12 @@ bool SceneParser::parse(const char* filename, Entity* root)
 				new_entity->models.emplace_back(model, true);
 
 			}
-			new_entity->material.shader = Shader::Get("data/shaders/instanced.vs", "data/shaders/texture.fs");
+			//new_entity->material.shader = Shader::Get("data/shaders/instanced.vs", "data/shaders/texture.fs");
 		}
 		// Create normal entity
 		else {
 			new_entity->model = render_data.models[0];
-			new_entity->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+			//new_entity->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 		}
 
 		// Add entity to scene root

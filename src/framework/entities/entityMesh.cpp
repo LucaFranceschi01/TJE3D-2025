@@ -8,6 +8,8 @@
 #include "graphics/texture.h"
 
 #include "game/game.h"
+#include "game/world.h"
+#include "game/player/player.h"
 
 constexpr auto CULLING_DIST = 400.f;
 
@@ -76,35 +78,58 @@ void EntityMesh::render(Camera* camera)
 
     // =================== END CULLINGS ===================
 
-    if (!material.shader) {
-        material.shader = Shader::Get(
-            isInstanced ? "data/shaders/instanced.vs" : "data/shaders/basic.vs", "data/shaders/texture.fs");
+    Shader* shader = material.shader;
+
+    if (!shader) {
+        shader = Shader::Get(
+            isInstanced ? "data/shaders/instanced.vs" : "data/shaders/basic.vs", "data/shaders/phong.fs");
     }
 
     // Enable shader and pass uniforms
-    material.shader->enable();
+    shader->enable();
+    shader->setUniform("u_color", material.color);
+    shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
+    shader->setUniform("u_camera_position", camera->eye);
+    shader->setUniform("u_background_color", Vector4(0.1f, 0.f, 0.f, 1.f));
 
-    material.shader->setUniform("u_color", material.color);
-    material.shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
-    material.shader->setUniform("u_camera_position", camera->eye);
+    // Lighting
+    shader->setUniform("u_Ka", Vector3(0.5f));
+    shader->setUniform("u_Kd", Vector3(0.5f));
+    shader->setUniform("u_Ks", Vector3(0.5f));
+    shader->setUniform("u_light_color", Vector3(0.9f, 0.9f, 1.0f));
+    shader->setUniform("u_light_position", World::getInstance()->player->getGlobalMatrix().getTranslation() + Vector3(0.f, 500.f, 0.f));
+    shader->setUniform("u_fog_factor", 1.f);
+    shader->setUniform("u_time", Game :: instance->time);
+
+
+    // Texture flags
+    Vector2 maps = { 0.f, 0.f };
 
     if (material.diffuse) {
-        material.shader->setTexture("u_texture", material.diffuse, 0); // the slot is hardcoded
+        maps.x = 1.0f;
+        shader->setTexture("u_texture", material.diffuse, 0); // the slot is hardcoded
     }
+
+    if (material.normal) {
+        maps.y = 1.0f;
+        shader->setUniform("u_normal_texture", material.normal, 1);
+    }
+
+    shader->setUniform("u_maps", maps);
 
     if (!isInstanced) {
         // Send model matrix uniform and render current LOD mesh
-        material.shader->setUniform("u_model", getGlobalMatrix());
+        shader->setUniform("u_model", getGlobalMatrix());
         getLOD(camera)->render(GL_TRIANGLES);
     }
     else {
         // ATTRIBUTES ARE PER INSTANCE, UNIFORMS ARE PER (mesh)
-        //material.shader->("a_color", material.color); // why cannot we do this ?
+        //shader->("a_color", material.color); // why cannot we do this ?
         mesh->renderInstanced(GL_TRIANGLES, must_render_models.data(), static_cast<int>(must_render_models.size()));
     }
 
     // Disable shader after finishing rendering
-    material.shader->disable();
+    shader->disable();
 
     // Render bounding boxes if debugging mode is set
     if (Game::instance->debug_view) {

@@ -43,8 +43,7 @@ World::World()
 
     // Init player
     Material player_material;
-    player_material.diffuse = Texture::Get("data/meshes/faces.png");
-    player_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+    player_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/phong.fs");
     player = new Player(Mesh::Get("data/player/Don_Bolon.obj"), player_material, "player");
 
     // Init half player

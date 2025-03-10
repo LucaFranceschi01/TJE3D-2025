@@ -51,9 +51,10 @@ void MenuStage::init()
 
     EntityUI* ui_elem;
     Material mat;
+    //mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
     Material mat_flat;
     mat_flat.color = { 0.f, 0.f, 0.f, 0.4 };
-    mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+    mat_flat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
 
     // all menus have the same background
     ui_elem = new EntityUI(mat, Vector2(width / 2.f, height / 2.f),

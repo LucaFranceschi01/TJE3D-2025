@@ -45,8 +45,6 @@ PlayStage::PlayStage()
     btn->visible = false;
     UI_root->addChild(btn);
 
-    mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
-
     btn = new EntityUI(mat, Vector2(64.f, 64.f),
         square_btn_size, "pause", EntityUI::PAUSE);
     UI_root->addChild(btn);

@@ -101,7 +101,7 @@ EntityUI::EntityUI(const Material& material, Vector2 position, Vector2 size,
 	this->material.diffuse = this->base;
 
 	if (!this->material.shader) {
-		this->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+		this->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 	}
 }
 
