@@ -25,7 +25,7 @@ vec3 perturbNormal(vec3 normal, vec3 viewDir, vec2 uv, vec3 normalMap) {
 vec4 applyLight() {
     vec4 Kd = vec4(u_Kd, 1.0);
 
-    if( u_maps.x ) {
+    if( u_maps.x == 1.0) {
         Kd = texture2D( u_texture, v_uv );
     }
 
@@ -33,8 +33,8 @@ vec4 applyLight() {
     vec3 V = normalize(u_camera_position - v_world_position);
     vec3 N = normalize(v_normal);
 
-    if( u_maps.y ) {
-        vec3 normals_texture = texture2D( u_normals_texture, v_uv );
+    if( u_maps.y == 1.0) {
+        vec3 normals_texture = texture2D( u_normals_texture, v_uv ).xyz;
         N = perturbNormal( normalize(v_normal), -V, v_uv, normals_texture );
     }
 
@@ -50,7 +50,7 @@ vec4 applyLight() {
 
     // Specular component
     vec3 R = reflect(-L, N);
-    float RdotV = pow(max(0.0, dot(R,V)), 20);
+    float RdotV = pow(max(0.0, dot(R,V)), 20.0);
     //RdotV = floor(RdotV * steps) / steps;
     vec3 specular = u_Ks * u_light_color * RdotV;
 
