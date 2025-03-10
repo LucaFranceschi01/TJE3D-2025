@@ -14,6 +14,7 @@ uniform sampler2D u_texture;
 uniform sampler2D u_normals_texture;
 uniform vec2 u_maps;
 
+// perturbNormal function made with ChatGPT
 vec3 perturbNormal(vec3 normal, vec3 viewDir, vec2 uv, vec3 normalMap) {
     // Decode normal from normal map (assuming the map is in tangent space)
     vec3 encodedNormal = normalize(normalMap * 2.0 - 1.0); // Normal map values are in [0,1] and need to be remapped to [-1,1]

@@ -10,6 +10,8 @@
 #include "framework/extra/picopng.h"
 #include <cassert>
 
+#include "game/game.h"
+
 //bilinear interpolation
 Color Image::getPixelInterpolated(float x, float y, bool repeat) {
 	int ix = repeat ? fmod(x, width) : clamp(x, 0, width - 1);
@@ -463,6 +465,11 @@ void Texture::toViewport(Shader* shader)
 		shader = Shader::getDefaultShader("screen");
 	shader->enable();
 	shader->setUniform("u_texture", this, 0);
+	//shader->setUniform("u_depth", , 1);
+	//shader->setUniform("focalDepth", );
+	//shader->setUniform("focalRange", );
+	//shader->setUniform("blurAmount", );
+	shader->setUniform("u_resolution", Vector2(Game::instance->window_width, Game::instance->window_height));
 	quad->render(GL_TRIANGLES);
 	shader->disable();
 }

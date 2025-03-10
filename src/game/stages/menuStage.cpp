@@ -53,7 +53,7 @@ void MenuStage::init()
     Material mat;
     //mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
     Material mat_flat;
-    mat_flat.color = { 0.f, 0.f, 0.f, 0.4 };
+    mat_flat.color = { 0.f, 0.f, 0.f, 0.4f };
     mat_flat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
 
     // all menus have the same background
@@ -177,7 +177,7 @@ void MenuStage::init()
             for (int j = 0; j < button_names[i].size(); j++) {
                 std::string& name = button_names[i][j];
                 if (name == "") continue;
-                ui_elem = new EntityUI(mat, Vector2(width / 7.f + j * (btn_size_small.x+offset), height / 6.f + i * (btn_size_small.y+offset)),
+                ui_elem = new EntityUI(mat, Vector2(width / 7.f + j * (btn_size_small.x+offset), height / 9.f + i * (btn_size_small.y+offset)),
                     btn_size_small, name, EntityUI::TUTORIAL_BTN);
                 UI_root->addChild(ui_elem);
             }
@@ -300,7 +300,7 @@ void MenuStage::render()
                 else {
                     offset2 = offset / 2.f;
                 }
-                drawText(instance->window_width * 2.f / 7.f, instance->window_height / 6.f + i * (btn_size_small.y + offset) - offset2,
+                drawText(instance->window_width * 2.f / 7.f, instance->window_height / 9.f + i * (btn_size_small.y + offset) - offset2,
                     button_descriptions[i], Vector3(1.f), 2.f);
             }
             break;

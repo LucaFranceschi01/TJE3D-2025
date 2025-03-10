@@ -5,8 +5,10 @@
 #include "game/game.h"
 
 #include "framework/camera.h"
-#include "graphics/shader.h"
 #include "framework/entities/entityUI.h"
+
+#include "graphics/shader.h"
+#include "graphics/render_to_texture.h"
 
 PlayStage::PlayStage()
 {
@@ -40,7 +42,10 @@ PlayStage::PlayStage()
         UI_root->addChild(btn);
     }
 
-    btn = new EntityUI(mat, Vector2(width / 2.f, height / 2.f),
+    Material mat_flat;
+    mat_flat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+    mat_flat.color = { 0.f, 0.f, 0.f, 0.4f };
+    btn = new EntityUI(mat_flat, Vector2(width / 2.f, height / 2.f),
         Vector2(width, height));
     btn->visible = false;
     UI_root->addChild(btn);
@@ -70,6 +75,9 @@ PlayStage::PlayStage()
     UI_root->addChild(btn);
 
     current_booster = NONE_BOOSTER;
+
+    postprocessing = new RenderToTexture();
+    postprocessing->create(Game::instance->window_width, Game::instance->window_height);
 }
 
 void PlayStage::init()
@@ -78,7 +86,15 @@ void PlayStage::init()
 
 void PlayStage::render()
 {
+    postprocessing->enable();
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
     World::getInstance()->render();
+
+    postprocessing->disable();
+
+    postprocessing->toViewport(Shader::Get("data/shaders/screen.vs", "data/shaders/colorGrading.fs"));
 
     UI_root->render(camera2D);
 }

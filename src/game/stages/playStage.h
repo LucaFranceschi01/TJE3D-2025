@@ -6,6 +6,8 @@
 
 #include "stage.h"
 
+class RenderToTexture;
+
 enum eBooster : int;
 
 class PlayStage : public Stage
@@ -14,6 +16,8 @@ public:
     Entity* UI_root = nullptr;
     Camera* camera2D = nullptr;
     eBooster current_booster;
+
+    RenderToTexture* postprocessing = nullptr;
 
     // ctor and dtor
     PlayStage();

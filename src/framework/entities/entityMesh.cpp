@@ -97,7 +97,7 @@ void EntityMesh::render(Camera* camera)
     shader->setUniform("u_Kd", Vector3(0.5f));
     shader->setUniform("u_Ks", Vector3(0.5f));
     shader->setUniform("u_light_color", Vector3(0.9f, 0.9f, 1.0f));
-    shader->setUniform("u_light_position", World::getInstance()->player->getGlobalMatrix().getTranslation() + Vector3(0.f, 500.f, 0.f));
+    shader->setUniform("u_light_position", World::getInstance()->player->getGlobalMatrix().getTranslation() + Vector3(-200.f, 500.f, 200.f));
     shader->setUniform("u_fog_factor", 1.f);
     shader->setUniform("u_time", Game :: instance->time);
 
