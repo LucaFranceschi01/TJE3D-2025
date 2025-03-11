@@ -418,7 +418,7 @@ void MenuStage::onGamepadButtonDown(SDL_JoyButtonEvent event)
 
     switch (event.button) {
     case 0: // A
-        if (stage_type == MAIN_MENU_ST) instance->goToStage(INTRO_ST);
+        if (stage_type == MAIN_MENU_ST) instance->goToStage(LORE_ST);
         else if (stage_type == INTRO_ST) instance->goToStage(MAP_SEL_ST);
         else if (stage_type == MAP_SEL_ST) instance->goToStage(PLAY_ST);
         else if (stage_type == DEATH_ST) instance->goToStage(PLAY_ST);

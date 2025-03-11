@@ -118,7 +118,6 @@ void LoreStage::onKeyDown(SDL_KeyboardEvent event)
 {
     Game* instance = Game::instance;
 
-    // TODO: put mouse control. I don't remeber how to do it.
     switch (event.keysym.sym) {
         case SDLK_RIGHT:
         case SDLK_RETURN:
@@ -136,12 +135,25 @@ void LoreStage::onKeyDown(SDL_KeyboardEvent event)
             break;
         }
     }
-    Stage::onKeyDown(event);
 }
 
 void LoreStage::onGamepadButtonDown(SDL_JoyButtonEvent event)
 {
-    Stage::onGamepadButtonDown(event);
+    Game* instance = Game::instance;
+
+    switch (event.button) {
+    case 0: {
+        next();
+        break;
+    }
+    case 1: {
+        previous();
+        break;
+    }
+    default: {
+        break;
+    }
+    }
 }
 
 void LoreStage::onEnter(Stage* prev_stage)

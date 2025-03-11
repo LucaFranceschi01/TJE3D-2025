@@ -123,7 +123,7 @@ void EntityUI::render(Camera* camera2D)
 	material.shader->enable();
 
 	material.shader->setUniform("u_model", model);
-	material.shader->setUniform("u_color", material.color); // TODO: CHECK IF SHADER USES U_COLOR
+	material.shader->setUniform("u_color", material.color);
 	material.shader->setUniform("u_viewprojection", camera2D->viewprojection_matrix);
 	material.shader->setUniform("u_camera_pos", camera2D->eye);
 	material.shader->setUniform("u_lives", World::getInstance()->live);

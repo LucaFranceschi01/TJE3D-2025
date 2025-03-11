@@ -55,20 +55,20 @@ void HalfPlayer::moveControl(Vector3& move_dir, const float dt)
 
         if (is_left) {
             if (abs(left_joystick.z) > 0.1f) {
-                move_dir += right * left_joystick * 0.5f;
+                move_dir += right * left_joystick.z;
             }
             if (abs(left_joystick.x) > 0.1f) {
-                move_dir -= front * left_joystick;
+                move_dir -= front * left_joystick.x;
             }
             pitch -= rotational_speed * dt * left_joystick.x;
             yaw -= rotational_speed * dt * left_joystick.z * 0.5f;
         }
         else {
             if (abs(right_joystick.z) > 0.1f) {
-                move_dir += right * right_joystick * 0.5f;
+                move_dir += right * right_joystick.z;
             }
             if (abs(right_joystick.x) > 0.1f) {
-                move_dir -= front * right_joystick;
+                move_dir -= front * right_joystick.x;
             }
             pitch -= rotational_speed * dt * right_joystick.x;
             yaw -= rotational_speed * dt * right_joystick.z * 0.5f;
