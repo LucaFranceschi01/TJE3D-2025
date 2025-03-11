@@ -374,7 +374,7 @@ void MenuStage::onKeyDown(SDL_KeyboardEvent event)
         if (stage_type == MAP_SEL_ST) instance->previousMap();
         break;
     case SDLK_RETURN:
-        if (stage_type == MAIN_MENU_ST) instance->goToStage(INTRO_ST);
+        if (stage_type == MAIN_MENU_ST) instance->goToStage(LORE_ST);
         else if (stage_type == INTRO_ST) instance->goToStage(MAP_SEL_ST);
         else if (stage_type == MAP_SEL_ST) instance->goToStage(PLAY_ST);
         else if (stage_type == DEATH_ST) instance->goToStage(PLAY_ST);
@@ -464,10 +464,14 @@ void MenuStage::onGamepadButtonUp(SDL_JoyButtonEvent event)
 void MenuStage::onEnter(Stage* prev_stage)
 {
     switch (stage_type) {
-    case MAIN_MENU_ST:
-        // Audio is in game to avoid stop the music during transition from main to map select…
-        Game::instance->menu_sound = Audio::Play("data/sounds/lobby-screen.mp3", 0.5, BASS_SAMPLE_LOOP);
+    case MAIN_MENU_ST: {
+        // Audio is in game to avoid stop the music during transition from main to map select
+
+        if (prev_stage == nullptr || (prev_stage->stage_type != LORE_ST && prev_stage->stage_type != INTRO_ST)) {
+            Game::instance->menu_sound = Audio::Play("data/sounds/lobby-screen.mp3", 0.5, BASS_SAMPLE_LOOP);
+        }
         break;
+    }
 
     case DEATH_ST: {
         std::cout << "Death" << std::endl;

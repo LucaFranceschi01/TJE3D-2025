@@ -18,6 +18,8 @@
 
 #include <cmath>
 
+#include "stages/LoreStage.h"
+
 Game* Game::instance = NULL;
 
 Game::Game(int window_width, int window_height, SDL_Window* window)
@@ -44,6 +46,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     stages[DEATH_ST] = new MenuStage(DEATH_ST);
     stages[WIN_ST] = new MenuStage(WIN_ST);
     stages[OUTRO_ST] = new MenuStage(OUTRO_ST);
+    stages[LORE_ST] = new LoreStage();
 
     for (auto& entry : stages) {
         Stage* stage = entry.second;
