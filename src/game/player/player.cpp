@@ -231,7 +231,7 @@ void Player::moveControl(Vector3& move_dir, const float dt)
             World::front.normalize();
             World::right.normalize();
         } else {
-            move_dir -= right * 0.5f * walk_speed;
+            move_dir -= right * 0.8f * walk_speed;
             yaw += rotational_speed * dt * 0.5f;
         }
 
@@ -254,7 +254,7 @@ void Player::moveControl(Vector3& move_dir, const float dt)
             World::front.normalize();
             World::right.normalize();
         } else {
-            move_dir += right * 0.5f * walk_speed;
+            move_dir += right * 0.8f * walk_speed;
             yaw -= rotational_speed * dt * 0.5f;
         }
     }

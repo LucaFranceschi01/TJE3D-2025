@@ -28,19 +28,19 @@ void HalfPlayer::moveControl(Vector3& move_dir, const float dt)
     if (world_instance->game_mode == World::DEBUG &&
         ((is_left && Input::isKeyPressed(SDL_SCANCODE_S)) ||
         (!is_left && Input::isKeyPressed(SDL_SCANCODE_DOWN)))) {
-        move_dir -= front * walk_speed;
+        move_dir -= front * walk_speed * 0.8f;
         pitch -= rotational_speed * dt;
     }
 
     if ((is_left && Input::isKeyPressed(SDL_SCANCODE_A)) ||
         (!is_left && Input::isKeyPressed(SDL_SCANCODE_LEFT))) {
-        move_dir -= right * 0.5f * walk_speed;
+        move_dir -= right * walk_speed * 0.8f;
         yaw += rotational_speed * dt * 0.5f;
     }
 
     if ((is_left && Input::isKeyPressed(SDL_SCANCODE_D)) ||
         (!is_left && Input::isKeyPressed(SDL_SCANCODE_RIGHT))) {
-        move_dir += right * 0.5f * walk_speed;
+        move_dir += right * walk_speed;
         yaw -= rotational_speed * dt * 0.5f;
     }
 
