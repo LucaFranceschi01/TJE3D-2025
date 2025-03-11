@@ -11,7 +11,8 @@ class LoreStage : public Stage
 public:
     Camera* camera2D = nullptr;
     std::vector<Entity*> images_lore;
-    int image_index = 0;
+    std::vector<std::string> text_lore;
+    int index = 0;
 
     // constructor
     LoreStage();

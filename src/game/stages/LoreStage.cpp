@@ -32,17 +32,45 @@ LoreStage::LoreStage()
         images_lore.push_back(ui_elem);
     }
 
+    text_lore.emplace_back(
+            "Pepe Strikazos es el mejor jugador de la IBF, y tiene un oscuro\n"
+            "secreto... realmente no sabe jugar a bolos. La verdadera razon\n"
+            "de su exito es Don Bolon, su especial bola de bolos que por\n"
+            "pura casualidad se encontro de pequeno. Realmente es la 'bola'\n"
+            "poliforme parlanchina la que juega por el."
+            );
+
+    text_lore.emplace_back(
+            "Don Bolon es capaz de moverse a su antojo sin que nadie\n"
+            "se de cuenta, logrando asi que Pepe Strikazos haya ascendido\n"
+            "a lo mas alto de los torneos de bolos, siendo una leyenda\n"
+            "en el mundillo."
+            );
+    text_lore.emplace_back(
+            "En esta edicion de la World Bowling Championship, Don Bolon\n"
+            "tendra que lograr las mejores puntuaciones posibles para que\n"
+            "Pepe Strikazos no pierda su titulo."
+            );
 }
 
 void LoreStage::init()
 {
-    image_index = 0;
+    index = 0;
     Stage::init();
 }
 
 void LoreStage::render()
 {
-    images_lore[image_index]->render(camera2D);
+    Game* instance = Game::instance;
+
+    const float window_height = static_cast<float>(instance->window_height);
+    images_lore[index]->render(camera2D);
+
+    float offset = 100.f;
+    float scaling = 2.f;
+    drawText(60, window_height - 150,
+                 text_lore[index], Vector3(1.f), scaling);
+
     Stage::render();
 }
 
@@ -60,9 +88,9 @@ void LoreStage::onKeyDown(SDL_KeyboardEvent event)
         case SDLK_RIGHT:
         case SDLK_RETURN:
         case SDLK_d: {
-            image_index++;
+            index++;
 
-            if (image_index > 2) {
+            if (index > 2) {
                 instance->goToStage(INTRO_ST);
             }
             break;
@@ -70,9 +98,9 @@ void LoreStage::onKeyDown(SDL_KeyboardEvent event)
         case SDLK_LEFT:
         case SDLK_a:
         case SDLK_q: {
-            image_index--;
+            index--;
 
-            if (image_index < 0) {
+            if (index < 0) {
                 instance->goToStage(MAIN_MENU_ST);
             }
             break;
@@ -96,7 +124,7 @@ void LoreStage::onEnter(Stage* prev_stage)
 
 void LoreStage::onLeave(Stage* new_stage)
 {
-    image_index = 0;
+    index = 0;
 
     Stage::onLeave(new_stage);
 
