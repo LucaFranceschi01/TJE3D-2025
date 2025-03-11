@@ -90,6 +90,8 @@ void Player::update(float dt)
     // Death cutscene
     if (world_instance->live <= 0 || position.y <= 0) {
         if (death_sound_time == 2.5f) {
+            Audio::Play("data/sounds/sad_horn.wav");
+            Audio::Stop(Game::instance->background_sound);
             death_sound_time -= dt;
         } else {
             death_sound_time -= dt;
