@@ -132,16 +132,16 @@ void Player::update(float dt)
             fluid_factor = rand() % 5 - 2;
             time_fluid_i = time_colision_fluid;
         }
-        velocity.z += 25.0f * static_cast<float>(fluid_factor) * dt;
+        velocity.z += static_cast<float>(fluid_factor) * dt;
 
-        velocity += 0.12 * 1000.f * (move_dir * speed_mult) * dt;
+        velocity += 0.12 * (move_dir * speed_mult) * dt;
     }
     else {
-        velocity += 1000 * (move_dir * speed_mult) * dt;
+        velocity += (move_dir * speed_mult) * dt;
     }
 
     // Update player position. Colliding with wall.
-    position += (is_colliding) ? velocity * dt : -velocity * 10.f * dt;
+    position += (is_colliding) ? velocity : -velocity * 10.f;
 
     // Get the rotation of the ball
     yaw = positive_modulo(yaw, 360.f*DEG2RAD);
@@ -201,13 +201,13 @@ void Player::moveControl(Vector3& move_dir, const float dt)
     World* world_instance = World::getInstance();
     if (world_instance->game_mode == World::RELEASE ||
         (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP))) {
-        move_dir += front;
+        move_dir += front * walk_speed;
         pitch += rotational_speed * dt;
     }
     // if DEBUG is not here, the user in release can stop the player. move_dir + front - front = 0
     if (world_instance->game_mode == World::DEBUG &&
         (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN))) {
-        move_dir -= front;
+        move_dir -= front * walk_speed;
         pitch -= rotational_speed * dt;
     }
     if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
@@ -228,7 +228,7 @@ void Player::moveControl(Vector3& move_dir, const float dt)
             World::front.normalize();
             World::right.normalize();
         } else {
-            move_dir -= right * 0.5f;
+            move_dir -= right * 0.5f * walk_speed;
             yaw += rotational_speed * dt * 0.5f;
         }
 
@@ -251,7 +251,7 @@ void Player::moveControl(Vector3& move_dir, const float dt)
             World::front.normalize();
             World::right.normalize();
         } else {
-            move_dir += right * 0.5f;
+            move_dir += right * 0.5f * walk_speed;
             yaw -= rotational_speed * dt * 0.5f;
         }
     }
@@ -274,11 +274,11 @@ void Player::moveControl(Vector3& move_dir, const float dt)
         }
         
         if (abs(joystick->z) > 0.1f) {
-            move_dir += right * joystick->z * 0.5f;
+            move_dir += right * joystick->z * 0.5f * walk_speed;
         }
 
         if (abs(joystick->x) > 0.1f) {
-            move_dir -= front * joystick->x;
+            move_dir -= front * joystick->x * walk_speed;
         }
         
         pitch -= rotational_speed * dt * joystick->x;
@@ -395,15 +395,15 @@ bool Player::testCollisions(const Vector3& position, float dt)
 
     // this part is to make the jump fluid
     if (jump_time > 0) {
-        float jump_force = 1.f;
         jump_time -= dt;
-        velocity.y += jump_force * jump_time;
+        velocity.y += 0.1f * dt;
     }
 
     if (!is_grounded) {
         front[1] = 0.f;
         if (jump_time <= 0) {
-            velocity.y += -100.0f * dt;
+
+            velocity.y -= 0.1f * dt;
             jump_time = 0;
         }
     }
