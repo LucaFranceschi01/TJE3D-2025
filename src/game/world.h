@@ -62,7 +62,7 @@ public:
     float window_width = 0.f;
 
     e_camera_mode camera_mode = THIRD_PERSON;
-    e_game_mode game_mode = DEBUG;
+    e_game_mode game_mode = RELEASE;
 
     static Vector3 front;
     static Vector3 right;
