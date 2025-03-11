@@ -486,6 +486,11 @@ void MenuStage::onEnter(Stage* prev_stage)
         screen_sound = Audio::Play("data/sounds/win-screen.mp3", 0.5, BASS_SAMPLE_LOOP);
         break;
     }
+    case MAP_SEL_ST: {
+        if (prev_stage != nullptr && prev_stage->stage_type == PLAY_ST) {
+            Game::instance->menu_sound = Audio::Play("data/sounds/lobby-screen.mp3", 0.5, BASS_SAMPLE_LOOP);
+        }
+    }
     default:
         break;
     }

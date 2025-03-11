@@ -19,7 +19,7 @@ class Player : public EntityMesh
 protected:
     float yaw = 0.f;
     float pitch = 0.f;
-    float walk_speed = 2.5f;
+    float walk_speed = 1.8f;
     float rotational_speed = 30.f;
     Vector3 velocity = Vector3(0.f);
 

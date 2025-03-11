@@ -128,13 +128,14 @@ void Player::update(float dt)
     //velocity += 1000 * (move_dir * speed_mult) * dt;
 
     if (collision_fluid) {
-        
+        /*
         time_colision_fluid += dt;
         if (time_colision_fluid - time_fluid_i > 0.25) {
             fluid_factor = rand() % 5 - 2;
             time_fluid_i = time_colision_fluid;
         }
         velocity.z += static_cast<float>(fluid_factor) * dt;
+        */
 
         velocity += 0.12 * (move_dir * speed_mult) * dt;
     }
@@ -378,8 +379,6 @@ bool Player::testCollisions(const Vector3& position, float dt)
                 time_booster = 10;
 
                 world_instance->destroyEntity(collision_data.collider, collision_data.col_point);
-
-                booster = EXTRA_LIVE;
 
                 choosing_booster = true;
                 time_choosing_booster = 3;
