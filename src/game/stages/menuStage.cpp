@@ -22,8 +22,8 @@ std::vector<std::string> button_descriptions = {
     "Change running direction",
     "Tipically means EXIT, BACK",
     "Pause / Resume playthrough",
-    "Tipycally means GO or PLAY",
-    "View leaderboard"
+    "View leaderboard",
+    "Tipycally means GO or PLAY"
 };
 
 Vector2 btn_size(128.f, 64.f);
@@ -166,8 +166,8 @@ void MenuStage::init()
         std::vector<std::vector<std::string>> button_names = {
             {"", "ub"}, {"lb", "db", "rb"},
             {"", "w"}, {"a", "s", "d"},
-            {"e", "gp_x"}, {"z", "gp_lb", "gp_rb"}, {"q", "gp_b"}, {"r", "gp_menu"}, {"enter", "gp_a"},
-            {"gp_view"}
+            {"e", "gp_x"}, {"z", "gp_lb", "gp_rb"}, {"q", "gp_b"}, {"r", "gp_menu"}, {"r", "gp_view"},
+            {"enter", "gp_a"},
         };
 
         for (int i = 0; i < button_names.size(); i++) {
@@ -397,6 +397,11 @@ void MenuStage::onKeyDown(SDL_KeyboardEvent event)
         else if (stage_type == DEATH_ST || stage_type == WIN_ST) instance->goToStage(MAP_SEL_ST);
         else if (stage_type == OUTRO_ST) instance->goToStage(MAP_SEL_ST);
         break;
+    case SDLK_r:
+        if (stage_type == MAP_SEL_ST) instance->goToStage(OUTRO_ST);
+        break;
+    default:
+        break;
     }
 }
 
@@ -467,7 +472,7 @@ void MenuStage::onEnter(Stage* prev_stage)
     case MAIN_MENU_ST: {
         // Audio is in game to avoid stop the music during transition from main to map select
 
-        if (prev_stage == nullptr || (prev_stage->stage_type != LORE_ST && prev_stage->stage_type != INTRO_ST)) {
+        if (prev_stage == nullptr || (prev_stage->stage_type != LORE_ST && prev_stage->stage_type != INTRO_ST && prev_stage->stage_type != OUTRO_ST)) {
             Game::instance->menu_sound = Audio::Play("data/sounds/lobby-screen.mp3", 0.5, BASS_SAMPLE_LOOP);
         }
         break;
