@@ -74,7 +74,7 @@ void MenuStage::init()
     switch (stage_type) {
     case MAIN_MENU_ST: {
         ui_elem = new EntityUI(mat, Vector2(width / 3.f, height * 5.f / 6.f),
-                               btn_size, "play", EntityUI::ENTER_INTRO);
+                               btn_size, "play", EntityUI::ENTER_LORE);
         UI_root->addChild(ui_elem);
 
         ui_elem = new EntityUI(mat, Vector2(width * 2.f / 3.f, height * 5.f / 6.f),

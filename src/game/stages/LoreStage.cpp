@@ -27,8 +27,7 @@ LoreStage::LoreStage()
 
     for (int i = 0; i < 3; ++i) {
         EntityUI* ui_elem = new EntityUI(mat, Vector2(width / 2.f, height / 2.f),
-                                         Vector2(height, height),
-                                         "data/textures/lore/lore_" + std::to_string(i) + ".png");
+            Vector2(height, height), "data/textures/lore/lore_" + std::to_string(i) + ".png", EntityUI::LORE_NEXT);
         images_lore.push_back(ui_elem);
     }
 
@@ -110,6 +109,8 @@ void LoreStage::update(float dt)
         }
     }
 
+    images_lore[index]->update(dt);
+
     Stage::update(dt);
 }
 
@@ -122,43 +123,13 @@ void LoreStage::onKeyDown(SDL_KeyboardEvent event)
         case SDLK_RIGHT:
         case SDLK_RETURN:
         case SDLK_d: {
-            if (!text_completed) {
-                current_char = text_lore[index].length();
-                text_completed = true;
-                audio_stardet = false;
-                Audio::Stop(screen_sound);
-            } else {
-                index++;
-                if (index > 2) {
-                    instance->goToStage(INTRO_ST);
-                } else {
-                    text_timer = 0.0f;
-                    current_char = 0;
-                    text_completed = false;
-
-                }
-            }
+            next();
             break;
         }
         case SDLK_LEFT:
         case SDLK_a:
         case SDLK_q: {
-            if (!text_completed) {
-                current_char = text_lore[index].length();
-                text_completed = true;
-                audio_stardet = false;
-                Audio::Stop(screen_sound);
-            } else {
-                index--;
-                if (index < 0) {
-                    instance->goToStage(MAIN_MENU_ST);
-                } else {
-                    // Reinicia las variables para el nuevo texto
-                    text_timer = 0.0f;
-                    current_char = 0;
-                    text_completed = false;
-                }
-            }
+            previous();
             break;
         }
         default: {
@@ -189,4 +160,48 @@ void LoreStage::onLeave(Stage* new_stage)
     Audio::Stop(screen_sound);
     Stage::onLeave(new_stage);
 
+}
+
+void LoreStage::next()
+{
+    if (!text_completed) {
+        current_char = text_lore[index].length();
+        text_completed = true;
+        audio_stardet = false;
+        Audio::Stop(screen_sound);
+    }
+    else {
+        index++;
+        if (index > 2) {
+            Game::instance->goToStage(INTRO_ST);
+        }
+        else {
+            text_timer = 0.0f;
+            current_char = 0;
+            text_completed = false;
+
+        }
+    }
+}
+
+void LoreStage::previous()
+{
+    if (!text_completed) {
+        current_char = text_lore[index].length();
+        text_completed = true;
+        audio_stardet = false;
+        Audio::Stop(screen_sound);
+    }
+    else {
+        index--;
+        if (index < 0) {
+            Game::instance->goToStage(MAIN_MENU_ST);
+        }
+        else {
+            // Reinicia las variables para el nuevo texto
+            text_timer = 0.0f;
+            current_char = 0;
+            text_completed = false;
+        }
+    }
 }

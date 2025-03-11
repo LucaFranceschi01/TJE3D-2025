@@ -10,6 +10,7 @@
 
 #include "game/game.h"
 #include "game/stages/playStage.h"
+#include "game/stages/LoreStage.h"
 
 #include "game/world.h"
 
@@ -35,6 +36,7 @@ EntityUI::EntityUI(const Material& material, Vector2 position, Vector2 size,
 
 		switch (buttonID) {
 			case UNDEFINED:
+			case LORE_NEXT:
 			case MAP_THUMBNAIL: {
 				this->is_pixel_art = false;
 				this->base = Texture::Get(name.c_str());
@@ -99,6 +101,8 @@ EntityUI::EntityUI(const Material& material, Vector2 position, Vector2 size,
 	}
 
 	this->material.diffuse = this->base;
+
+
 
 	if (!this->material.shader) {
 		this->material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
@@ -165,12 +169,12 @@ void EntityUI::update(float dt)
 	Game* instance = Game::instance;
 
 	if (above_btn
-		&& buttonID != e_UIButtonID::UNDEFINED
-		&& buttonID != e_UIButtonID::MAP_THUMBNAIL
-		&& buttonID != e_UIButtonID::LIVES
-		&& buttonID != e_UIButtonID::PIN_COUNTER) {
+		&& buttonID != EntityUI::UNDEFINED
+		&& buttonID != EntityUI::MAP_THUMBNAIL
+		&& buttonID != EntityUI::LIVES
+		&& buttonID != EntityUI::PIN_COUNTER) {
 
-		this->material.diffuse = this->pressed;
+		if (buttonID != EntityUI::LORE_NEXT) this->material.diffuse = this->pressed;
 
 		if (Input::wasMousePressed(SDL_BUTTON_LEFT)) {
 			//Audio::Play("data/sounds/click.mp3");
@@ -181,6 +185,9 @@ void EntityUI::update(float dt)
 				break;
 			case EntityUI::ENTER_INTRO:
 				instance->goToStage(INTRO_ST);
+				break;
+			case EntityUI::ENTER_LORE:
+				instance->goToStage(LORE_ST);
 				break;
 			case EntityUI::EXIT:
 				if (instance->currentStage->stage_type == MAIN_MENU_ST) {
@@ -225,6 +232,14 @@ void EntityUI::update(float dt)
 			case EntityUI::ENTER_LEADERBOARD:
 				instance->goToStage(OUTRO_ST);
 				break;
+			case EntityUI::LORE_NEXT:
+			{
+				LoreStage* lore = dynamic_cast<LoreStage*>(instance->currentStage);
+				if (!lore) break;
+
+				lore->next();
+				break;
+			}
 			default:
 				break;
 			}

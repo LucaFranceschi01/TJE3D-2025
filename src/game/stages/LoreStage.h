@@ -37,6 +37,8 @@ public:
     void onEnter(Stage* prev_stage) override;
     void onLeave(Stage* new_stage) override;
 
+    void next();
+    void previous();
 };
 
 
