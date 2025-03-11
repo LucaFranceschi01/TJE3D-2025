@@ -474,12 +474,10 @@ void MenuStage::onEnter(Stage* prev_stage)
     }
 
     case DEATH_ST: {
-        std::cout << "Death" << std::endl;
         screen_sound = Audio::Play("data/sounds/death-screen.mp3", 0.5, BASS_SAMPLE_LOOP);
         break;
     }
     case WIN_ST: {
-        std::cout << "Win" << std::endl;
         screen_sound = Audio::Play("data/sounds/win-screen.mp3", 0.5, BASS_SAMPLE_LOOP);
         break;
     }
