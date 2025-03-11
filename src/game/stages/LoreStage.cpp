@@ -28,7 +28,7 @@ LoreStage::LoreStage()
     for (int i = 0; i < 3; ++i) {
         EntityUI* ui_elem = new EntityUI(mat, Vector2(width / 2.f, height / 2.f),
                                          Vector2(height, height),
-                                         "data/textures/lore_" + std::to_string(i) + ".png");
+                                         "data/textures/lore/lore_" + std::to_string(i) + ".png");
         images_lore.push_back(ui_elem);
     }
 
@@ -56,6 +56,10 @@ LoreStage::LoreStage()
 void LoreStage::init()
 {
     index = 0;
+    text_timer = 0.0f;
+    current_char = 0;
+    text_completed = false;
+    audio_stardet = false;
     Stage::init();
 }
 
@@ -68,14 +72,44 @@ void LoreStage::render()
 
     float offset = 100.f;
     float scaling = 2.f;
-    drawText(60, window_height - 150,
-                 text_lore[index], Vector3(1.f), scaling);
+
+    std::string partial_text;
+    if (current_char > 0) {
+        partial_text = text_lore[index].substr(0, current_char);
+    }
+    
+    drawText(60, window_height - 150, partial_text, Vector3(1.f), scaling);
 
     Stage::render();
 }
 
 void LoreStage::update(float dt)
 {
+    // Prompt claude sonnet: only show one char at time
+    if (!text_completed) {
+
+        if (!audio_stardet) {
+            screen_sound = Audio::Play("data/sounds/r2d2.mp3", 0.05, BASS_SAMPLE_LOOP);
+            audio_stardet = true;
+        }
+
+        text_timer += dt;
+        
+        int total_chars = static_cast<int>(text_lore[index].length());
+        int chars_to_show = static_cast<int>(text_timer / char_delay);
+        
+        if (chars_to_show > current_char) {
+            current_char = chars_to_show;
+            
+            if (current_char >= total_chars) {
+                text_completed = true;
+                current_char = total_chars;
+                audio_stardet = false;
+                Audio::Stop(screen_sound);
+            }
+        }
+    }
+
     Stage::update(dt);
 }
 
@@ -88,20 +122,42 @@ void LoreStage::onKeyDown(SDL_KeyboardEvent event)
         case SDLK_RIGHT:
         case SDLK_RETURN:
         case SDLK_d: {
-            index++;
+            if (!text_completed) {
+                current_char = text_lore[index].length();
+                text_completed = true;
+                audio_stardet = false;
+                Audio::Stop(screen_sound);
+            } else {
+                index++;
+                if (index > 2) {
+                    instance->goToStage(INTRO_ST);
+                } else {
+                    text_timer = 0.0f;
+                    current_char = 0;
+                    text_completed = false;
 
-            if (index > 2) {
-                instance->goToStage(INTRO_ST);
+                }
             }
             break;
         }
         case SDLK_LEFT:
         case SDLK_a:
         case SDLK_q: {
-            index--;
-
-            if (index < 0) {
-                instance->goToStage(MAIN_MENU_ST);
+            if (!text_completed) {
+                current_char = text_lore[index].length();
+                text_completed = true;
+                audio_stardet = false;
+                Audio::Stop(screen_sound);
+            } else {
+                index--;
+                if (index < 0) {
+                    instance->goToStage(MAIN_MENU_ST);
+                } else {
+                    // Reinicia las variables para el nuevo texto
+                    text_timer = 0.0f;
+                    current_char = 0;
+                    text_completed = false;
+                }
             }
             break;
         }
@@ -119,13 +175,18 @@ void LoreStage::onGamepadButtonDown(SDL_JoyButtonEvent event)
 
 void LoreStage::onEnter(Stage* prev_stage)
 {
+    index = 0;
+    text_timer = 0.0f;
+    current_char = 0;
+    text_completed = false;
+    audio_stardet = false;
     Stage::onEnter(prev_stage);
 }
 
 void LoreStage::onLeave(Stage* new_stage)
 {
     index = 0;
-
+    Audio::Stop(screen_sound);
     Stage::onLeave(new_stage);
 
 }
